@@ -1,11 +1,94 @@
-// Update this page (the content is just a fallback if you fail to update the page)
 
+import React, { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Lock } from "lucide-react";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { TokenProvider } from "@/context/TokenContext";
+import PinSetup from "@/components/auth/PinSetup";
+import PinEntry from "@/components/auth/PinEntry";
+import TokenList from "@/components/tokens/TokenList";
+
+// App Content component that displays the main content when authenticated
+const AppContent = () => {
+  const { lockApp } = useAuth();
+
+  // Auto-lock after inactivity (5 minutes)
+  useEffect(() => {
+    let inactivityTimer: number;
+    
+    const resetTimer = () => {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = window.setTimeout(lockApp, 5 * 60 * 1000); // 5 minutes
+    };
+    
+    // Set up event listeners for user activity
+    window.addEventListener("mousemove", resetTimer);
+    window.addEventListener("keypress", resetTimer);
+    window.addEventListener("click", resetTimer);
+    
+    // Start initial timer
+    resetTimer();
+    
+    // Clean up event listeners
+    return () => {
+      clearTimeout(inactivityTimer);
+      window.removeEventListener("mousemove", resetTimer);
+      window.removeEventListener("keypress", resetTimer);
+      window.removeEventListener("click", resetTimer);
+    };
+  }, [lockApp]);
+  
+  return (
+    <div>
+      <header className="border-b mb-8 pb-4 flex justify-between items-center">
+        <h1 className="text-2xl font-bold">AdiNox Authenticator</h1>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={lockApp}
+        >
+          <Lock className="h-4 w-4 mr-2" /> Lock App
+        </Button>
+      </header>
+      
+      <TokenList />
+    </div>
+  );
+};
+
+// Auth wrapper component that handles showing setup or entry based on auth state
+const AuthWrapper = () => {
+  const { isAuthenticated, isSetupComplete } = useAuth();
+  
+  if (!isSetupComplete) {
+    return <PinSetup />;
+  }
+  
+  if (!isAuthenticated) {
+    return <PinEntry />;
+  }
+  
+  return <AppContent />;
+};
+
+// Main Index component that provides context providers
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-background p-4 md:p-6">
+      <div className="container mx-auto max-w-4xl">
+        <AuthProvider>
+          <TokenProvider>
+            <Card className="shadow-xl bg-card">
+              <CardContent className="p-6">
+                <AuthWrapper />
+              </CardContent>
+            </Card>
+            <footer className="mt-8 text-center text-sm text-muted-foreground">
+              <p>AdiNox Vault Keeper &copy; {new Date().getFullYear()}</p>
+            </footer>
+          </TokenProvider>
+        </AuthProvider>
       </div>
     </div>
   );
