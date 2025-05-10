@@ -149,7 +149,7 @@ const AuthPage: React.FC = () => {
   const onSignupSubmit = async (data: SignupFormValues) => {
     setIsLoading(true);
     try {
-      // Sign up with email and password
+      // Sign up with email and password, no email verification
       const { error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -157,7 +157,8 @@ const AuthPage: React.FC = () => {
           data: {
             username: data.username,
           },
-          emailRedirectTo: window.location.origin,
+          // Skip email verification
+          emailRedirectTo: undefined,
         },
       });
 

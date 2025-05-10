@@ -103,6 +103,7 @@ const Index = () => {
           </Card>
           <footer className="mt-8 text-center text-sm text-muted-foreground">
             <p>AdiNox Vault Keeper &copy; {new Date().getFullYear()}</p>
+            <p className="mt-2 font-medium">Proudly Developed by Adil Munawar</p>
           </footer>
         </TokenProvider>
       </div>
