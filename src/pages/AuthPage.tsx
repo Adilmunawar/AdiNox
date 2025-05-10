@@ -22,8 +22,8 @@ import { Eye, EyeOff, KeyRound, Mail, User } from "lucide-react";
 
 // Login form schema
 const loginSchema = z.object({
-  username: z.string().min(3, {
-    message: "Username must be at least 3 characters.",
+  email: z.string().email({
+    message: "Please enter a valid email address.",
   }),
   password: z.string().min(6, {
     message: "Password must be at least 6 characters.",
@@ -64,7 +64,7 @@ const AuthPage: React.FC = () => {
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
@@ -84,40 +84,9 @@ const AuthPage: React.FC = () => {
   const onLoginSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
-      // Get user email from username
-      const { data: profiles, error: profileError } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("username", data.username)
-        .single();
-      
-      if (profileError || !profiles) {
-        toast({
-          title: "Error",
-          description: "Username not found. Please check your credentials.",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      // Get email from auth.users table
-      const { data: authUser, error: authError } = await supabase.auth.admin
-        .getUserById(profiles.id);
-
-      if (authError || !authUser.user) {
-        toast({
-          title: "Error",
-          description: "User account not found. Please contact support.",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      // Sign in with email and password
+      // Sign in directly with email and password
       const { error } = await supabase.auth.signInWithPassword({
-        email: authUser.user.email!,
+        email: data.email,
         password: data.password,
       });
 
@@ -173,7 +142,7 @@ const AuthPage: React.FC = () => {
           title: "Account created",
           description: "Your account has been created successfully! You can now login.",
         });
-        loginForm.setValue("username", data.username);
+        loginForm.setValue("email", data.email);
       }
     } catch (error: any) {
       toast({
@@ -208,15 +177,15 @@ const AuthPage: React.FC = () => {
                 <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
                   <FormField
                     control={loginForm.control}
-                    name="username"
+                    name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel>Email</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                            <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                             <Input 
-                              placeholder="Enter your username" 
+                              placeholder="Enter your email" 
                               className="pl-10" 
                               {...field}
                               disabled={isLoading} 
