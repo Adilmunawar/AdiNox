@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lock } from "lucide-react";
+import { Lock, LogOut } from "lucide-react";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { TokenProvider } from "@/context/TokenContext";
 import PinSetup from "@/components/auth/PinSetup";
@@ -11,7 +11,8 @@ import TokenList from "@/components/tokens/TokenList";
 
 // App Content component that displays the main content when authenticated
 const AppContent = () => {
-  const { lockApp } = useAuth();
+  const { lockApp, isSetupComplete } = useAuth();
+  const { user, signOut } = useAuth();
 
   // Auto-lock after inactivity (5 minutes)
   useEffect(() => {
@@ -43,14 +44,31 @@ const AppContent = () => {
     <div>
       <header className="border-b mb-8 pb-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold">AdiNox Authenticator</h1>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={lockApp}
-        >
-          <Lock className="h-4 w-4 mr-2" /> Lock App
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={lockApp}
+          >
+            <Lock className="h-4 w-4 mr-2" /> Lock App
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={signOut}
+          >
+            <LogOut className="h-4 w-4 mr-2" /> Sign Out
+          </Button>
+        </div>
       </header>
+
+      {user && (
+        <div className="mb-4 p-4 bg-muted rounded-lg">
+          <p className="text-sm text-muted-foreground">
+            Logged in as: <span className="font-medium text-foreground">{user.user_metadata.username || user.email}</span>
+          </p>
+        </div>
+      )}
       
       <TokenList />
     </div>
@@ -77,18 +95,16 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="container mx-auto max-w-4xl">
-        <AuthProvider>
-          <TokenProvider>
-            <Card className="shadow-xl bg-card">
-              <CardContent className="p-6">
-                <AuthWrapper />
-              </CardContent>
-            </Card>
-            <footer className="mt-8 text-center text-sm text-muted-foreground">
-              <p>AdiNox Vault Keeper &copy; {new Date().getFullYear()}</p>
-            </footer>
-          </TokenProvider>
-        </AuthProvider>
+        <TokenProvider>
+          <Card className="shadow-xl bg-card">
+            <CardContent className="p-6">
+              <AuthWrapper />
+            </CardContent>
+          </Card>
+          <footer className="mt-8 text-center text-sm text-muted-foreground">
+            <p>AdiNox Vault Keeper &copy; {new Date().getFullYear()}</p>
+          </footer>
+        </TokenProvider>
       </div>
     </div>
   );
