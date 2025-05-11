@@ -8,7 +8,7 @@
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.1%20adopted-ff69b4.svg)](code_of_conduct.md)
 
 <p align="center">
-  <img src="https://github.com/Adilmunawar/adinox/blob/main/adinox_logo.png?raw=true" alt="AdiNox Logo" width="200">
+  <img src="https://github.com/Adilmunawar/adinox/blob/main/Pink%20Minimalist%20Shield%20a%20Logo.png" alt="AdiNox Logo" width="200">
 </p>
 
 ## Description
