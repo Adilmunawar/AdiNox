@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { generateTOTP } from "@/utils/tokenUtils";
@@ -40,12 +41,8 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
         const tokensWithDates = parsedTokens.map((token: any) => ({
           ...token,
           createdAt: new Date(token.createdAt),
-          // Regenerate code on load to ensure it's current
-          currentCode: generateTOTP(token.secret, {
-            period: token.period,
-            digits: token.digits,
-            algorithm: token.algorithm as "SHA1" | "SHA256" | "SHA512",
-          })
+          // Default code will be updated in the next effect
+          currentCode: "------"
         }));
         setTokens(tokensWithDates);
       } catch (error) {
@@ -65,11 +62,11 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
 
   // Update token codes every second
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setTokens((currentTokens) => {
-        return currentTokens.map(token => {
+    const updateCodes = async () => {
+      const updatedTokens = await Promise.all(
+        tokens.map(async (token) => {
           try {
-            const currentCode = generateTOTP(token.secret, {
+            const currentCode = await generateTOTP(token.secret, {
               period: token.period,
               digits: token.digits,
               algorithm: token.algorithm as "SHA1" | "SHA256" | "SHA512",
@@ -84,19 +81,27 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
             // Keep the previous code if there's an error
             return token;
           }
-        });
-      });
-    }, 1000);
+        })
+      );
 
+      setTokens(updatedTokens);
+    };
+
+    // Update codes immediately on mount and when tokens change
+    if (tokens.length > 0) {
+      updateCodes();
+    }
+
+    const intervalId = setInterval(updateCodes, 1000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [tokens.length]);
 
-  const addToken = (newToken: Omit<TokenType, "id" | "currentCode" | "createdAt">) => {
+  const addToken = async (newToken: Omit<TokenType, "id" | "currentCode" | "createdAt">) => {
     try {
       // Clean up the secret (remove spaces and convert to uppercase)
       const cleanSecret = newToken.secret.replace(/\s+/g, '').toUpperCase();
       
-      const currentCode = generateTOTP(cleanSecret, {
+      const currentCode = await generateTOTP(cleanSecret, {
         period: newToken.period,
         digits: newToken.digits,
         algorithm: newToken.algorithm as "SHA1" | "SHA256" | "SHA512",

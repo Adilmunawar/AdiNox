@@ -2,7 +2,6 @@
 // Implementation of RFC 6238 TOTP (Time-based One-Time Password) algorithm
 // Based on the HMAC-based One-Time Password algorithm (HOTP) from RFC 4226
 
-import { createHmac } from 'crypto-browserify';
 import * as base32 from 'hi-base32';
 
 export type TOTPOptions = {
@@ -32,8 +31,43 @@ const intToBytes = (num: number): Uint8Array => {
   return bytes;
 };
 
+// Convert bytes to hex string
+const bytesToHex = (bytes: Uint8Array): string => {
+  return Array.from(bytes)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+};
+
+// Generate HMAC using Web Crypto API
+const generateHMAC = async (
+  algorithm: string,
+  key: Uint8Array,
+  message: Uint8Array
+): Promise<Uint8Array> => {
+  const cryptoAlgorithm = {
+    name: 'HMAC',
+    hash: { name: algorithm }
+  };
+  
+  const cryptoKey = await window.crypto.subtle.importKey(
+    'raw',
+    key,
+    cryptoAlgorithm,
+    false,
+    ['sign']
+  );
+  
+  const signature = await window.crypto.subtle.sign(
+    cryptoAlgorithm,
+    cryptoKey,
+    message
+  );
+  
+  return new Uint8Array(signature);
+};
+
 // Generate a TOTP code based on the secret and options
-export function generateTOTP(secret: string, options: TOTPOptions = {}): string {
+export async function generateTOTP(secret: string, options: TOTPOptions = {}): Promise<string> {
   try {
     const { 
       period = 30, 
@@ -59,13 +93,14 @@ export function generateTOTP(secret: string, options: TOTPOptions = {}): string 
     const counter = Math.floor(Date.now() / 1000 / period);
     const counterBytes = intToBytes(counter);
     
-    // Create HMAC using the specified algorithm
-    const hmac = createHmac(algorithm.toLowerCase(), key);
-    hmac.update(counterBytes);
-    const hmacResult = hmac.digest('hex');
+    // Create HMAC using Web Crypto API
+    const hmacBytes = await generateHMAC(
+      algorithm,
+      key,
+      counterBytes
+    );
     
-    // Convert the HMAC result to a number using dynamic truncation
-    const hmacBytes = hexToBytes(hmacResult);
+    // Dynamic truncation
     const offset = hmacBytes[hmacBytes.length - 1] & 0xf;
     
     // Take 4 bytes starting at the offset
