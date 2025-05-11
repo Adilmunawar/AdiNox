@@ -31,22 +31,23 @@ const intToBytes = (num: number): Uint8Array => {
   return bytes;
 };
 
-// Convert bytes to hex string
-const bytesToHex = (bytes: Uint8Array): string => {
-  return Array.from(bytes)
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
-};
-
 // Generate HMAC using Web Crypto API
 const generateHMAC = async (
   algorithm: string,
   key: Uint8Array,
   message: Uint8Array
 ): Promise<Uint8Array> => {
+  // Map algorithm names to their Web Crypto API counterparts
+  const algorithmMap: Record<string, string> = {
+    "SHA1": "SHA-1",
+    "SHA256": "SHA-256", 
+    "SHA512": "SHA-512"
+  };
+  
+  // Use the mapped algorithm name for Web Crypto API
   const cryptoAlgorithm = {
     name: 'HMAC',
-    hash: { name: algorithm }
+    hash: { name: algorithmMap[algorithm] || "SHA-1" }
   };
   
   const cryptoKey = await window.crypto.subtle.importKey(
