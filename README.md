@@ -115,7 +115,7 @@ AdiNox is licensed under the [License Name] License.  See the [LICENSE](LICENSE)
     * Describe any security measures implemented in AdiNox (e.g., encryption of stored keys).
     * If you have a security policy, link to it.
     * If you have a bug bounty program, mention it here.
-* **Vulnerability Reporting:** Provide instructions on how to report security vulnerabilities.  E.g.: "To report security vulnerabilities, please email AdilMunawarX."
+* **Vulnerability Reporting:** Provide instructions on how to report security vulnerabilities.  E.g.: "To report security vulnerabilities, please email AdilMunawarX@gmail.com."
 
 ## FAQ
 
