@@ -140,7 +140,3 @@ A:   (Explain the differences, focusing on AdiNox's unique features, advantages,
 
 * **Email:** adilfromavengers@gmail.com
 * **Instagram:** AdilMunawarX
-
-##  Further Information
-
-* Link
