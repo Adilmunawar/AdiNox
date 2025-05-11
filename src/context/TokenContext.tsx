@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { generateTOTP } from "@/utils/tokenUtils";
+import { useAuth } from "@/context/AuthContext";
 
 export type TokenType = {
   id: string;
@@ -30,10 +31,19 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
   const [tokens, setTokens] = useState<TokenType[]>([]);
   const [sortOption, setSortOption] = useState<"name" | "issuer" | "createdAt">("name");
   const { toast } = useToast();
+  const { user } = useAuth();
 
-  // Initialize tokens from localStorage
+  // Generate a storage key that's unique per user
+  const getStorageKey = () => {
+    if (user) {
+      return `adinox_tokens_${user.id}`;
+    }
+    return "adinox_tokens";
+  };
+
+  // Initialize tokens from localStorage using the user-specific key
   useEffect(() => {
-    const storedTokens = localStorage.getItem("adinox_tokens");
+    const storedTokens = localStorage.getItem(getStorageKey());
     if (storedTokens) {
       try {
         const parsedTokens = JSON.parse(storedTokens);
@@ -50,15 +60,17 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
         // If there's an error parsing, start with empty tokens
         setTokens([]);
       }
+    } else {
+      setTokens([]); // Reset tokens when user changes or logs out
     }
-  }, []);
+  }, [user?.id]); // Update tokens when user changes
 
-  // Save tokens to localStorage whenever they change
+  // Save tokens to localStorage whenever they change, using user-specific key
   useEffect(() => {
-    if (tokens.length > 0) {
-      localStorage.setItem("adinox_tokens", JSON.stringify(tokens));
+    if (tokens.length > 0 && user) {
+      localStorage.setItem(getStorageKey(), JSON.stringify(tokens));
     }
-  }, [tokens]);
+  }, [tokens, user?.id]);
 
   // Update token codes every second
   useEffect(() => {

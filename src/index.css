@@ -53,22 +53,52 @@
   }
 
   .token-card {
-    @apply relative overflow-hidden rounded-xl bg-card p-6 shadow-lg transition-all hover:shadow-xl;
+    @apply relative overflow-hidden rounded-xl bg-card p-6 shadow-lg;
   }
 
   .token-code {
-    @apply text-3xl font-bold tracking-wider text-foreground;
+    @apply text-3xl font-bold tracking-wider text-foreground font-mono;
   }
 
-  .countdown-ring {
-    @apply w-16 h-16 absolute -right-2 -top-2;
+  /* Mobile responsive adjustments */
+  @media (max-width: 768px) {
+    .token-card {
+      @apply p-4;
+    }
+    
+    .token-code {
+      @apply text-2xl;
+    }
   }
 
-  .countdown-ring circle {
-    @apply stroke-primary stroke-2 fill-transparent;
-    stroke-dasharray: 283;
-    stroke-linecap: round;
-    transform-origin: center;
-    transform: rotate(-90deg);
+  /* Enhanced timer styles */
+  .timer-ring {
+    @apply relative w-full h-2 bg-muted rounded-full overflow-hidden;
   }
+  
+  .timer-progress {
+    @apply absolute top-0 left-0 h-full bg-primary transition-all rounded-full;
+  }
+  
+  .timer-expiring {
+    @apply bg-destructive;
+  }
+  
+  .timer-warning {
+    @apply bg-amber-500;
+  }
+}
+
+/* Animation for the timer */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
 }
