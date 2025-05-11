@@ -75,6 +75,8 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
   // Update token codes every second
   useEffect(() => {
     const updateCodes = async () => {
+      if (tokens.length === 0) return; // Skip if no tokens
+      
       const updatedTokens = await Promise.all(
         tokens.map(async (token) => {
           try {
@@ -129,6 +131,12 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
 
       setTokens(prevTokens => [...prevTokens, token]);
       
+      // Save to localStorage immediately after adding a token
+      if (user) {
+        const updatedTokens = [...tokens, token];
+        localStorage.setItem(getStorageKey(), JSON.stringify(updatedTokens));
+      }
+      
       toast({
         title: "Token added",
         description: `${newToken.issuer || 'New token'} has been added successfully.`,
@@ -144,7 +152,13 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const removeToken = (id: string) => {
-    setTokens(prevTokens => prevTokens.filter(token => token.id !== id));
+    const updatedTokens = tokens.filter(token => token.id !== id);
+    setTokens(updatedTokens);
+    
+    // Save to localStorage immediately after removing a token
+    if (user) {
+      localStorage.setItem(getStorageKey(), JSON.stringify(updatedTokens));
+    }
     
     toast({
       title: "Token removed",
@@ -153,9 +167,16 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateToken = (id: string, updatedFields: Partial<TokenType>) => {
-    setTokens(prevTokens => prevTokens.map(token => 
+    const updatedTokens = tokens.map(token => 
       token.id === id ? { ...token, ...updatedFields } : token
-    ));
+    );
+    
+    setTokens(updatedTokens);
+    
+    // Save to localStorage immediately after updating a token
+    if (user) {
+      localStorage.setItem(getStorageKey(), JSON.stringify(updatedTokens));
+    }
     
     toast({
       title: "Token updated",
@@ -166,13 +187,20 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
   const sortTokens = (sortBy: "name" | "issuer" | "createdAt") => {
     setSortOption(sortBy);
     
-    setTokens(prevTokens => [...prevTokens].sort((a, b) => {
+    const sortedTokens = [...tokens].sort((a, b) => {
       if (sortBy === "createdAt") {
         return b.createdAt.getTime() - a.createdAt.getTime();
       } else {
         return a[sortBy].localeCompare(b[sortBy]);
       }
-    }));
+    });
+    
+    setTokens(sortedTokens);
+    
+    // Save sorted order to localStorage
+    if (user) {
+      localStorage.setItem(getStorageKey(), JSON.stringify(sortedTokens));
+    }
   };
 
   const filterTokens = (searchTerm: string) => {
