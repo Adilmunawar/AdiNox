@@ -1,6 +1,9 @@
 
-// Simple TOTP implementation for demonstration purposes
-// In a real app, we would use a cryptographic library like 'otplib' or 'jsOTP'
+// Implementation of RFC 6238 TOTP (Time-based One-Time Password) algorithm
+// Based on the HMAC-based One-Time Password algorithm (HOTP) from RFC 4226
+
+import { createHmac } from 'crypto-browserify';
+import * as base32 from 'hi-base32';
 
 export type TOTPOptions = {
   period?: number;
@@ -8,37 +11,77 @@ export type TOTPOptions = {
   algorithm?: "SHA1" | "SHA256" | "SHA512";
 };
 
-export function generateTOTP(secret: string, options: TOTPOptions = {}): string {
-  const { 
-    period = 30, 
-    digits = 6,
-    algorithm = "SHA1" 
-  } = options;
-
-  // In a real app, we'd use actual cryptographic functions
-  // For this demo, we'll simulate TOTP with a simplified algorithm
-  
-  // Calculate time slice based on period
-  const timeSlice = Math.floor(Date.now() / 1000 / period);
-  
-  // Combine secret and time for pseudo-random value
-  const hash = simpleHash(secret + timeSlice.toString());
-  
-  // Generate appropriate number of digits
-  return hash.toString().padStart(digits, '0').slice(-digits);
-}
-
-// Simple hash function for demonstration only
-// In production, use actual HMAC-SHA1/SHA256/SHA512
-function simpleHash(input: string): number {
-  let hash = 0;
-  for (let i = 0; i < input.length; i++) {
-    const char = input.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit integer
+// Convert a hex string to a byte array
+const hexToBytes = (hex: string): Uint8Array => {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
   }
-  // Make it positive and limit to 6 digits
-  return Math.abs(hash) % 1000000;
+  return bytes;
+};
+
+// Convert an integer to a byte array
+const intToBytes = (num: number): Uint8Array => {
+  const bytes = new Uint8Array(8);
+  let temp = num;
+  // Convert to big-endian byte array
+  for (let i = 7; i >= 0; i--) {
+    bytes[i] = temp & 0xff;
+    temp = temp >> 8;
+  }
+  return bytes;
+};
+
+// Generate a TOTP code based on the secret and options
+export function generateTOTP(secret: string, options: TOTPOptions = {}): string {
+  try {
+    const { 
+      period = 30, 
+      digits = 6,
+      algorithm = "SHA1" 
+    } = options;
+
+    // Normalize and decode the base32 secret
+    const normalizedSecret = secret.toUpperCase().replace(/\s/g, '');
+    let key: Uint8Array;
+    
+    try {
+      // Decode the base32 secret
+      const decoded = base32.decode.asBytes(normalizedSecret);
+      key = new Uint8Array(decoded);
+    } catch (e) {
+      console.error('Error decoding base32 secret:', e);
+      // If base32 decoding fails, try using the raw secret
+      key = new TextEncoder().encode(secret);
+    }
+
+    // Calculate time counter (number of time steps since Unix epoch)
+    const counter = Math.floor(Date.now() / 1000 / period);
+    const counterBytes = intToBytes(counter);
+    
+    // Create HMAC using the specified algorithm
+    const hmac = createHmac(algorithm.toLowerCase(), key);
+    hmac.update(counterBytes);
+    const hmacResult = hmac.digest('hex');
+    
+    // Convert the HMAC result to a number using dynamic truncation
+    const hmacBytes = hexToBytes(hmacResult);
+    const offset = hmacBytes[hmacBytes.length - 1] & 0xf;
+    
+    // Take 4 bytes starting at the offset
+    const binCode = 
+      ((hmacBytes[offset] & 0x7f) << 24) |
+      ((hmacBytes[offset + 1] & 0xff) << 16) |
+      ((hmacBytes[offset + 2] & 0xff) << 8) |
+      (hmacBytes[offset + 3] & 0xff);
+    
+    // Generate the specified number of digits
+    const otp = binCode % Math.pow(10, digits);
+    return otp.toString().padStart(digits, '0');
+  } catch (error) {
+    console.error('Error generating TOTP:', error);
+    return '000000'; // Return fallback code on error
+  }
 }
 
 export function getTimeRemaining(period: number = 30): number {

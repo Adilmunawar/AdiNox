@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { generateTOTP } from "@/utils/tokenUtils";
@@ -35,13 +34,25 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const storedTokens = localStorage.getItem("adinox_tokens");
     if (storedTokens) {
-      const parsedTokens = JSON.parse(storedTokens);
-      // Convert date strings back to Date objects
-      const tokensWithDates = parsedTokens.map((token: any) => ({
-        ...token,
-        createdAt: new Date(token.createdAt),
-      }));
-      setTokens(tokensWithDates);
+      try {
+        const parsedTokens = JSON.parse(storedTokens);
+        // Convert date strings back to Date objects
+        const tokensWithDates = parsedTokens.map((token: any) => ({
+          ...token,
+          createdAt: new Date(token.createdAt),
+          // Regenerate code on load to ensure it's current
+          currentCode: generateTOTP(token.secret, {
+            period: token.period,
+            digits: token.digits,
+            algorithm: token.algorithm as "SHA1" | "SHA256" | "SHA512",
+          })
+        }));
+        setTokens(tokensWithDates);
+      } catch (error) {
+        console.error("Error parsing stored tokens:", error);
+        // If there's an error parsing, start with empty tokens
+        setTokens([]);
+      }
     }
   }, []);
 
@@ -57,14 +68,22 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
     const intervalId = setInterval(() => {
       setTokens((currentTokens) => {
         return currentTokens.map(token => {
-          return {
-            ...token,
-            currentCode: generateTOTP(token.secret, {
+          try {
+            const currentCode = generateTOTP(token.secret, {
               period: token.period,
               digits: token.digits,
               algorithm: token.algorithm as "SHA1" | "SHA256" | "SHA512",
-            })
-          };
+            });
+            
+            return {
+              ...token,
+              currentCode
+            };
+          } catch (error) {
+            console.error(`Error generating code for token ${token.id}:`, error);
+            // Keep the previous code if there's an error
+            return token;
+          }
         });
       });
     }, 1000);
@@ -73,23 +92,38 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const addToken = (newToken: Omit<TokenType, "id" | "currentCode" | "createdAt">) => {
-    const token: TokenType = {
-      ...newToken,
-      id: crypto.randomUUID(),
-      currentCode: generateTOTP(newToken.secret, {
+    try {
+      // Clean up the secret (remove spaces and convert to uppercase)
+      const cleanSecret = newToken.secret.replace(/\s+/g, '').toUpperCase();
+      
+      const currentCode = generateTOTP(cleanSecret, {
         period: newToken.period,
         digits: newToken.digits,
         algorithm: newToken.algorithm as "SHA1" | "SHA256" | "SHA512",
-      }),
-      createdAt: new Date(),
-    };
+      });
 
-    setTokens(prevTokens => [...prevTokens, token]);
-    
-    toast({
-      title: "Token added",
-      description: `${newToken.issuer || 'New token'} has been added successfully.`,
-    });
+      const token: TokenType = {
+        ...newToken,
+        secret: cleanSecret, // Store the cleaned secret
+        id: crypto.randomUUID(),
+        currentCode,
+        createdAt: new Date(),
+      };
+
+      setTokens(prevTokens => [...prevTokens, token]);
+      
+      toast({
+        title: "Token added",
+        description: `${newToken.issuer || 'New token'} has been added successfully.`,
+      });
+    } catch (error) {
+      console.error("Error adding token:", error);
+      toast({
+        title: "Error adding token",
+        description: "There was a problem adding the token. Please check the secret key.",
+        variant: "destructive",
+      });
+    }
   };
 
   const removeToken = (id: string) => {
