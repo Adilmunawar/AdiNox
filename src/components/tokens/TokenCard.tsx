@@ -144,7 +144,7 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
             {animatedDigits(token.currentCode)}
           </div>
           <Button 
-            variant={copied ? "success" : "outline"} 
+            variant={copied ? "secondary" : "outline"} 
             size="sm" 
             className={cn(
               "flex gap-1 items-center transition-all duration-300",

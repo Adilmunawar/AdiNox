@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, SlidersHorizontal, Plus, Filter, Calendar, Clock, Grid, List } from "lucide-react";
+import { Search, SlidersHorizontal, Plus, Filter, Calendar, Clock, Grid, List, Copy, Edit, QrCode, MoreVertical, Trash2 } from "lucide-react";
 import TokenCard from "./TokenCard";
 import AddTokenForm from "./AddTokenForm";
 import { useTokens } from "@/context/TokenContext";
@@ -18,9 +18,11 @@ import { TokenType } from "@/context/TokenContext";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
+  DropdownMenuItem,
   DropdownMenuRadioGroup, 
   DropdownMenuRadioItem, 
   DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 import { 
   Dialog,
@@ -34,6 +36,8 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/use-toast";
+import { formatTOTPDisplay, getTimeRemaining } from "@/utils/tokenUtils";
 
 const TokenList = () => {
   const { tokens, removeToken, sortTokens } = useTokens();
@@ -44,6 +48,7 @@ const TokenList = () => {
   const [filterType, setFilterType] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"name" | "issuer" | "createdAt">("name");
   const isMobile = useIsMobile();
+  const { toast } = useToast();
 
   const filteredTokens = tokens.filter(token => {
     const term = searchTerm.toLowerCase();
@@ -292,7 +297,7 @@ const TokenList = () => {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              {onEdit && (
+                              {handleEditToken && (
                                 <DropdownMenuItem onClick={() => handleEditToken(token)} className="cursor-pointer">
                                   <Edit className="h-4 w-4 mr-2" /> Edit
                                 </DropdownMenuItem>
