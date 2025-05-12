@@ -30,6 +30,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_tokens: {
+        Row: {
+          algorithm: string
+          created_at: string
+          digits: number
+          id: string
+          issuer: string
+          name: string
+          period: number
+          secret: string
+          user_id: string
+        }
+        Insert: {
+          algorithm?: string
+          created_at?: string
+          digits?: number
+          id?: string
+          issuer: string
+          name: string
+          period?: number
+          secret: string
+          user_id: string
+        }
+        Update: {
+          algorithm?: string
+          created_at?: string
+          digits?: number
+          id?: string
+          issuer?: string
+          name?: string
+          period?: number
+          secret?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

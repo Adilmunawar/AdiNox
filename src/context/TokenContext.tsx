@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { generateTOTP } from "@/utils/tokenUtils";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export type TokenType = {
   id: string;
@@ -32,45 +32,56 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
   const [sortOption, setSortOption] = useState<"name" | "issuer" | "createdAt">("name");
   const { toast } = useToast();
   const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Generate a storage key that's unique per user
-  const getStorageKey = () => {
-    if (user) {
-      return `adinox_tokens_${user.id}`;
-    }
-    return "adinox_tokens";
-  };
-
-  // Initialize tokens from localStorage using the user-specific key
+  // Fetch tokens from Supabase when user changes
   useEffect(() => {
-    const storedTokens = localStorage.getItem(getStorageKey());
-    if (storedTokens) {
-      try {
-        const parsedTokens = JSON.parse(storedTokens);
-        // Convert date strings back to Date objects
-        const tokensWithDates = parsedTokens.map((token: any) => ({
-          ...token,
-          createdAt: new Date(token.createdAt),
-          // Default code will be updated in the next effect
-          currentCode: "------"
-        }));
-        setTokens(tokensWithDates);
-      } catch (error) {
-        console.error("Error parsing stored tokens:", error);
-        // If there's an error parsing, start with empty tokens
+    const fetchTokens = async () => {
+      if (!user) {
         setTokens([]);
+        setIsLoading(false);
+        return;
       }
-    } else {
-      setTokens([]); // Reset tokens when user changes or logs out
-    }
-  }, [user?.id]); // Update tokens when user changes
 
-  // Save tokens to localStorage whenever they change, using user-specific key
-  useEffect(() => {
-    if (tokens.length > 0 && user) {
-      localStorage.setItem(getStorageKey(), JSON.stringify(tokens));
-    }
-  }, [tokens, user?.id]);
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from("user_tokens")
+          .select("*")
+          .order(sortOption, { ascending: sortOption !== "createdAt" });
+
+        if (error) {
+          throw error;
+        }
+
+        // Transform database tokens to TokenType format
+        const transformedTokens = data.map((token) => ({
+          id: token.id,
+          name: token.name,
+          issuer: token.issuer,
+          secret: token.secret,
+          period: token.period,
+          digits: token.digits,
+          algorithm: token.algorithm,
+          currentCode: "------", // Will be generated in the next useEffect
+          createdAt: new Date(token.created_at),
+        }));
+
+        setTokens(transformedTokens);
+      } catch (error) {
+        console.error("Error fetching tokens:", error);
+        toast({
+          title: "Failed to load tokens",
+          description: "There was an error loading your tokens. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTokens();
+  }, [user, sortOption, toast]);
 
   // Update token codes every second
   useEffect(() => {
@@ -110,32 +121,61 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
     return () => clearInterval(intervalId);
   }, [tokens.length]);
 
+  // Add a token to Supabase
   const addToken = async (newToken: Omit<TokenType, "id" | "currentCode" | "createdAt">) => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "You must be logged in to add tokens.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       // Clean up the secret (remove spaces and convert to uppercase)
       const cleanSecret = newToken.secret.replace(/\s+/g, '').toUpperCase();
-      
+
+      // Insert the token into Supabase
+      const { data, error } = await supabase.from("user_tokens").insert({
+        user_id: user.id,
+        name: newToken.name,
+        issuer: newToken.issuer,
+        secret: cleanSecret,
+        period: newToken.period,
+        digits: newToken.digits,
+        algorithm: newToken.algorithm,
+      }).select();
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        throw new Error("No data returned from insert operation");
+      }
+
+      // Generate current code
       const currentCode = await generateTOTP(cleanSecret, {
         period: newToken.period,
         digits: newToken.digits,
         algorithm: newToken.algorithm as "SHA1" | "SHA256" | "SHA512",
       });
 
-      const token: TokenType = {
-        ...newToken,
-        secret: cleanSecret, // Store the cleaned secret
-        id: crypto.randomUUID(),
+      // Add the new token to the local state
+      const addedToken: TokenType = {
+        id: data[0].id,
+        name: newToken.name,
+        issuer: newToken.issuer,
+        secret: cleanSecret,
+        period: newToken.period,
+        digits: newToken.digits,
+        algorithm: newToken.algorithm,
         currentCode,
-        createdAt: new Date(),
+        createdAt: new Date(data[0].created_at),
       };
 
-      setTokens(prevTokens => [...prevTokens, token]);
-      
-      // Save to localStorage immediately after adding a token
-      if (user) {
-        const updatedTokens = [...tokens, token];
-        localStorage.setItem(getStorageKey(), JSON.stringify(updatedTokens));
-      }
+      setTokens(prevTokens => [...prevTokens, addedToken]);
       
       toast({
         title: "Token added",
@@ -145,62 +185,93 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
       console.error("Error adding token:", error);
       toast({
         title: "Error adding token",
-        description: "There was a problem adding the token. Please check the secret key.",
+        description: "There was a problem adding the token. Please check your connection and try again.",
         variant: "destructive",
       });
     }
   };
 
-  const removeToken = (id: string) => {
-    const updatedTokens = tokens.filter(token => token.id !== id);
-    setTokens(updatedTokens);
-    
-    // Save to localStorage immediately after removing a token
-    if (user) {
-      localStorage.setItem(getStorageKey(), JSON.stringify(updatedTokens));
+  // Remove a token from Supabase
+  const removeToken = async (id: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from("user_tokens")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        throw error;
+      }
+
+      // Remove from local state
+      setTokens(prevTokens => prevTokens.filter(token => token.id !== id));
+      
+      toast({
+        title: "Token removed",
+        description: "The token has been removed successfully.",
+      });
+    } catch (error) {
+      console.error("Error removing token:", error);
+      toast({
+        title: "Error removing token",
+        description: "There was a problem removing the token. Please try again.",
+        variant: "destructive",
+      });
     }
-    
-    toast({
-      title: "Token removed",
-      description: "The token has been removed successfully.",
-    });
   };
 
-  const updateToken = (id: string, updatedFields: Partial<TokenType>) => {
-    const updatedTokens = tokens.map(token => 
-      token.id === id ? { ...token, ...updatedFields } : token
-    );
+  // Update a token in Supabase
+  const updateToken = async (id: string, updatedFields: Partial<TokenType>) => {
+    if (!user) return;
     
-    setTokens(updatedTokens);
-    
-    // Save to localStorage immediately after updating a token
-    if (user) {
-      localStorage.setItem(getStorageKey(), JSON.stringify(updatedTokens));
+    try {
+      // Create an object with only the fields that can be updated in the database
+      const dbUpdateFields: any = {};
+      if (updatedFields.name) dbUpdateFields.name = updatedFields.name;
+      if (updatedFields.issuer) dbUpdateFields.issuer = updatedFields.issuer;
+      if (updatedFields.secret) dbUpdateFields.secret = updatedFields.secret.replace(/\s+/g, '').toUpperCase();
+      if (updatedFields.period) dbUpdateFields.period = updatedFields.period;
+      if (updatedFields.digits) dbUpdateFields.digits = updatedFields.digits;
+      if (updatedFields.algorithm) dbUpdateFields.algorithm = updatedFields.algorithm;
+      
+      // Only update if there are fields to update
+      if (Object.keys(dbUpdateFields).length > 0) {
+        const { error } = await supabase
+          .from("user_tokens")
+          .update(dbUpdateFields)
+          .eq("id", id);
+          
+        if (error) {
+          throw error;
+        }
+      }
+      
+      // Update local state
+      setTokens(prevTokens => 
+        prevTokens.map(token => 
+          token.id === id ? { ...token, ...updatedFields } : token
+        )
+      );
+      
+      toast({
+        title: "Token updated",
+        description: "The token has been updated successfully.",
+      });
+    } catch (error) {
+      console.error("Error updating token:", error);
+      toast({
+        title: "Error updating token",
+        description: "There was a problem updating the token. Please try again.",
+        variant: "destructive",
+      });
     }
-    
-    toast({
-      title: "Token updated",
-      description: "The token has been updated successfully.",
-    });
   };
 
   const sortTokens = (sortBy: "name" | "issuer" | "createdAt") => {
     setSortOption(sortBy);
-    
-    const sortedTokens = [...tokens].sort((a, b) => {
-      if (sortBy === "createdAt") {
-        return b.createdAt.getTime() - a.createdAt.getTime();
-      } else {
-        return a[sortBy].localeCompare(b[sortBy]);
-      }
-    });
-    
-    setTokens(sortedTokens);
-    
-    // Save sorted order to localStorage
-    if (user) {
-      localStorage.setItem(getStorageKey(), JSON.stringify(sortedTokens));
-    }
+    // The actual sorting will happen when we fetch from Supabase in the useEffect
   };
 
   const filterTokens = (searchTerm: string) => {
@@ -224,7 +295,13 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
         filterTokens,
       }}
     >
-      {children}
+      {isLoading && user ? (
+        <div className="flex justify-center items-center p-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      ) : (
+        children
+      )}
     </TokenContext.Provider>
   );
 };

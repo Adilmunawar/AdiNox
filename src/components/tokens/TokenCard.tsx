@@ -49,6 +49,12 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
     });
   };
 
+  const handleRemove = () => {
+    if (window.confirm(`Are you sure you want to remove the token for ${token.issuer || token.name}?`)) {
+      onRemove(token.id);
+    }
+  };
+
   const getTimerColor = () => {
     if (timeRemaining <= 5) return "text-destructive";
     if (timeRemaining <= 10) return "text-amber-500";
@@ -56,7 +62,7 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
   };
 
   return (
-    <Card className="token-card hover:shadow-md transition-all">
+    <Card className="token-card hover:shadow-md transition-all p-4">
       <div className="flex justify-between items-start mb-2">
         <div>
           <h3 className="font-semibold text-lg line-clamp-1">{token.issuer}</h3>
@@ -84,7 +90,7 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
             <DropdownMenuSeparator />
             <DropdownMenuItem 
               className="text-destructive focus:text-destructive" 
-              onClick={() => onRemove(token.id)}
+              onClick={handleRemove}
             >
               <Trash2 className="h-4 w-4 mr-2" /> Remove
             </DropdownMenuItem>
@@ -93,7 +99,7 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
       </div>
       
       <div className={`mt-4 flex ${isMobile ? 'flex-col gap-2' : 'justify-between items-center'}`}>
-        <div className="token-code">{formatTOTPDisplay(token.currentCode)}</div>
+        <div className="token-code text-2xl font-mono font-bold">{formatTOTPDisplay(token.currentCode)}</div>
         <Button 
           variant="outline" 
           size="sm" 
