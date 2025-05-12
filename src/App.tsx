@@ -1,83 +1,26 @@
 
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Index from "./pages/Index";
-import AuthPage from "./pages/AuthPage";
-import NotFound from "./pages/NotFound";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import NotFound from "@/pages/NotFound";
+import AuthPage from "@/pages/AuthPage";
+import Index from "@/pages/Index";
+import { AuthProvider } from "@/context/AuthContext";
+import AnimatedBackground from "@/components/ui/animated-background";
 
-const queryClient = new QueryClient();
-
-// Protected route component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div className="flex h-screen items-center justify-center">Loading...</div>;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  return <>{children}</>;
-};
-
-// Public route that redirects to main page if already authenticated
-const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div className="flex h-screen items-center justify-center">Loading...</div>;
-  }
-
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <>{children}</>;
-};
-
-// App routes wrapper with Auth Provider
-const AppRoutes = () => {
+const App = () => {
   return (
-    <Routes>
-      <Route 
-        path="/" 
-        element={
-          <ProtectedRoute>
-            <Index />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/auth" 
-        element={
-          <PublicRoute>
-            <AuthPage />
-          </PublicRoute>
-        } 
-      />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <Router>
+      <AuthProvider>
+        <AnimatedBackground />
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        <Toaster />
+      </AuthProvider>
+    </Router>
   );
 };
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <AppRoutes />
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
 
 export default App;

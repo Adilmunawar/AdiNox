@@ -87,6 +87,35 @@
   .timer-warning {
     @apply bg-amber-500;
   }
+  
+  /* Animated gradient background */
+  .animated-gradient-background {
+    background: linear-gradient(
+      315deg,
+      hsl(222 28% 10%),
+      hsl(252 81% 25%),
+      hsl(252 60% 35%),
+      hsl(252 81% 45%),
+      hsl(252 60% 35%),
+      hsl(252 81% 25%),
+      hsl(222 28% 10%)
+    );
+    background-size: 400% 400%;
+    animation: gradient-animation 15s ease infinite;
+    opacity: 0.8;
+  }
+  
+  @keyframes gradient-animation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
 }
 
 /* Animation for the timer */

@@ -8,6 +8,7 @@ import { TokenProvider } from "@/context/TokenContext";
 import PinSetup from "@/components/auth/PinSetup";
 import PinEntry from "@/components/auth/PinEntry";
 import TokenList from "@/components/tokens/TokenList";
+import AnimatedBackground from "@/components/ui/animated-background";
 
 // App Content component that displays the main content when authenticated
 const AppContent = () => {
@@ -93,10 +94,11 @@ const AuthWrapper = () => {
 // Main Index component that provides context providers
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background p-4 md:p-6">
+    <div className="min-h-screen bg-transparent p-4 md:p-6">
+      <AnimatedBackground />
       <div className="container mx-auto max-w-4xl">
         <TokenProvider>
-          <Card className="shadow-xl bg-card">
+          <Card className="shadow-xl bg-card/80 backdrop-blur-md">
             <CardContent className="p-6">
               <AuthWrapper />
             </CardContent>
