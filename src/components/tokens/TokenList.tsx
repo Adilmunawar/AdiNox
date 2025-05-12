@@ -21,11 +21,13 @@ import {
   DropdownMenuRadioGroup, 
   DropdownMenuRadioItem, 
   DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { 
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle 
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 
 const TokenList = () => {
