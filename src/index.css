@@ -88,7 +88,7 @@
     @apply bg-amber-500;
   }
   
-  /* Animated gradient background */
+  /* Enhanced animated gradient background */
   .animated-gradient-background {
     background: linear-gradient(
       315deg,
@@ -100,9 +100,9 @@
       hsl(252 81% 25%),
       hsl(222 28% 10%)
     );
-    background-size: 400% 400%;
-    animation: gradient-animation 15s ease infinite;
-    opacity: 0.8;
+    background-size: 300% 300%;
+    animation: gradient-animation 8s ease infinite alternate;
+    opacity: 0.85;
   }
   
   @keyframes gradient-animation {

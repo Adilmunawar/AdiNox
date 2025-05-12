@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, Plus } from "lucide-react";
 import TokenCard from "./TokenCard";
 import AddTokenForm from "./AddTokenForm";
 import { useTokens } from "@/context/TokenContext";
@@ -20,13 +20,19 @@ import {
   DropdownMenuContent, 
   DropdownMenuRadioGroup, 
   DropdownMenuRadioItem, 
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle 
 } from "@/components/ui/dropdown-menu";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 
 const TokenList = () => {
   const { tokens, removeToken, sortTokens } = useTokens();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedToken, setSelectedToken] = useState<TokenType | null>(null);
+  const [isAddingToken, setIsAddingToken] = useState(false);
   const isMobile = useIsMobile();
 
   const filteredTokens = tokens.filter(token => {
@@ -105,6 +111,16 @@ const TokenList = () => {
             <p className="text-muted-foreground">
               {searchTerm ? "No tokens match your search" : "No tokens added yet"}
             </p>
+            {!searchTerm && (
+              <Button 
+                onClick={() => setIsAddingToken(true)}
+                className="mt-4"
+                variant="outline"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add your first token
+              </Button>
+            )}
           </div>
         )}
       </div>

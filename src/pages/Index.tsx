@@ -43,12 +43,13 @@ const AppContent = () => {
   
   return (
     <div>
-      <header className="border-b mb-8 pb-4 flex justify-between items-center">
+      <header className="border-b mb-8 pb-4 flex flex-col sm:flex-row justify-between items-center gap-4">
         <h1 className="text-2xl font-bold">AdiNox Authenticator</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           <Button 
             variant="outline" 
             size="sm" 
+            className="flex-1 sm:flex-none"
             onClick={lockApp}
           >
             <Lock className="h-4 w-4 mr-2" /> Lock App
@@ -56,6 +57,7 @@ const AppContent = () => {
           <Button 
             variant="outline" 
             size="sm"
+            className="flex-1 sm:flex-none"
             onClick={signOut}
           >
             <LogOut className="h-4 w-4 mr-2" /> Sign Out
@@ -65,7 +67,7 @@ const AppContent = () => {
 
       {user && (
         <div className="mb-4 p-4 bg-muted rounded-lg">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground text-center sm:text-left">
             Logged in as: <span className="font-medium text-foreground">{user.user_metadata.username || user.email}</span>
           </p>
         </div>
@@ -95,7 +97,6 @@ const AuthWrapper = () => {
 const Index = () => {
   return (
     <div className="min-h-screen bg-transparent p-4 md:p-6">
-      <AnimatedBackground />
       <div className="container mx-auto max-w-4xl">
         <TokenProvider>
           <Card className="shadow-xl bg-card/80 backdrop-blur-md">
