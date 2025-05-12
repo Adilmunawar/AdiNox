@@ -45,6 +45,23 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-background/50;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50;
+  }
 }
 
 @layer components {
@@ -58,6 +75,11 @@
 
   .token-code {
     @apply text-3xl font-bold tracking-wider text-foreground font-mono;
+  }
+
+  /* Glass effect */
+  .glass-effect {
+    @apply backdrop-blur-sm bg-white/5 border border-white/10;
   }
 
   /* Mobile responsive adjustments */
@@ -88,33 +110,26 @@
     @apply bg-amber-500;
   }
   
-  /* Enhanced animated gradient background */
-  .animated-gradient-background {
-    background: linear-gradient(
-      315deg,
-      hsl(222 28% 10%),
-      hsl(252 81% 25%),
-      hsl(252 60% 35%),
-      hsl(252 81% 45%),
-      hsl(252 60% 35%),
-      hsl(252 81% 25%),
-      hsl(222 28% 10%)
-    );
-    background-size: 300% 300%;
-    animation: gradient-animation 8s ease infinite alternate;
-    opacity: 0.85;
+  /* Card hover effect */
+  .hover-lift {
+    @apply transition-all duration-300;
   }
   
-  @keyframes gradient-animation {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
+  .hover-lift:hover {
+    @apply -translate-y-1 shadow-lg;
+  }
+  
+  /* Button glow effect */
+  .glow-effect {
+    @apply relative overflow-hidden;
+  }
+  
+  .glow-effect::after {
+    @apply content-[''] absolute inset-0 bg-primary/20 blur-xl opacity-0 transition-opacity duration-300;
+  }
+  
+  .glow-effect:hover::after {
+    @apply opacity-100;
   }
 }
 
@@ -122,12 +137,61 @@
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
+    transform: scale(1);
   }
   50% {
     opacity: 0.6;
+    transform: scale(0.98);
   }
 }
 
 .animate-pulse {
   animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Entrance animations */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-slide-in {
+  animation: fadeSlideIn 0.3s ease-out forwards;
+}
+
+/* Enhanced glow for primary elements */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px theme('colors.primary.DEFAULT'), 0 0 10px theme('colors.primary.DEFAULT');
+  }
+  50% {
+    box-shadow: 0 0 15px theme('colors.primary.DEFAULT'), 0 0 20px theme('colors.primary.DEFAULT');
+  }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Button focus animation */
+@keyframes ringPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(139, 92, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+  }
+}
+
+.animate-ring-pulse {
+  animation: ringPulse 1.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
 }
