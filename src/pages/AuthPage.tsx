@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -20,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Eye, EyeOff, KeyRound, Mail, User, Shield } from "lucide-react";
 import { motion } from "framer-motion";
+import { PageHeader } from "@/components/ui/page-header";
 
 // Login form schema
 const loginSchema = z.object({
@@ -183,7 +183,9 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="container flex items-center justify-center min-h-screen py-8">
+    <div className="container max-w-md mx-auto px-4 py-6">
+      <PageHeader showAuth={false} />
+      
       <motion.div 
         initial="hidden"
         animate="visible"

@@ -2,6 +2,7 @@
 import { cn } from "@/lib/utils";
 import React, { useEffect, useRef } from "react";
 import NoiseTexture from "./noise-texture";
+import { useTheme } from "@/context/ThemeContext";
 
 interface AnimatedBackgroundProps {
   className?: string;
@@ -9,6 +10,7 @@ interface AnimatedBackgroundProps {
 
 const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { theme } = useTheme();
   
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -27,13 +29,21 @@ const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
     
     window.addEventListener("resize", resize);
     
-    // Colors from our theme
-    const colors = [
+    // Colors based on theme
+    const darkColors = [
       "rgba(147, 51, 234, 0.5)",  // Purple
       "rgba(139, 92, 246, 0.5)",  // Lighter purple
       "rgba(124, 58, 237, 0.5)",  // Vivid purple
       "rgba(109, 40, 217, 0.5)",  // Deep purple
       "rgba(91, 33, 182, 0.5)",   // Indigo
+    ];
+    
+    const lightColors = [
+      "rgba(147, 51, 234, 0.3)",  // Purple (lighter opacity)
+      "rgba(139, 92, 246, 0.3)",  // Lighter purple
+      "rgba(124, 58, 237, 0.3)",  // Vivid purple
+      "rgba(167, 139, 250, 0.3)", // Lavender
+      "rgba(196, 181, 253, 0.3)", // Very light purple
     ];
     
     // Particles array
@@ -55,7 +65,7 @@ const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
         this.size = Math.random() * 20 + 10;
         this.speedX = Math.random() * 2 - 1;
         this.speedY = Math.random() * 2 - 1;
-        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.color = (theme === 'dark' ? darkColors : lightColors)[Math.floor(Math.random() * 5)];
       }
       
       update() {
@@ -85,6 +95,7 @@ const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
     
     // Create particles
     function init() {
+      particlesArray.length = 0; // Clear existing particles
       for (let i = 0; i < numberOfParticles; i++) {
         particlesArray.push(new Particle());
       }
@@ -93,11 +104,17 @@ const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Draw gradient background
+      // Draw gradient background based on theme
       const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, "hsl(222, 28%, 10%)");
-      gradient.addColorStop(0.5, "hsl(252, 81%, 25%)");
-      gradient.addColorStop(1, "hsl(222, 28%, 14%)");
+      if (theme === 'dark') {
+        gradient.addColorStop(0, "hsl(222, 28%, 10%)");
+        gradient.addColorStop(0.5, "hsl(252, 81%, 25%)");
+        gradient.addColorStop(1, "hsl(222, 28%, 14%)");
+      } else {
+        gradient.addColorStop(0, "hsl(225, 25%, 95%)");
+        gradient.addColorStop(0.5, "hsl(252, 100%, 97%)");
+        gradient.addColorStop(1, "hsl(225, 25%, 98%)");
+      }
       
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -141,7 +158,7 @@ const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
     return () => {
       window.removeEventListener("resize", resize);
     };
-  }, []);
+  }, [theme]); // Re-initialize when theme changes
   
   return (
     <>
@@ -150,8 +167,13 @@ const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
         className={cn("fixed inset-0 -z-10", className)} 
         style={{ filter: "blur(50px)" }}
       />
-      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-background/70 via-background/50 to-background/70 opacity-70" />
-      <NoiseTexture opacity={0.4} />
+      <div className={cn(
+        "fixed inset-0 -z-10 opacity-70",
+        theme === 'dark' 
+          ? "bg-gradient-to-br from-background/70 via-background/50 to-background/70" 
+          : "bg-gradient-to-br from-background/50 via-background/30 to-background/50"
+      )} />
+      <NoiseTexture opacity={theme === 'dark' ? 0.4 : 0.2} />
     </>
   );
 };
