@@ -33,25 +33,56 @@ export const Logo = ({ size = "md", showText = true, className }: LogoProps) => 
     <div className={cn("flex items-center gap-3", className)}>
       <motion.div 
         className={cn(
-          "rounded-full bg-primary/20 flex items-center justify-center",
+          "rounded-full bg-gradient-to-br from-adinox-purple to-adinox-red/70 flex items-center justify-center",
           sizeMap[size].container
         )}
-        whileHover={{ scale: 1.05 }}
-        animate={{ 
-          boxShadow: ["0 0 0 rgba(124, 58, 237, 0.2)", "0 0 20px rgba(124, 58, 237, 0.4)", "0 0 0 rgba(124, 58, 237, 0.2)"]
+        whileHover={{ 
+          scale: 1.1,
+          rotate: [0, 5, -5, 0],
+          transition: { duration: 0.5 }
         }}
-        transition={{ duration: 2, repeat: Infinity }}
+        animate={{ 
+          boxShadow: [
+            "0 0 0 rgba(155, 135, 245, 0.2)", 
+            "0 0 25px rgba(155, 135, 245, 0.6)", 
+            "0 0 0 rgba(155, 135, 245, 0.2)"
+          ]
+        }}
+        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
       >
-        <Shield className={cn("text-primary", sizeMap[size].icon)} />
+        <motion.div
+          animate={{ 
+            rotate: [0, 360],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 rounded-full bg-gradient-to-br from-adinox-purple/20 to-adinox-red/20"
+        />
+        <Shield className={cn("text-white", sizeMap[size].icon)} />
       </motion.div>
       
       {showText && (
-        <h1 className={cn(
-          "font-bold bg-clip-text text-transparent bg-gradient-to-r from-secondary to-primary",
-          sizeMap[size].text
-        )}>
+        <motion.h1 
+          className={cn(
+            "font-bold text-transparent",
+            sizeMap[size].text
+          )}
+          style={{
+            backgroundImage: "linear-gradient(90deg, #ea384c, #9B87F5, #D6BCFA, #ea384c)",
+            backgroundSize: "300% 100%",
+            backgroundClip: "text",
+          }}
+          animate={{
+            backgroundPosition: ["0% 0%", "100% 0%", "0% 0%"],
+          }}
+          transition={{
+            duration: 8,
+            ease: "easeInOut",
+            repeat: Infinity,
+          }}
+        >
           AdiNox Authenticator
-        </h1>
+        </motion.h1>
       )}
     </div>
   );

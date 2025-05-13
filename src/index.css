@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 225 25% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
@@ -13,11 +13,11 @@
     --popover-foreground: 222 47% 11%;
     --primary: 262 83% 58%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
+    --secondary: 250 25% 95%;
     --secondary-foreground: 222 47% 11%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215 16% 47%;
-    --accent: 210 40% 96.1%;
+    --accent: 262 60% 95%;
     --accent-foreground: 222 47% 11%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
@@ -28,25 +28,25 @@
   }
 
   .dark {
-    --background: 222 47% 11%;
+    --background: 222 47% 10%;
     --foreground: 210 40% 98%;
-    --card: 222 47% 11%;
+    --card: 222 47% 12%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
+    --popover: 222 47% 12%;
     --popover-foreground: 210 40% 98%;
-    --primary: 263 70% 50%;
+    --primary: 263 70% 65%;
     --primary-foreground: 210 40% 98%;
     --secondary: 217 32% 17%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217 32% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 32% 17%;
+    --muted-foreground: 215 20% 75%;
+    --accent: 263 63% 20%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62% 30%;
+    --destructive: 0 62% 50%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217 32% 17%;
-    --input: 217 32% 17%;
-    --ring: 263 70% 50%;
+    --border: 217 32% 20%;
+    --input: 217 32% 20%;
+    --ring: 263 70% 65%;
   }
 }
 
@@ -68,6 +68,23 @@
 
   .slide-in-from-bottom-3 {
     animation-name: slideInFromBottom3;
+  }
+  
+  .hover-glow {
+    @apply transition-all duration-300;
+  }
+  
+  .hover-glow:hover {
+    filter: drop-shadow(0 0 6px theme('colors.primary.DEFAULT'));
+    @apply scale-105;
+  }
+  
+  .glass-card {
+    @apply backdrop-blur-md bg-white/10 border border-white/20;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-adinox-purple via-adinox-light-purple to-adinox-red;
   }
 
   @keyframes fadeIn {
@@ -99,6 +116,38 @@
       transform: translateY(0);
       opacity: 1;
     }
+  }
+  
+  @keyframes floatAnimation {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+  
+  .animate-float {
+    animation: floatAnimation 3s ease-in-out infinite;
+  }
+  
+  @keyframes pulseGlow {
+    0% {
+      box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(124, 58, 237, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+    }
+  }
+  
+  .animate-pulse-glow {
+    animation: pulseGlow 2s infinite;
   }
 }
 
@@ -137,4 +186,33 @@ html, body, #root {
 
 body {
   @apply bg-background text-foreground transition-colors duration-300;
+}
+
+/* Token card enhancements */
+.token-card {
+  @apply transition-all duration-300;
+}
+
+.token-card:hover {
+  @apply transform scale-[1.02] shadow-lg;
+}
+
+/* Button hover effects */
+button:not(.no-hover-effect) {
+  position: relative;
+  overflow: hidden;
+}
+
+button:not(.no-hover-effect)::after {
+  content: '';
+  @apply absolute inset-0 bg-white opacity-0 transition-opacity duration-300;
+}
+
+button:not(.no-hover-effect):hover::after {
+  @apply opacity-10;
+}
+
+/* 3D button press effect */
+button:not(.no-hover-effect):active {
+  transform: translateY(1px);
 }
