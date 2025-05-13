@@ -69,7 +69,7 @@ export const Pulse = ({
   className?: string;
   scale?: number[];
   duration?: number;
-  repeat?: number | "Infinity";
+  repeat?: number;  // Changed from number | "Infinity" to just number
 }) => (
   <motion.div
     animate={{ scale }}
