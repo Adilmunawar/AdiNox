@@ -117,9 +117,10 @@ const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
         const colorMatch = this.color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
         if (colorMatch) {
           const [_, r, g, b, a] = colorMatch;
+          const alpha = a ? parseFloat(a) : 1; // Parse a to number or use 1 if undefined
           
-          gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${a || 1})`);
-          gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${(a || 1) * 0.6})`);
+          gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${alpha})`);
+          gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${alpha * 0.6})`);
           gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
         } else {
           // Fallback if parsing fails

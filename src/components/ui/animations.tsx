@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 
@@ -16,15 +15,15 @@ export const FadeIn = ({
   className?: string;
   direction?: "up" | "down" | "left" | "right" | null;
 }) => {
-  const directionMap = {
+  const directionMap: Record<string, {x: number, y: number}> = {
     up: { y: 20, x: 0 },
     down: { y: -20, x: 0 },
     left: { x: 20, y: 0 },
     right: { x: -20, y: 0 },
-    null: { y: 0, x: 0 }
+    none: { y: 0, x: 0 }
   };
 
-  const directionValue = direction ? directionMap[direction] : directionMap[null];
+  const directionValue = direction ? directionMap[direction] : directionMap["none"];
 
   return (
     <motion.div
