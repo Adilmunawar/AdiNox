@@ -135,7 +135,9 @@ export const ThreeDToken = ({
         </div>
         
         {/* Glowing effect */}
-        <Pulse className="absolute inset-0 bg-gradient-to-r from-adinox-purple/10 via-transparent to-adinox-red/10 rounded-xl" />
+        <Pulse className="absolute inset-0 bg-gradient-to-r from-adinox-purple/10 via-transparent to-adinox-red/10 rounded-xl">
+          <div></div>
+        </Pulse>
       </motion.div>
     </ScaleIn>
   );

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -12,7 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useVoiceCommands } from "@/hooks/use-voice-commands";
-import { useMobile } from "@/hooks/use-mobile"; 
+import { useIsMobile } from "@/hooks/use-mobile"; 
 
 interface AmbientAssistantProps {
   className?: string;
@@ -23,7 +22,7 @@ export function AmbientAssistant({ className }: AmbientAssistantProps) {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [insights, setInsights] = useState<string[]>([]);
   const { toast } = useToast();
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
 
   // Sample insights about token security
   const possibleInsights = [
