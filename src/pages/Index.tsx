@@ -52,15 +52,15 @@ const Index = () => {
                   token="SecureToken" 
                   size="md"
                   className="mx-auto"
+                  animate={true}
                 />
                 
                 <div className="max-w-xs text-center md:text-left">
                   <h3 className="text-lg font-medium mb-2 bg-clip-text text-transparent bg-gradient-to-r from-adinox-purple to-adinox-red">
-                    Interactive Token Visualization
+                    AdiNox
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Hover and interact with this 3D visualization of your security token.
-                    Each token in AdiNox is protected with multiple layers of encryption.
+                    AdiNox on your 24/7 reinforcement with worlds highend and top notch security features
                   </p>
                 </div>
               </div>
