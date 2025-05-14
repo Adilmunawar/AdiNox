@@ -9,10 +9,21 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import AnimatedBackground from "@/components/ui/animated-background";
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
+  const { toast } = useToast();
+  
+  React.useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to access this page",
+      });
+    }
+  }, [isLoading, isAuthenticated, toast]);
   
   if (isLoading) {
     return (
