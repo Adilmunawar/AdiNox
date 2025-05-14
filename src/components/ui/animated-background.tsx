@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import NoiseTexture from "./noise-texture";
 import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AnimatedBackgroundProps {
   className?: string;
@@ -12,6 +13,7 @@ interface AnimatedBackgroundProps {
 const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { theme } = useTheme();
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -49,7 +51,9 @@ const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
     
     // Particles array
     const particlesArray: any[] = [];
-    const numberOfParticles = 75; // Increased number of particles
+    
+    // Reduce number of particles on mobile for better performance
+    const numberOfParticles = isMobile ? 30 : 75;
     
     // Particle class with enhanced behavior
     class Particle {
@@ -61,46 +65,53 @@ const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
       speedY: number;
       color: string;
       opacity: number;
-      hueShift: number;
       
       constructor() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.baseSize = Math.random() * 20 + 15; // Larger base size
+        // Smaller particle size on mobile
+        this.baseSize = Math.random() * (isMobile ? 10 : 20) + (isMobile ? 8 : 15);
         this.size = this.baseSize;
-        this.speedX = Math.random() * 1.5 - 0.75;
-        this.speedY = Math.random() * 1.5 - 0.75;
+        // Slower movement on mobile
+        const speedFactor = isMobile ? 0.4 : 1;
+        this.speedX = (Math.random() * 1.5 - 0.75) * speedFactor;
+        this.speedY = (Math.random() * 1.5 - 0.75) * speedFactor;
         this.color = (theme === 'dark' ? darkColors : lightColors)[Math.floor(Math.random() * 5)];
         this.opacity = Math.random() * 0.5 + 0.5;
-        this.hueShift = 0;
       }
       
       update() {
         this.x += this.speedX;
         this.y += this.speedY;
         
-        // Dynamic size based on sine wave
-        this.size = this.baseSize + Math.sin(Date.now() * 0.001) * 3;
+        // Less dramatic size change on mobile to prevent layout shifts
+        const sizeVariation = isMobile ? 1 : 3;
+        this.size = this.baseSize + Math.sin(Date.now() * 0.001) * sizeVariation;
         
-        // Animate opacity for pulsing effect
-        this.opacity = 0.5 + Math.sin(Date.now() * 0.002) * 0.2;
-        
-        // Animate hue for subtle color shifts
-        this.hueShift = (this.hueShift + 0.1) % 360;
+        // Less dramatic opacity changes on mobile
+        const opacityVariation = isMobile ? 0.1 : 0.2;
+        this.opacity = 0.5 + Math.sin(Date.now() * 0.002) * opacityVariation;
         
         // Bounce off edges with slight randomization
         if (this.x < 0 || this.x > canvas.width) {
           this.speedX *= -1;
-          this.speedX += (Math.random() * 0.2 - 0.1); // Add randomness
+          // Less randomness on mobile
+          if (!isMobile) {
+            this.speedX += (Math.random() * 0.2 - 0.1);
+          }
         }
         if (this.y < 0 || this.y > canvas.height) {
           this.speedY *= -1;
-          this.speedY += (Math.random() * 0.2 - 0.1); // Add randomness
+          // Less randomness on mobile
+          if (!isMobile) {
+            this.speedY += (Math.random() * 0.2 - 0.1);
+          }
         }
         
         // Ensure speeds don't get too extreme
-        this.speedX = Math.max(-2, Math.min(2, this.speedX));
-        this.speedY = Math.max(-2, Math.min(2, this.speedY));
+        const maxSpeed = isMobile ? 1 : 2;
+        this.speedX = Math.max(-maxSpeed, Math.min(maxSpeed, this.speedX));
+        this.speedY = Math.max(-maxSpeed, Math.min(maxSpeed, this.speedY));
       }
       
       draw() {
@@ -134,11 +145,13 @@ const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
         
-        // Add glow effect
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = this.color;
-        ctx.fill();
-        ctx.shadowBlur = 0;
+        // Add glow effect - reduced on mobile
+        if (!isMobile) {
+          ctx.shadowBlur = 15;
+          ctx.shadowColor = this.color;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
         
         ctx.globalAlpha = 1; // Reset global alpha
       }
@@ -180,31 +193,40 @@ const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
         particlesArray[i].update();
         particlesArray[i].draw();
         
-        // Connect particles with lines
+        // Connect particles with lines - fewer connections on mobile
+        const maxConnections = isMobile ? 3 : 8;
+        let connections = 0;
+        
         for (let j = i; j < particlesArray.length; j++) {
+          // Limit number of connections per particle on mobile
+          if (isMobile && connections >= maxConnections) break;
+          
           const dx = particlesArray[i].x - particlesArray[j].x;
           const dy = particlesArray[i].y - particlesArray[j].y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           
-          // Dynamic connection distance based on screen size
-          const maxDistance = Math.min(canvas.width, canvas.height) * 0.15;
+          // Dynamic connection distance based on screen size - shorter on mobile
+          const maxDistance = Math.min(canvas.width, canvas.height) * (isMobile ? 0.1 : 0.15);
           
           if (distance < maxDistance) {
             // Calculate opacity based on distance
             const opacity = 1 - (distance / maxDistance);
             
             ctx.beginPath();
-            ctx.strokeStyle = particlesArray[i].color.replace(/[\d.]+\)$/, `${opacity * 0.3})`);
-            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = particlesArray[i].color.replace(/[\d.]+\)$/, `${opacity * (isMobile ? 0.2 : 0.3)})`);
+            ctx.lineWidth = isMobile ? 0.3 : 0.5;
             ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
             ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
             ctx.stroke();
             ctx.closePath();
+            
+            if (isMobile) connections++;
           }
         }
         
-        // Occasionally regenerate particles for diversity
-        if (Math.random() < 0.001) {
+        // Regenerate particles less frequently on mobile
+        const regenerationChance = isMobile ? 0.0005 : 0.001;
+        if (Math.random() < regenerationChance) {
           particlesArray.splice(i, 1);
           particlesArray.push(new Particle());
           i--;
@@ -220,14 +242,14 @@ const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
     return () => {
       window.removeEventListener("resize", resize);
     };
-  }, [theme]); // Re-initialize when theme changes
+  }, [theme, isMobile]); // Re-initialize when theme or mobile status changes
   
   return (
     <>
       <canvas 
         ref={canvasRef} 
         className={cn("fixed inset-0 -z-10", className)} 
-        style={{ filter: "blur(40px)" }}
+        style={{ filter: `blur(${isMobile ? '30px' : '40px'})` }}
       />
       <div className={cn(
         "fixed inset-0 -z-10 opacity-70",
@@ -237,48 +259,50 @@ const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
       )} />
       <NoiseTexture opacity={theme === 'dark' ? 0.35 : 0.18} />
       
-      {/* Add subtle floating elements for extra visual interest */}
-      <div className="fixed inset-0 -z-5 overflow-hidden pointer-events-none">
-        <motion.div 
-          className="absolute w-40 h-40 rounded-full bg-gradient-to-r from-adinox-purple/10 to-adinox-red/10 blur-3xl"
-          style={{ top: '15%', left: '10%' }}
-          animate={{
-            x: [0, 30, 0],
-            y: [0, 20, 0],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div 
-          className="absolute w-56 h-56 rounded-full bg-gradient-to-br from-adinox-light-purple/10 to-adinox-purple/10 blur-3xl"
-          style={{ top: '60%', right: '15%' }}
-          animate={{
-            x: [0, -40, 0],
-            y: [0, -30, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div 
-          className="absolute w-48 h-48 rounded-full bg-gradient-to-tr from-adinox-red/5 to-adinox-light-purple/5 blur-3xl"
-          style={{ bottom: '20%', left: '20%' }}
-          animate={{
-            x: [0, 50, 0],
-            y: [0, -20, 0],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      </div>
+      {/* Add subtle floating elements - DISABLED ON MOBILE */}
+      {!isMobile && (
+        <div className="fixed inset-0 -z-5 overflow-hidden pointer-events-none">
+          <motion.div 
+            className="absolute w-40 h-40 rounded-full bg-gradient-to-r from-adinox-purple/10 to-adinox-red/10 blur-3xl"
+            style={{ top: '15%', left: '10%' }}
+            animate={{
+              x: [0, 30, 0],
+              y: [0, 20, 0],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div 
+            className="absolute w-56 h-56 rounded-full bg-gradient-to-br from-adinox-light-purple/10 to-adinox-purple/10 blur-3xl"
+            style={{ top: '60%', right: '15%' }}
+            animate={{
+              x: [0, -40, 0],
+              y: [0, -30, 0],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div 
+            className="absolute w-48 h-48 rounded-full bg-gradient-to-tr from-adinox-red/5 to-adinox-light-purple/5 blur-3xl"
+            style={{ bottom: '20%', left: '20%' }}
+            animate={{
+              x: [0, 50, 0],
+              y: [0, -20, 0],
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </div>
+      )}
     </>
   );
 };
