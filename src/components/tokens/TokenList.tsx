@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import {
@@ -8,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, SlidersHorizontal, Plus, Filter, Calendar, Clock, Grid, List, Copy, Edit, QrCode, MoreVertical, Trash2 } from "lucide-react";
+import { Search, SlidersHorizontal, Plus, Filter, Calendar, Clock, Grid, List, Copy, Edit, QrCode, MoreVertical, Trash2, History } from "lucide-react";
 import TokenCard from "./TokenCard";
 import AddTokenForm from "./AddTokenForm";
 import { useTokens } from "@/context/TokenContext";
@@ -38,6 +37,8 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 import { formatTOTPDisplay, getTimeRemaining } from "@/utils/tokenUtils";
+import { FadeIn, ScaleIn } from "@/components/ui/animations";
+import { useNavigate } from "react-router-dom";
 
 const TokenList = () => {
   const { tokens, removeToken, sortTokens } = useTokens();
@@ -91,6 +92,9 @@ const TokenList = () => {
       animationDelay: `${index * 0.05}s`
     };
   };
+
+  // Add a navigate hook to go to the traces page
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-6">
@@ -352,6 +356,21 @@ const TokenList = () => {
       )}
 
       <AddTokenForm />
+      
+      {/* AdiNox Traces Button */}
+      <div className="flex justify-center mt-8">
+        <FadeIn>
+          <Button 
+            onClick={() => navigate('/traces')}
+            variant="outline" 
+            className="animate-pulse-subtle border-primary/50 hover:border-primary shadow-sm hover:shadow"
+            size="lg"
+          >
+            <History className="mr-2 h-5 w-5 text-primary" />
+            <span className="text-base">AdiNox Traces</span>
+          </Button>
+        </FadeIn>
+      </div>
       
       {/* Selected Token Dialog for QR Code */}
       {selectedToken && (

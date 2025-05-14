@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/NotFound";
 import AuthPage from "@/pages/AuthPage";
 import Index from "@/pages/Index";
+import TracesPage from "@/pages/TracesPage";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import AnimatedBackground from "@/components/ui/animated-background";
@@ -42,6 +43,11 @@ const App = () => {
             <Route path="/" element={
               <ProtectedRoute>
                 <Index />
+              </ProtectedRoute>
+            } />
+            <Route path="/traces" element={
+              <ProtectedRoute>
+                <TracesPage />
               </ProtectedRoute>
             } />
             <Route path="/auth" element={<AuthPage />} />
