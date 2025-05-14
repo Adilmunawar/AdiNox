@@ -1,4 +1,5 @@
 
+import React from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/NotFound";
@@ -33,27 +34,37 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// App Routes Component - Separated to use context hooks
+const AppRoutes = () => {
+  return (
+    <>
+      <AnimatedBackground />
+      <Routes>
+        <Route path="/" element={
+          <ProtectedRoute>
+            <Index />
+          </ProtectedRoute>
+        } />
+        <Route path="/traces" element={
+          <ProtectedRoute>
+            <TracesPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Toaster />
+    </>
+  );
+};
+
+// Main App Component
 const App = () => {
   return (
     <Router>
       <ThemeProvider>
         <AuthProvider>
-          <AnimatedBackground />
-          <Routes>
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            } />
-            <Route path="/traces" element={
-              <ProtectedRoute>
-                <TracesPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
+          <AppRoutes />
         </AuthProvider>
       </ThemeProvider>
     </Router>

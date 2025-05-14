@@ -22,6 +22,7 @@ interface PageHeaderProps {
   description?: string;
   showAuth?: boolean;
   className?: string;
+  icon?: React.ReactNode; // Add optional icon prop
 }
 
 export const PageHeader = ({
@@ -29,6 +30,7 @@ export const PageHeader = ({
   description,
   showAuth = true,
   className,
+  icon,
 }: PageHeaderProps) => {
   const { user, signOut } = useAuth();
 
@@ -101,24 +103,31 @@ export const PageHeader = ({
       </div>
 
       {(title || description) && (
-        <div className="space-y-1">
-          {title && (
-            <motion.h1 
-              className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-adinox-purple to-adinox-red"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-            >
-              {title}
-            </motion.h1>
-          )}
-          {description && (
-            <FadeIn delay={0.4} direction="up">
-              <p className="text-muted-foreground">
-                {description}
-              </p>
+        <div className="space-y-1 flex items-start">
+          {icon && (
+            <FadeIn delay={0.3} direction="up" className="mr-3 mt-1">
+              {icon}
             </FadeIn>
           )}
+          <div>
+            {title && (
+              <motion.h1 
+                className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-adinox-purple to-adinox-red"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+              >
+                {title}
+              </motion.h1>
+            )}
+            {description && (
+              <FadeIn delay={0.4} direction="up">
+                <p className="text-muted-foreground">
+                  {description}
+                </p>
+              </FadeIn>
+            )}
+          </div>
         </div>
       )}
     </header>
