@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ScaleIn, Pulse } from "@/components/ui/animations";
-import { Shield, Key, Lock, Activity, ZapOff, Infinity } from "lucide-react";
+import { Shield, Key, Lock, Activity, ZapOff, Infinity, LucideIcon } from "lucide-react";
 
 interface ThreeDTokenProps {
   token: string;
@@ -22,7 +22,9 @@ export const ThreeDToken = ({
   const [isRotating, setIsRotating] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [glowIntensity, setGlowIntensity] = useState(0.5);
-  const [securityIcons] = useState([
+  
+  // Updated to use the correct type for the icons
+  const [securityIcons] = useState<LucideIcon[]>([
     Shield, Key, Lock, Activity, ZapOff, Infinity
   ]);
   
@@ -167,6 +169,7 @@ export const ThreeDToken = ({
                 repeat: Infinity,
               }}
             >
+              {/* Correct rendering of the icon component */}
               <Icon className="w-full h-full" />
             </motion.div>
           );
