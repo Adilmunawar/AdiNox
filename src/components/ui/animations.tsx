@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 
@@ -406,4 +407,178 @@ export const GlowPulse = ({
       {children}
     </motion.div>
   );
+};
+
+// New Magnetic animation for hover effects
+export const MagneticEffect = ({ 
+  children, 
+  className = "",
+  strength = 15
+}: { 
+  children: React.ReactNode;
+  className?: string;
+  strength?: number;
+}) => {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const [position, setPosition] = React.useState({ x: 0, y: 0 });
+  
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (ref.current) {
+      const { clientX, clientY } = e;
+      const { left, top, width, height } = ref.current.getBoundingClientRect();
+      
+      const x = (clientX - (left + width / 2)) / strength;
+      const y = (clientY - (top + height / 2)) / strength;
+      
+      setPosition({ x, y });
+    }
+  };
+  
+  const handleMouseLeave = () => {
+    setPosition({ x: 0, y: 0 });
+  };
+  
+  return (
+    <motion.div
+      ref={ref}
+      className={className}
+      animate={{ x: position.x, y: position.y }}
+      transition={{ type: "spring", stiffness: 150, damping: 15 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+// New Parallax effect for scrolling
+export const ParallaxLayer = ({
+  children,
+  className = "",
+  speed = 0.5
+}: {
+  children: React.ReactNode;
+  className?: string;
+  speed?: number;
+}) => {
+  const [scrollY, setScrollY] = React.useState(0);
+  
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  
+  return (
+    <motion.div
+      className={className}
+      style={{ y: scrollY * speed }}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+// New animated number counter
+export const CountUp = ({
+  end,
+  start = 0,
+  duration = 2,
+  delay = 0,
+  className = "",
+  prefix = "",
+  suffix = "",
+  decimals = 0
+}: {
+  end: number;
+  start?: number;
+  duration?: number;
+  delay?: number;
+  className?: string;
+  prefix?: string;
+  suffix?: string;
+  decimals?: number;
+}) => {
+  const [count, setCount] = React.useState(start);
+  const countRef = React.useRef(start);
+  
+  React.useEffect(() => {
+    let startTime: number;
+    let animationFrame: number;
+    const totalChange = end - start;
+    
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
+      const currentCount = start + totalChange * progress;
+      
+      countRef.current = currentCount;
+      setCount(currentCount);
+      
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(step);
+      }
+    };
+    
+    const timeout = setTimeout(() => {
+      animationFrame = requestAnimationFrame(step);
+    }, delay * 1000);
+    
+    return () => {
+      clearTimeout(timeout);
+      cancelAnimationFrame(animationFrame);
+    };
+  }, [start, end, duration, delay]);
+  
+  const formattedCount = React.useMemo(() => {
+    return `${prefix}${count.toFixed(decimals)}${suffix}`;
+  }, [count, prefix, suffix, decimals]);
+  
+  return <span className={className}>{formattedCount}</span>;
+};
+
+// New text scramble animation
+export const TextScramble = ({
+  text,
+  className = "",
+  duration = 2,
+  chars = "!<>-_\\/[]{}—=+*^?#_"
+}: {
+  text: string;
+  className?: string;
+  duration?: number;
+  chars?: string;
+}) => {
+  const [displayText, setDisplayText] = React.useState(text);
+  
+  React.useEffect(() => {
+    let interval: NodeJS.Timeout;
+    let iteration = 0;
+    const maxIterations = 10;
+    
+    interval = setInterval(() => {
+      setDisplayText(prev => {
+        return prev.split("").map((char, idx) => {
+          if (idx < (iteration / maxIterations) * text.length) {
+            return text[idx];
+          }
+          return chars[Math.floor(Math.random() * chars.length)];
+        }).join("");
+      });
+      
+      iteration += 1;
+      if (iteration >= maxIterations) {
+        clearInterval(interval);
+        setDisplayText(text);
+      }
+    }, duration * 100);
+    
+    return () => clearInterval(interval);
+  }, [text, chars, duration]);
+  
+  return <span className={className}>{displayText}</span>;
 };

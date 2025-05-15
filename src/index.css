@@ -87,6 +87,52 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-adinox-purple via-adinox-light-purple to-adinox-red;
   }
 
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-shine::after {
+    content: '';
+    @apply absolute -inset-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0;
+    transform: translateX(-100%);
+    transition: transform 0.7s ease;
+  }
+  
+  .btn-shine:hover::after {
+    transform: translateX(100%);
+    opacity: 1;
+  }
+  
+  .animated-border {
+    @apply relative rounded-lg p-[1px] overflow-hidden;
+    background: linear-gradient(90deg, #9B87F5, #D6BCFA, #ea384c, #9B87F5);
+    background-size: 300% 100%;
+    animation: gradientBorder 4s linear infinite;
+  }
+  
+  .animated-border-content {
+    @apply bg-card rounded-lg p-4 relative z-10;
+  }
+  
+  .bg-mesh {
+    background-color: hsla(0, 0%, 100%, 1);
+    background-image:
+      radial-gradient(at 51% 52%, hsla(262, 83%, 85%, 0.5) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, hsla(263, 70%, 85%, 0.3) 0px, transparent 50%),
+      radial-gradient(at 0% 95%, hsla(263, 70%, 85%, 0.3) 0px, transparent 50%),
+      radial-gradient(at 86% 87%, hsla(0, 78%, 85%, 0.25) 0px, transparent 50%);
+  }
+  
+  .dark .bg-mesh {
+    background-color: hsla(222, 47%, 10%, 1);
+    background-image:
+      radial-gradient(at 51% 52%, hsla(262, 83%, 15%, 0.7) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, hsla(263, 70%, 15%, 0.5) 0px, transparent 50%),
+      radial-gradient(at 0% 95%, hsla(263, 70%, 15%, 0.5) 0px, transparent 50%),
+      radial-gradient(at 86% 87%, hsla(0, 78%, 15%, 0.35) 0px, transparent 50%);
+  }
+
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -148,6 +194,54 @@
   
   .animate-pulse-glow {
     animation: pulseGlow 2s infinite;
+  }
+  
+  @keyframes gradientBorder {
+    0% {
+      background-position: 0% 0%;
+    }
+    100% {
+      background-position: 100% 0%;
+    }
+  }
+  
+  .animate-gradient-text {
+    background-size: 300% 300%;
+    animation: textGradientFlow 4s ease infinite;
+  }
+  
+  @keyframes textGradientFlow {
+    0% { background-position: 0% 50% }
+    50% { background-position: 100% 50% }
+    100% { background-position: 0% 50% }
+  }
+  
+  .hover-scale {
+    @apply transition-transform duration-300;
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+  
+  .neumorph {
+    @apply bg-white rounded-xl;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1),
+                -5px -5px 15px rgba(255, 255, 255, 0.8);
+  }
+  
+  .dark .neumorph {
+    @apply bg-slate-800;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3),
+                -5px -5px 15px rgba(255, 255, 255, 0.05);
+  }
+  
+  .glass-morphism {
+    @apply bg-white/10 backdrop-blur-lg border border-white/20 shadow-lg;
+  }
+  
+  .dark .glass-morphism {
+    @apply bg-slate-900/30 border-white/10;
   }
 }
 
@@ -215,4 +309,50 @@ button:not(.no-hover-effect):hover::after {
 /* 3D button press effect */
 button:not(.no-hover-effect):active {
   transform: translateY(1px);
+}
+
+/* Card hover effect */
+.hover-card {
+  @apply transition-all duration-300;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.hover-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-5px);
+}
+
+/* Auth card background animation */
+.bg-auth-animation {
+  background: linear-gradient(-45deg, #9B87F5, #D6BCFA, #ea384c, #FFA99F);
+  background-size: 400% 400%;
+  animation: gradientBg 15s ease infinite;
+}
+
+@keyframes gradientBg {
+  0% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
+}
+
+/* New floating elements animation */
+.floating {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) }
+  50% { transform: translate(0, -10px) }
+  100% { transform: translate(0, 0) }
+}
+
+/* Blinking cursor animation */
+.cursor-blink {
+  border-right: 2px solid;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from, to { border-color: transparent }
+  50% { border-color: currentColor }
 }

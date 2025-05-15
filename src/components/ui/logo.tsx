@@ -8,9 +8,10 @@ interface LogoProps {
   size?: "sm" | "md" | "lg";
   showText?: boolean;
   className?: string;
+  interactive?: boolean;
 }
 
-export const Logo = ({ size = "md", showText = true, className }: LogoProps) => {
+export const Logo = ({ size = "md", showText = true, className, interactive = true }: LogoProps) => {
   const sizeMap = {
     sm: {
       container: "h-8 w-8",
@@ -29,11 +30,17 @@ export const Logo = ({ size = "md", showText = true, className }: LogoProps) => 
     }
   };
 
+  const [isHovered, setIsHovered] = React.useState(false);
+
   return (
-    <div className={cn("flex items-center gap-3", className)}>
+    <div 
+      className={cn("flex items-center gap-3", className)}
+      onMouseEnter={() => interactive && setIsHovered(true)}
+      onMouseLeave={() => interactive && setIsHovered(false)}
+    >
       <motion.div 
         className={cn(
-          "rounded-full bg-gradient-to-br from-adinox-purple to-adinox-red/70 flex items-center justify-center",
+          "rounded-full bg-gradient-to-br from-adinox-purple to-adinox-red/70 flex items-center justify-center relative",
           sizeMap[size].container
         )}
         whileHover={{ 
@@ -58,7 +65,27 @@ export const Logo = ({ size = "md", showText = true, className }: LogoProps) => 
           transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
           className="absolute inset-0 rounded-full bg-gradient-to-br from-adinox-purple/20 to-adinox-red/20"
         />
-        <Shield className={cn("text-white", sizeMap[size].icon)} />
+        
+        {/* Animated shield icon */}
+        <motion.div
+          animate={isHovered ? {
+            scale: [1, 1.2, 1],
+            rotate: [0, 15, -15, 0],
+          } : {}}
+          transition={{ duration: 0.6 }}
+        >
+          <Shield className={cn("text-white", sizeMap[size].icon)} />
+        </motion.div>
+        
+        {/* Background pulse effect */}
+        {isHovered && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0.5 }}
+            animate={{ scale: 1.5, opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="absolute inset-0 rounded-full bg-white"
+          />
+        )}
       </motion.div>
       
       {showText && (
@@ -81,7 +108,29 @@ export const Logo = ({ size = "md", showText = true, className }: LogoProps) => 
             repeat: Infinity,
           }}
         >
-          AdiNox Authenticator
+          <motion.span 
+            animate={isHovered ? { y: [-2, 2, -2] } : {}}
+            transition={{ duration: 0.6, repeat: isHovered ? Infinity : 0 }}
+          >
+            Adi
+          </motion.span>
+          <motion.span 
+            animate={isHovered ? { y: [2, -2, 2] } : {}}
+            transition={{ duration: 0.6, repeat: isHovered ? Infinity : 0, delay: 0.1 }}
+          >
+            Nox
+          </motion.span>
+          {" "}
+          <motion.span 
+            animate={isHovered ? { 
+              scale: [1, 1.05, 1],
+              color: ["#9B87F5", "#ea384c", "#9B87F5"] 
+            } : {}}
+            transition={{ duration: 1.2, repeat: isHovered ? Infinity : 0 }}
+            className="bg-clip-text text-transparent"
+          >
+            Authenticator
+          </motion.span>
         </motion.h1>
       )}
     </div>
