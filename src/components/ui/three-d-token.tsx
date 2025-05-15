@@ -25,14 +25,14 @@ export const ThreeDToken = ({
   const [glowIntensity, setGlowIntensity] = useState(0.5);
   
   // Define security icons as an array of icon components
-  const securityIcons = [
+  const securityIcons: Array<LucideIcon> = [
     Shield,
     Key,
     Lock,
     Activity,
     ZapOff,
     Infinity
-  ] as LucideIcon[];
+  ];
   
   // Token digits split for 3D effect
   const tokenDigits = token.split('');
@@ -175,7 +175,7 @@ export const ThreeDToken = ({
                 repeat: Infinity,
               }}
             >
-              <Icon className="w-full h-full" />
+              <Icon />
             </motion.div>
           );
         })}
