@@ -50,21 +50,28 @@ declare global {
   }
 }
 
-type VoiceCommandCallback = () => void;
-
-interface VoiceCommand {
-  command: string;
-  action: VoiceCommandCallback;
-  description: string;
+interface CommandConfig {
+  [key: string]: () => void;
 }
 
-export function useVoiceCommands(commands: VoiceCommand[]) {
+export function useVoiceCommands({
+  commands,
+  continuous = false
+}: {
+  commands: CommandConfig;
+  continuous?: boolean;
+}) {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
   const { toast } = useToast();
+  
+  // Check if browser supports speech recognition
+  const isSupported = typeof window !== 'undefined' && 
+    (('SpeechRecognition' in window) || ('webkitSpeechRecognition' in window));
 
   const startListening = () => {
-    if (!('SpeechRecognition' in window) && !('webkitSpeechRecognition' in window)) {
+    if (!isSupported) {
       toast({
         title: "Voice Commands Unavailable",
         description: "Your browser doesn't support voice recognition.",
@@ -74,13 +81,13 @@ export function useVoiceCommands(commands: VoiceCommand[]) {
     }
 
     const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognitionAPI();
+    const recognitionInstance = new SpeechRecognitionAPI();
     
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = 'en-US';
+    recognitionInstance.continuous = continuous;
+    recognitionInstance.interimResults = false;
+    recognitionInstance.lang = 'en-US';
     
-    recognition.onstart = () => {
+    recognitionInstance.onstart = () => {
       setIsListening(true);
       toast({
         title: "Listening...",
@@ -88,30 +95,31 @@ export function useVoiceCommands(commands: VoiceCommand[]) {
       });
     };
     
-    recognition.onresult = (event) => {
+    recognitionInstance.onresult = (event) => {
       const speechResult = event.results[0][0].transcript.toLowerCase().trim();
       setTranscript(speechResult);
       
       // Find matching command
-      const matchedCommand = commands.find(cmd => 
-        speechResult.includes(cmd.command.toLowerCase())
+      const commandKeys = Object.keys(commands);
+      const matchedCommand = commandKeys.find(cmd => 
+        speechResult.includes(cmd.toLowerCase())
       );
       
       if (matchedCommand) {
         toast({
           title: "Command recognized",
-          description: `Executing: ${matchedCommand.command}`
+          description: `Executing: ${matchedCommand}`
         });
-        matchedCommand.action();
+        commands[matchedCommand]();
       } else {
         toast({
           title: "Unknown command",
-          description: `Try saying: ${commands.map(c => c.command).join(", ")}`
+          description: `Try saying: ${commandKeys.join(", ")}`
         });
       }
     };
     
-    recognition.onerror = (event) => {
+    recognitionInstance.onerror = (event) => {
       console.error("Speech recognition error", event.error);
       setIsListening(false);
       toast({
@@ -121,17 +129,30 @@ export function useVoiceCommands(commands: VoiceCommand[]) {
       });
     };
     
-    recognition.onend = () => {
+    recognitionInstance.onend = () => {
       setIsListening(false);
     };
     
-    recognition.start();
+    setRecognition(recognitionInstance);
+    recognitionInstance.start();
+  };
+
+  const stopListening = () => {
+    if (recognition) {
+      recognition.stop();
+      setIsListening(false);
+    }
   };
 
   return {
     startListening,
+    stopListening,
     isListening,
     transcript,
-    availableCommands: commands.map(c => ({ command: c.command, description: c.description }))
+    isSupported,
+    availableCommands: Object.keys(commands).map(command => ({ 
+      command, 
+      description: command 
+    }))
   };
 }

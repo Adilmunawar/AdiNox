@@ -37,7 +37,7 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 import { formatTOTPDisplay, getTimeRemaining } from "@/utils/tokenUtils";
-import { FadeIn, ScaleIn, motion } from "@/components/ui/animations";
+import { FadeIn, ScaleIn, motion, AnimatePresence } from "@/components/ui/animations";
 
 const TokenList = () => {
   const { tokens, removeToken, sortTokens } = useTokens();
