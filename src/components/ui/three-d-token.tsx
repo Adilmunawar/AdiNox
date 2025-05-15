@@ -23,8 +23,8 @@ export const ThreeDToken = ({
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [glowIntensity, setGlowIntensity] = useState(0.5);
   
-  // Define security icons as an array of LucideIcon components
-  const securityIcons: Array<LucideIcon> = [
+  // Define security icons as an array of icon components
+  const securityIcons: LucideIcon[] = [
     Shield,
     Key,
     Lock,
@@ -144,7 +144,7 @@ export const ThreeDToken = ({
           ))}
         </motion.div>
         
-        {/* Security Symbols - properly type and render Lucide icons */}
+        {/* Security Symbols - properly render Lucide icons */}
         {securityIcons.map((Icon, index) => {
           const angle = (index / securityIcons.length) * Math.PI * 2;
           const radius = size === "sm" ? 50 : size === "md" ? 65 : 80;
@@ -174,7 +174,7 @@ export const ThreeDToken = ({
                 repeat: Infinity,
               }}
             >
-              <Icon className="w-full h-full" />
+              {React.createElement(Icon, { className: "w-full h-full" })}
             </motion.div>
           );
         })}
