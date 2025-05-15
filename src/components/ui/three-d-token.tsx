@@ -23,10 +23,15 @@ export const ThreeDToken = ({
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [glowIntensity, setGlowIntensity] = useState(0.5);
   
-  // Updated to use the correct type for the icons
-  const [securityIcons] = useState<LucideIcon[]>([
-    Shield, Key, Lock, Activity, ZapOff, Infinity
-  ]);
+  // Define security icons as components, not numbers
+  const securityIcons = [
+    Shield,
+    Key,
+    Lock,
+    Activity,
+    ZapOff,
+    Infinity
+  ];
   
   // Token digits split for 3D effect
   const tokenDigits = token.split('');
@@ -139,8 +144,8 @@ export const ThreeDToken = ({
           ))}
         </motion.div>
         
-        {/* Security Symbols - now with more dynamic animations */}
-        {securityIcons.map((Icon, index) => {
+        {/* Security Symbols - fixed to correctly render Lucide icons */}
+        {securityIcons.map((IconComponent, index) => {
           const angle = (index / securityIcons.length) * Math.PI * 2;
           const radius = size === "sm" ? 50 : size === "md" ? 65 : 80;
           
@@ -169,8 +174,7 @@ export const ThreeDToken = ({
                 repeat: Infinity,
               }}
             >
-              {/* Correct rendering of the icon component */}
-              <Icon className="w-full h-full" />
+              <IconComponent className="w-full h-full" />
             </motion.div>
           );
         })}
