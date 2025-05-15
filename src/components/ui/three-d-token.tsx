@@ -3,7 +3,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ScaleIn, Pulse } from "@/components/ui/animations";
-import { Shield, Key, Lock, Activity, ZapOff, Infinity, LucideIcon } from "lucide-react";
+import { Shield, Key, Lock, Activity, ZapOff, Infinity } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 interface ThreeDTokenProps {
   token: string;
@@ -24,14 +25,14 @@ export const ThreeDToken = ({
   const [glowIntensity, setGlowIntensity] = useState(0.5);
   
   // Define security icons as an array of icon components
-  const securityIcons: LucideIcon[] = [
+  const securityIcons = [
     Shield,
     Key,
     Lock,
     Activity,
     ZapOff,
     Infinity
-  ];
+  ] as LucideIcon[];
   
   // Token digits split for 3D effect
   const tokenDigits = token.split('');
@@ -174,7 +175,7 @@ export const ThreeDToken = ({
                 repeat: Infinity,
               }}
             >
-              {React.createElement(Icon, { className: "w-full h-full" })}
+              <Icon className="w-full h-full" />
             </motion.div>
           );
         })}
