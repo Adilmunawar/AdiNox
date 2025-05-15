@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import {
@@ -37,7 +38,6 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 import { formatTOTPDisplay, getTimeRemaining } from "@/utils/tokenUtils";
-import { FadeIn, ScaleIn, motion, AnimatePresence } from "@/components/ui/animations";
 
 const TokenList = () => {
   const { tokens, removeToken, sortTokens } = useTokens();
@@ -85,40 +85,11 @@ const TokenList = () => {
   
   const algorithmTypes = [...new Set(tokens.map(token => token.algorithm))];
   
-  // Enhanced animation delay for staggered entrance
+  // Animation delay for staggered entrance
   const getAnimationDelay = (index: number) => {
     return {
-      animationDelay: `${index * 0.08}s`
+      animationDelay: `${index * 0.05}s`
     };
-  };
-
-  // New beautiful pulse animation for tokens
-  const tokenCardVariants = {
-    initial: { 
-      opacity: 0, 
-      y: 20, 
-      scale: 0.95 
-    },
-    animate: { 
-      opacity: 1, 
-      y: 0, 
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }
-    },
-    hover: {
-      y: -5,
-      scale: 1.02,
-      boxShadow: "0 15px 30px rgba(0, 0, 0, 0.1)",
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 20
-      }
-    }
   };
 
   return (
@@ -236,95 +207,48 @@ const TokenList = () => {
         <div className={`grid gap-4 animate-in fade-in-50 ${isMobile ? 'grid-cols-1' : 'sm:grid-cols-2 lg:grid-cols-3'}`}>
           {filteredTokens.length > 0 ? (
             filteredTokens.map((token, index) => (
-              <motion.div 
+              <div 
                 key={token.id} 
                 style={getAnimationDelay(index)}
                 className="animate-in fade-in slide-in-from-bottom-3"
-                variants={tokenCardVariants}
-                initial="initial"
-                animate="animate"
-                whileHover="hover"
-                whileTap={{ scale: 0.98 }}
-                transition={{
-                  layoutId: token.id,
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 20
-                }}
               >
                 <TokenCard
                   token={token}
                   onRemove={removeToken}
                   onEdit={handleEditToken}
                 />
-              </motion.div>
+              </div>
             ))
           ) : (
-            <motion.div 
-              className="col-span-full text-center py-12 bg-card/30 backdrop-blur-sm rounded-xl border border-border/50"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-            >
+            <div className="col-span-full text-center py-12 bg-card/30 backdrop-blur-sm rounded-xl border border-border/50">
               <div className="max-w-md mx-auto space-y-4 p-4">
-                <motion.div 
-                  className="w-16 h-16 mx-auto rounded-full bg-primary/20 flex items-center justify-center"
-                  animate={{ 
-                    boxShadow: [
-                      "0 0 0 rgba(155, 135, 245, 0.2)", 
-                      "0 0 25px rgba(155, 135, 245, 0.6)", 
-                      "0 0 0 rgba(155, 135, 245, 0.2)"
-                    ]
-                  }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                >
+                <div className="w-16 h-16 mx-auto rounded-full bg-primary/20 flex items-center justify-center">
                   <Calendar className="h-8 w-8 text-primary" />
-                </motion.div>
-                <motion.p 
-                  className="text-xl font-medium"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3, duration: 0.5 }}
-                >
+                </div>
+                <p className="text-xl font-medium">
                   {searchTerm ? "No tokens match your search" : "No tokens added yet"}
-                </motion.p>
-                <motion.p 
-                  className="text-muted-foreground"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.4, duration: 0.5 }}
-                >
+                </p>
+                <p className="text-muted-foreground">
                   {searchTerm ? 
                     "Try adjusting your search or filters to find what you're looking for." : 
                     "Add your first authentication token to get started with secure access."
                   }
-                </motion.p>
+                </p>
                 {!searchTerm && (
-                  <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.5, duration: 0.5 }}
+                  <Button 
+                    onClick={() => setIsAddingToken(true)}
+                    className="mt-4 bg-primary hover:bg-primary/90"
                   >
-                    <Button 
-                      onClick={() => setIsAddingToken(true)}
-                      className="mt-4 bg-gradient-to-r from-adinox-purple to-adinox-red hover:bg-primary/90 text-white shadow-md hover:shadow-xl transition-shadow"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add your first token
-                    </Button>
-                  </motion.div>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add your first token
+                  </Button>
                 )}
               </div>
-            </motion.div>
+            </div>
           )}
         </div>
       ) : (
-        <motion.div 
-          className="space-y-6 animate-in fade-in-50"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
+        <div className="space-y-6 animate-in fade-in-50">
           {Object.keys(groupedTokens).length > 0 ? (
             Object.entries(groupedTokens).map(([issuer, issuerTokens], groupIndex) => (
               <div 
@@ -424,7 +348,7 @@ const TokenList = () => {
               </div>
             </div>
           )}
-        </motion.div>
+        </div>
       )}
 
       <AddTokenForm />

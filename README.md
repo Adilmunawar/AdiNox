@@ -100,6 +100,14 @@ We welcome contributions to AdiNox!  Please see our [Contributing Guide](CONTRIB
 * **Bug Reports:** Report any issues you find.
 * **Feature Requests:** Suggest new features.
 
+## Code of Conduct
+
+We have adopted a [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md) that we expect project participants to adhere to.  Please read it before contributing.
+
+## License
+
+AdiNox is licensed under the [License Name] License.  See the [LICENSE](LICENSE) file for more information.  (Replace with the actual license, e.g., MIT, Apache 2.0)
+
 ## Security
 
 * **Important:** Emphasize the importance of keeping the secret keys stored within AdiNox secure.  If someone gains access to these keys, they can generate valid OTPs.
@@ -123,6 +131,10 @@ A:  (Provide instructions for backup and restore, if available.  Otherwise, advi
 **Q:  How is AdiNox different from Google Authenticator/Authy?**
 A:   (Explain the differences, focusing on AdiNox's unique features, advantages, or philosophy, e.g., open-source, privacy focus, specific features).
 
+## Acknowledgements
+
+* Mention any libraries, frameworks, or other projects that AdiNox uses.
+* Thank any contributors or sponsors.
 
 ## Contact
 

@@ -1,9 +1,5 @@
-
 import React from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-
-// Export motion from framer-motion so it can be used in other components
-export { motion, AnimatePresence };
 
 // Fade In animation component with enhanced features
 export const FadeIn = ({ 

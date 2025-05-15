@@ -1,5 +1,4 @@
 
-import React from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/NotFound";
@@ -9,21 +8,10 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import AnimatedBackground from "@/components/ui/animated-background";
 import { motion } from "framer-motion";
-import { useToast } from "@/hooks/use-toast";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
-  const { toast } = useToast();
-  
-  React.useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Authentication required",
-        description: "Please sign in to access this page",
-      });
-    }
-  }, [isLoading, isAuthenticated, toast]);
   
   if (isLoading) {
     return (
@@ -44,32 +32,22 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// App Routes Component - Separated to use context hooks
-const AppRoutes = () => {
-  return (
-    <>
-      <AnimatedBackground />
-      <Routes>
-        <Route path="/" element={
-          <ProtectedRoute>
-            <Index />
-          </ProtectedRoute>
-        } />
-        <Route path="/auth" element={<AuthPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      <Toaster />
-    </>
-  );
-};
-
-// Main App Component
 const App = () => {
   return (
     <Router>
       <ThemeProvider>
         <AuthProvider>
-          <AppRoutes />
+          <AnimatedBackground />
+          <Routes>
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            } />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Toaster />
         </AuthProvider>
       </ThemeProvider>
     </Router>

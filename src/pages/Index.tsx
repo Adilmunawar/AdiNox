@@ -6,9 +6,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { FadeIn, ScaleIn, RevealOnScroll, StaggerContainer, StaggerItem } from "@/components/ui/animations";
 import { motion } from "framer-motion";
-import { ThreeDToken } from "@/components/ui/three-d-token";
-import { AmbientAssistant } from "@/components/ui/ambient-assistant";
-import { Key } from "lucide-react";
 
 const Index = () => {
   const { user } = useAuth();
@@ -19,7 +16,6 @@ const Index = () => {
       <PageHeader 
         title="Authentication Tokens" 
         description="Manage your two-factor authentication tokens securely"
-        icon={<Key className="h-5 w-5 text-primary" />}
       />
       
       <StaggerContainer delayChildren={0.3} staggerChildren={0.1}>
@@ -39,34 +35,6 @@ const Index = () => {
             <TokenList />
           </TokenProvider>
         </StaggerItem>
-        
-        <StaggerItem>
-          <RevealOnScroll>
-            <div className="mt-12 mb-16 flex flex-col items-center">
-              <p className="text-center text-sm text-muted-foreground mb-6">
-                Your tokens are protected with advanced encryption
-              </p>
-              
-              <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-                <ThreeDToken 
-                  token="SecureToken" 
-                  size="md"
-                  className="mx-auto"
-                  animate={true}
-                />
-                
-                <div className="max-w-xs text-center md:text-left">
-                  <h3 className="text-lg font-medium mb-2 bg-clip-text text-transparent bg-gradient-to-r from-adinox-purple to-adinox-red">
-                    AdiNox
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    AdiNox on your 24/7 reinforcement with worlds highend and top notch security features
-                  </p>
-                </div>
-              </div>
-            </div>
-          </RevealOnScroll>
-        </StaggerItem>
       </StaggerContainer>
       
       <RevealOnScroll>
@@ -79,9 +47,6 @@ const Index = () => {
           </motion.p>
         </div>
       </RevealOnScroll>
-      
-      {/* Ambient AI Assistant */}
-      <AmbientAssistant />
     </div>
   );
 };

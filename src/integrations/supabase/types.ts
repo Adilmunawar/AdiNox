@@ -30,50 +30,6 @@ export type Database = {
         }
         Relationships: []
       }
-      token_access_logs: {
-        Row: {
-          access_type: string
-          created_at: string
-          device_name: string | null
-          id: string
-          ip_address: string | null
-          location_data: Json | null
-          token_id: string
-          user_agent: string | null
-          user_id: string
-        }
-        Insert: {
-          access_type: string
-          created_at?: string
-          device_name?: string | null
-          id?: string
-          ip_address?: string | null
-          location_data?: Json | null
-          token_id: string
-          user_agent?: string | null
-          user_id: string
-        }
-        Update: {
-          access_type?: string
-          created_at?: string
-          device_name?: string | null
-          id?: string
-          ip_address?: string | null
-          location_data?: Json | null
-          token_id?: string
-          user_agent?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "token_access_logs_token_id_fkey"
-            columns: ["token_id"]
-            isOneToOne: false
-            referencedRelation: "user_tokens"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       user_tokens: {
         Row: {
           algorithm: string
