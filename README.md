@@ -59,10 +59,6 @@ AdiNox works by generating one-time passwords (OTPs) that change either at speci
 * **Platform 3 (e.g., Desktop - Windows, macOS, Linux):**
     1.  \[Link to download page or package manager instructions]
     2.  Step-by-step instructions.
-* **Building from Source:** (If applicable)
-    1.  Instructions for cloning the repository.
-    2.  Instructions for installing dependencies.
-    3.  Instructions for building the application.
 
 ## Usage
 
