@@ -48,22 +48,6 @@ AdiNox works by generating one-time passwords (OTPs) that change either at speci
 4.  **Authentication:** When you log in to the online service, you enter your password and the current OTP displayed by AdiNox.
 5.  **Verification:** The online service verifies the OTP, and if it's correct, you're granted access.
 
-## Usage
-
-1.  **Add an Account:**
-    * Tap the "+" icon.
-    * Scan the QR code provided by the service, or enter the details manually.
-2.  **View OTP:**
-    * The main screen displays a list of your accounts and their current OTPs.
-    * The OTPs refresh automatically.
-3.  **Copy OTP:**
-    * Tap on the OTP to copy it to your clipboard.
-    * Paste the OTP into the website or application you are logging into.
-4.  **Edit/Delete an Account:**
-    * Long-press on an account to edit its details or delete it.
-5.  **Search for an Account:**
-    * Use the search bar to quickly find a specific account.
-
 ## Contributing
 
 We welcome contributions to AdiNox!  Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.  Here are some ways you can contribute:
