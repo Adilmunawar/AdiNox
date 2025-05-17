@@ -88,10 +88,6 @@ We welcome contributions to AdiNox!  Please see our [Contributing Guide](CONTRIB
 * **Bug Reports:** Report any issues you find.
 * **Feature Requests:** Suggest new features.
 
-## License
-
-AdiNox is licensed under the [License Name] License.  See the [LICENSE](LICENSE) file for more information.  (Replace with the actual license, e.g., MIT, Apache 2.0)
-
 ## Security
 
 * **Important:** Emphasize the importance of keeping the secret keys stored within AdiNox secure.  If someone gains access to these keys, they can generate valid OTPs.
