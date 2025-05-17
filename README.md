@@ -48,18 +48,6 @@ AdiNox works by generating one-time passwords (OTPs) that change either at speci
 4.  **Authentication:** When you log in to the online service, you enter your password and the current OTP displayed by AdiNox.
 5.  **Verification:** The online service verifies the OTP, and if it's correct, you're granted access.
 
-### Instructions
-
-* **Platform 1 (e.g., Android):**
-    1.  \[Link to App Store or APK download, if applicable]
-    2.  Step-by-step instructions.
-* **Platform 2 (e.g., iOS):**
-    1.  \[Link to App Store, if applicable]
-    2.  Step-by-step instructions.
-* **Platform 3 (e.g., Desktop - Windows, macOS, Linux):**
-    1.  \[Link to download page or package manager instructions]
-    2.  Step-by-step instructions.
-
 ## Usage
 
 1.  **Add an Account:**
