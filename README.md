@@ -96,10 +96,6 @@ We welcome contributions to AdiNox!  Please see our [Contributing Guide](CONTRIB
 * **Bug Reports:** Report any issues you find.
 * **Feature Requests:** Suggest new features.
 
-## Code of Conduct
-
-We have adopted a [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md) that we expect project participants to adhere to.  Please read it before contributing.
-
 ## License
 
 AdiNox is licensed under the [License Name] License.  See the [LICENSE](LICENSE) file for more information.  (Replace with the actual license, e.g., MIT, Apache 2.0)
