@@ -115,11 +115,6 @@ A:  (Provide instructions for backup and restore, if available.  Otherwise, advi
 **Q:  How is AdiNox different from Google Authenticator/Authy?**
 A:   (Explain the differences, focusing on AdiNox's unique features, advantages, or philosophy, e.g., open-source, privacy focus, specific features).
 
-## Acknowledgements
-
-* Mention any libraries, frameworks, or other projects that AdiNox uses.
-* Thank any contributors or sponsors.
-
 ## Contact
 
 * **Email:** adilfromavengers@gmail.com
