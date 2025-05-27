@@ -19,7 +19,7 @@ This project was created with the goal of providing a secure, open-source authen
 <p>working diagram</p> 
 
 <p align="center">
-  <img src="">
+  <img src="https://github.com/Adilmunawar/adinox/blob/main/public/lovable-uploads/diagram%20(2).png">
 </p>
 
 ## Features
