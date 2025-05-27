@@ -84,8 +84,7 @@ A:  2FA is an extra layer of security that requires not only a password but also
 A:  AdiNox stores your secret keys securely end to end encrypted on your database,which is also secured by multilayer securities
 
 **Q:  How is AdiNox different from Google Authenticator/Authy?**
-A:   (Explain the differences, focusing on AdiNox's unique features, advantages, or philosophy, e.g., open-source, privacy focus, specific features).
-
+A:  As we all know Google and all other authenticators mostly works on mobile devices, sometimes we don't have access to our mobile phone so here we have introduced a web authenticator as a solution
 ## Contact
 
 * **Email:** adilfromavengers@gmail.com
