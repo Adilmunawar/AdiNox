@@ -81,10 +81,7 @@ We welcome contributions to AdiNox!  Please see our [Contributing Guide](CONTRIB
 A:  2FA is an extra layer of security that requires not only a password but also something that only the user has, like a code from an authenticator app.
 
 **Q:  Is AdiNox secure?**
-A:  AdiNox stores your secret keys securely on your device.  (Expand on this with details of your security implementation).
-
-**Q:  What happens if I lose my device?**
-A:  (Provide instructions for backup and restore, if available.  Otherwise, advise users to save their secret keys or recovery codes).
+A:  AdiNox stores your secret keys securely end to end encrypted on your database,which is also secured by multilayer securities
 
 **Q:  How is AdiNox different from Google Authenticator/Authy?**
 A:   (Explain the differences, focusing on AdiNox's unique features, advantages, or philosophy, e.g., open-source, privacy focus, specific features).
