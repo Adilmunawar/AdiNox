@@ -16,6 +16,7 @@
 AdiNox is a robust and user-friendly authenticator application designed to provide secure two-factor authentication (2FA) for your online accounts.  It implements the Time-based One-Time Password (TOTP) and HMAC-based One-Time Password (HOTP) algorithms, offering a reliable alternative to traditional SMS-based authentication.  AdiNox aims to provide a seamless and secure experience, similar to other leading authenticator apps, with a focus on user privacy and control.
 
 This project was created with the goal of providing a secure, open-source authentication solution.  We believe in giving users control over their security and data.
+working diagram 
 
 ## Features
 
