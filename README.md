@@ -17,7 +17,7 @@ AdiNox is a robust and user-friendly authenticator application designed to provi
 
 This project was created with the goal of providing a secure, open-source authentication solution.  We believe in giving users control over their security and data.
 
-## working diagram
+## Working Diagram
 
 <p align="center">
   <img src="https://github.com/Adilmunawar/adinox/blob/main/public/lovable-uploads/diagram%20(2).png">
