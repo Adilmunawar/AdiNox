@@ -85,6 +85,11 @@ A:  AdiNox stores your secret keys securely end to end encrypted on your databas
 
 **Q:  How is AdiNox different from Google Authenticator/Authy?**
 A:  As we all know Google and all other authenticators mostly works on mobile devices, sometimes we don't have access to our mobile phone so here we have introduced a web authenticator as a solution
+## Get Started Today!
+Download AdiNox
+Scan your account QR codes or enter secrets manually
+Enjoy secure, private, and hassle-free two-factor authentication!
+Contribute, audit, or just use AdiNox to protect your digital life—securely and privately.
 ## Contact
 
 * **Email:** adilfromavengers@gmail.com
