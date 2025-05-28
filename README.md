@@ -74,23 +74,27 @@ We welcome contributions to AdiNox!  Please see our [Contributing Guide](CONTRIB
 
 ## Security
 
-* **Important:** Emphasize the importance of keeping the secret keys stored within AdiNox secure.  If someone gains access to these keys, they can generate valid OTPs.
-* **Security Practices:**
-    * Describe any security measures implemented in AdiNox (e.g., encryption of stored keys).
-    * If you have a security policy, link to it.
-    * If you have a bug bounty program, mention it here.
-* **Vulnerability Reporting:** Provide instructions on how to report security vulnerabilities.  E.g.: "To report security vulnerabilities, please email AdilMunawarX@gmail.com."
+- **Secure Backend Storage:** All secret keys for two-factor authentication (2FA) are securely saved on our backend, protected by a multilayer security protocol. This includes strong encryption at rest and in transit, restricted access controls, and regular security audits to prevent unauthorized access.
+- **Encryption:** Your secrets are always encrypted, ensuring that only you (and not even our team) can access your 2FA keys.
+- **Multilayer Security:** We implement multiple security layers such as network firewalls, database encryption, secure authentication, and regular vulnerability assessments.
+- **Vulnerability Reporting:** To report security vulnerabilities, please email [AdilMunawarX@gmail.com](mailto:AdilMunawarX@gmail.com).
+
+---
 
 ## FAQ
 
-**Q: What is two-factor authentication (2FA)?**
-A:  2FA is an extra layer of security that requires not only a password but also something that only the user has, like a code from an authenticator app.
+**Q: Where are my 2FA secret keys stored?**  
+A: All your 2FA secret keys are securely stored on our backend using a multilayer security protocol, including strong encryption and strict access controls.
 
-**Q:  Is AdiNox secure?**
-A:  AdiNox stores your secret keys securely end to end encrypted on your database,which is also secured by multilayer securities
+**Q: How does AdiNox keep my 2FA secrets safe?**  
+A: AdiNox uses a secure backend with multiple layers of protection—your secret keys are encrypted and protected by network security, restricted permissions, and regular security reviews.
 
-**Q:  How is AdiNox different from Google Authenticator/Authy?**
-A:  As we all know Google and all other authenticators mostly works on mobile devices, sometimes we don't have access to our mobile phone so here we have introduced a web authenticator as a solution
+**Q: Can anyone at AdiNox access my secret keys?**  
+A: No, all secrets are stored encrypted and are inaccessible even to our team.
+
+**Q: What happens if your backend is compromised?**  
+A: Even in the unlikely event of a breach, your 2FA secrets remain protected by encryption and other security controls, minimizing any risk of exposure.
+
 ## Get Started Today!
 Download AdiNox
 Scan your account QR codes or enter secrets manually
