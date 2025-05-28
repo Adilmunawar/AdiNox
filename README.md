@@ -23,6 +23,10 @@ This project was created with the goal of providing a secure, open-source authen
   <img src="https://github.com/Adilmunawar/adinox/blob/main/public/lovable-uploads/diagram%20(2).png">
 </p>
 
+<p align="center">
+  <img src="https://github.com/Adilmunawar/adinox/blob/main/public/lovable-uploads/AdiNox%20Backend%20Working%20functionality.png">
+</p>
+
 ## Features
 
 AdiNox includes a comprehensive set of features:
