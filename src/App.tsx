@@ -8,21 +8,27 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import AnimatedBackground from "@/components/ui/animated-background";
 import { motion } from "framer-motion";
+import React, { Suspense } from "react";
 
-// Protected route component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+// High-performance loading component
+const LoadingSpinner = React.memo(() => (
+  <div className="flex items-center justify-center h-screen bg-background">
+    <motion.div
+      className="h-16 w-16 rounded-full border-4 border-primary/30 border-t-primary"
+      animate={{ rotate: 360 }}
+      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+    />
+  </div>
+));
+
+LoadingSpinner.displayName = "LoadingSpinner";
+
+// Optimized protected route component
+const ProtectedRoute = React.memo(({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <motion.div
-          className="h-16 w-16 rounded-full border-4 border-primary border-t-transparent"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
   
   if (!isAuthenticated) {
@@ -30,24 +36,30 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
   
   return <>{children}</>;
-};
+});
+
+ProtectedRoute.displayName = "ProtectedRoute";
 
 const App = () => {
   return (
     <Router>
       <ThemeProvider>
         <AuthProvider>
-          <AnimatedBackground />
-          <Routes>
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            } />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
+          <div className="min-h-screen bg-background gpu-accelerated">
+            <AnimatedBackground />
+            <Suspense fallback={<LoadingSpinner />}>
+              <Routes>
+                <Route path="/" element={
+                  <ProtectedRoute>
+                    <Index />
+                  </ProtectedRoute>
+                } />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+            <Toaster />
+          </div>
         </AuthProvider>
       </ThemeProvider>
     </Router>

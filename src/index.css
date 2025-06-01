@@ -48,13 +48,25 @@
     --input: 217 32% 20%;
     --ring: 263 70% 65%;
   }
+  
+  * {
+    scroll-behavior: smooth;
+  }
 }
 
-/* Animation utilities */
+/* High-performance animation utilities */
 @layer utilities {
+  /* GPU acceleration for smooth animations */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+  
   .animate-in {
     animation-duration: 0.3s;
-    animation-timing-function: ease-out;
+    animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
     animation-fill-mode: both;
   }
 
@@ -70,33 +82,36 @@
     animation-name: slideInFromBottom3;
   }
   
+  /* Enhanced hover effects */
   .hover-glow {
-    @apply transition-all duration-300;
+    @apply transition-all duration-300 gpu-accelerated;
   }
   
   .hover-glow:hover {
-    filter: drop-shadow(0 0 6px theme('colors.primary.DEFAULT'));
+    filter: drop-shadow(0 0 8px theme('colors.primary.DEFAULT'));
     @apply scale-105;
   }
   
   .glass-card {
-    @apply backdrop-blur-md bg-white/10 border border-white/20;
+    @apply backdrop-blur-xl bg-white/10 border border-white/20 shadow-xl gpu-accelerated;
   }
 
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-adinox-purple via-adinox-light-purple to-adinox-red;
   }
 
+  /* Enhanced button animations */
   .btn-shine {
     position: relative;
     overflow: hidden;
+    @apply gpu-accelerated;
   }
   
   .btn-shine::after {
     content: '';
-    @apply absolute -inset-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0;
+    @apply absolute -inset-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0;
     transform: translateX(-100%);
-    transition: transform 0.7s ease;
+    transition: transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
   }
   
   .btn-shine:hover::after {
@@ -104,21 +119,23 @@
     opacity: 1;
   }
   
+  /* Optimized border animation */
   .animated-border {
-    @apply relative rounded-lg p-[1px] overflow-hidden;
+    @apply relative rounded-xl p-[1px] overflow-hidden gpu-accelerated;
     background: linear-gradient(90deg, #9B87F5, #D6BCFA, #ea384c, #9B87F5);
     background-size: 300% 100%;
-    animation: gradientBorder 4s linear infinite;
+    animation: gradientBorder 3s linear infinite;
   }
   
   .animated-border-content {
-    @apply bg-card rounded-lg p-4 relative z-10;
+    @apply bg-card/95 backdrop-blur-sm rounded-xl p-4 relative z-10;
   }
   
+  /* Enhanced mesh background */
   .bg-mesh {
     background-color: hsla(0, 0%, 100%, 1);
     background-image:
-      radial-gradient(at 51% 52%, hsla(262, 83%, 85%, 0.5) 0px, transparent 50%),
+      radial-gradient(at 51% 52%, hsla(262, 83%, 85%, 0.4) 0px, transparent 50%),
       radial-gradient(at 80% 0%, hsla(263, 70%, 85%, 0.3) 0px, transparent 50%),
       radial-gradient(at 0% 95%, hsla(263, 70%, 85%, 0.3) 0px, transparent 50%),
       radial-gradient(at 86% 87%, hsla(0, 78%, 85%, 0.25) 0px, transparent 50%);
@@ -127,24 +144,27 @@
   .dark .bg-mesh {
     background-color: hsla(222, 47%, 10%, 1);
     background-image:
-      radial-gradient(at 51% 52%, hsla(262, 83%, 15%, 0.7) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, hsla(263, 70%, 15%, 0.5) 0px, transparent 50%),
-      radial-gradient(at 0% 95%, hsla(263, 70%, 15%, 0.5) 0px, transparent 50%),
-      radial-gradient(at 86% 87%, hsla(0, 78%, 15%, 0.35) 0px, transparent 50%);
+      radial-gradient(at 51% 52%, hsla(262, 83%, 15%, 0.6) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, hsla(263, 70%, 15%, 0.4) 0px, transparent 50%),
+      radial-gradient(at 0% 95%, hsla(263, 70%, 15%, 0.4) 0px, transparent 50%),
+      radial-gradient(at 86% 87%, hsla(0, 78%, 15%, 0.3) 0px, transparent 50%);
   }
 
+  /* Optimized keyframes */
   @keyframes fadeIn {
     from {
       opacity: 0;
+      transform: translateY(10px);
     }
     to {
       opacity: 1;
+      transform: translateY(0);
     }
   }
 
   @keyframes slideInFromTop3 {
     from {
-      transform: translateY(-0.75rem);
+      transform: translateY(-12px);
       opacity: 0;
     }
     to {
@@ -155,7 +175,7 @@
 
   @keyframes slideInFromBottom3 {
     from {
-      transform: translateY(0.75rem);
+      transform: translateY(12px);
       opacity: 0;
     }
     to {
@@ -165,35 +185,29 @@
   }
   
   @keyframes floatAnimation {
-    0% {
+    0%, 100% {
       transform: translateY(0px);
     }
     50% {
-      transform: translateY(-10px);
-    }
-    100% {
-      transform: translateY(0px);
+      transform: translateY(-8px);
     }
   }
   
   .animate-float {
-    animation: floatAnimation 3s ease-in-out infinite;
+    animation: floatAnimation 4s ease-in-out infinite;
   }
   
   @keyframes pulseGlow {
-    0% {
-      box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4);
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(155, 135, 245, 0.4);
     }
-    70% {
-      box-shadow: 0 0 0 10px rgba(124, 58, 237, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+    50% {
+      box-shadow: 0 0 0 15px rgba(155, 135, 245, 0);
     }
   }
   
   .animate-pulse-glow {
-    animation: pulseGlow 2s infinite;
+    animation: pulseGlow 2.5s infinite;
   }
   
   @keyframes gradientBorder {
@@ -205,61 +219,51 @@
     }
   }
   
-  .animate-gradient-text {
-    background-size: 300% 300%;
-    animation: textGradientFlow 4s ease infinite;
-  }
-  
-  @keyframes textGradientFlow {
-    0% { background-position: 0% 50% }
-    50% { background-position: 100% 50% }
-    100% { background-position: 0% 50% }
-  }
-  
+  /* Enhanced hover effects */
   .hover-scale {
-    @apply transition-transform duration-300;
+    @apply transition-transform duration-200 gpu-accelerated;
   }
   
   .hover-scale:hover {
-    transform: scale(1.05);
+    transform: scale(1.03);
   }
   
-  .neumorph {
-    @apply bg-white rounded-xl;
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1),
-                -5px -5px 15px rgba(255, 255, 255, 0.8);
-  }
-  
-  .dark .neumorph {
-    @apply bg-slate-800;
-    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3),
-                -5px -5px 15px rgba(255, 255, 255, 0.05);
-  }
-  
+  /* Premium glass morphism */
   .glass-morphism {
-    @apply bg-white/10 backdrop-blur-lg border border-white/20 shadow-lg;
+    @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl gpu-accelerated;
   }
   
   .dark .glass-morphism {
-    @apply bg-slate-900/30 border-white/10;
+    @apply bg-slate-900/20 border-white/10;
+  }
+  
+  /* Enhanced token card styling */
+  .token-card-premium {
+    @apply relative overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-xl shadow-xl gpu-accelerated;
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .token-card-premium:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 
+      0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
 }
 
-/* Focus styles */
+/* Enhanced focus styles */
 *:focus-visible {
-  @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  @apply outline-none ring-2 ring-primary/50 ring-offset-2 ring-offset-background;
 }
 
-/* Token code styling */
-.token-code {
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.1em;
-}
-
-/* Scrollbar styling */
+/* Optimized scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -268,6 +272,7 @@
 
 ::-webkit-scrollbar-thumb {
   @apply bg-muted-foreground/30 rounded-full;
+  transition: background-color 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -279,80 +284,25 @@ html, body, #root {
 }
 
 body {
-  @apply bg-background text-foreground transition-colors duration-300;
+  @apply bg-background text-foreground transition-colors duration-300 gpu-accelerated;
+  font-feature-settings: "liga" 1, "kern" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Token card enhancements */
-.token-card {
-  @apply transition-all duration-300;
+/* Performance optimizations */
+img {
+  @apply gpu-accelerated;
 }
 
-.token-card:hover {
-  @apply transform scale-[1.02] shadow-lg;
+button {
+  @apply gpu-accelerated;
 }
 
-/* Button hover effects */
-button:not(.no-hover-effect) {
-  position: relative;
-  overflow: hidden;
-}
-
-button:not(.no-hover-effect)::after {
-  content: '';
-  @apply absolute inset-0 bg-white opacity-0 transition-opacity duration-300;
-}
-
-button:not(.no-hover-effect):hover::after {
-  @apply opacity-10;
-}
-
-/* 3D button press effect */
-button:not(.no-hover-effect):active {
-  transform: translateY(1px);
-}
-
-/* Card hover effect */
-.hover-card {
-  @apply transition-all duration-300;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.hover-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  transform: translateY(-5px);
-}
-
-/* Auth card background animation */
-.bg-auth-animation {
-  background: linear-gradient(-45deg, #9B87F5, #D6BCFA, #ea384c, #FFA99F);
-  background-size: 400% 400%;
-  animation: gradientBg 15s ease infinite;
-}
-
-@keyframes gradientBg {
-  0% { background-position: 0% 50% }
-  50% { background-position: 100% 50% }
-  100% { background-position: 0% 50% }
-}
-
-/* New floating elements animation */
-.floating {
-  animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-  0% { transform: translate(0, 0) }
-  50% { transform: translate(0, -10px) }
-  100% { transform: translate(0, 0) }
-}
-
-/* Blinking cursor animation */
-.cursor-blink {
-  border-right: 2px solid;
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  from, to { border-color: transparent }
-  50% { border-color: currentColor }
+/* Enhanced token display */
+.token-code {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.15em;
+  @apply font-mono gpu-accelerated;
 }
