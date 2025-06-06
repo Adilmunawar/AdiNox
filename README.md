@@ -104,3 +104,4 @@ Contribute, audit, or just use AdiNox to protect your digital life—securely an
 
 * **Email:** adilfromavengers@gmail.com
 * **Instagram:** AdilMunawarX
+* **X:** AdilMunawarX
