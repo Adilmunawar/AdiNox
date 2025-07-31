@@ -35,6 +35,7 @@ const signupSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 type SignupFormValues = z.infer<typeof signupSchema>;
+type FormFieldName = "email" | "password" | "username" | "confirmPassword";
 
 interface AuthFormProps {
   type: "login" | "signup";
@@ -62,7 +63,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
   }, [onSubmit]);
 
   const FormFieldComponent = ({ name, label, placeholder, icon: Icon, type: inputType = "text", showToggle = false }: {
-    name: string;
+    name: FormFieldName;
     label: string;
     placeholder: string;
     icon: any;
