@@ -1,8 +1,8 @@
 
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { motion } from "framer-motion";
-import { LogIn, UserPlus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { LogIn, UserPlus, ArrowRight } from "lucide-react";
 
 interface AuthTabsProps {
   activeTab: string;
@@ -14,43 +14,64 @@ const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
       <div className="relative mb-8">
-        <TabsList className="grid w-full grid-cols-2 h-12 p-1 bg-muted/50 backdrop-blur-sm">
+        <TabsList className="grid w-full grid-cols-2 h-14 p-1 bg-muted/30 backdrop-blur-sm border border-border/30 shadow-inner">
           <TabsTrigger 
             value="login" 
-            className="relative h-10 font-medium data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all duration-300"
+            className="relative h-12 font-semibold text-sm data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all duration-300 group"
           >
             <motion.div
               className="flex items-center gap-2"
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ x: 2 }}
               whileTap={{ scale: 0.98 }}
             >
-              <LogIn className="h-4 w-4" />
+              <LogIn className="h-4 w-4 group-data-[state=active]:text-primary transition-colors" />
               Sign In
+              {activeTab === "login" && (
+                <motion.div
+                  initial={{ opacity: 0, x: -5 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 5 }}
+                >
+                  <ArrowRight className="h-3 w-3 text-primary" />
+                </motion.div>
+              )}
             </motion.div>
+            
             {activeTab === "login" && (
               <motion.div
-                layoutId="activeTab"
-                className="absolute inset-0 bg-gradient-to-r from-primary/10 to-primary/5 rounded-md -z-10"
+                layoutId="activeTabIndicator"
+                className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-md -z-10"
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               />
             )}
           </TabsTrigger>
+          
           <TabsTrigger 
             value="signup"
-            className="relative h-10 font-medium data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all duration-300"
+            className="relative h-12 font-semibold text-sm data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all duration-300 group"
           >
             <motion.div
               className="flex items-center gap-2"
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ x: 2 }}
               whileTap={{ scale: 0.98 }}
             >
-              <UserPlus className="h-4 w-4" />
+              <UserPlus className="h-4 w-4 group-data-[state=active]:text-primary transition-colors" />
               Sign Up
+              {activeTab === "signup" && (
+                <motion.div
+                  initial={{ opacity: 0, x: -5 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 5 }}
+                >
+                  <ArrowRight className="h-3 w-3 text-primary" />
+                </motion.div>
+              )}
             </motion.div>
+            
             {activeTab === "signup" && (
               <motion.div
-                layoutId="activeTab"
-                className="absolute inset-0 bg-gradient-to-r from-primary/10 to-primary/5 rounded-md -z-10"
+                layoutId="activeTabIndicator"
+                className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-md -z-10"
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               />
             )}
@@ -58,15 +79,22 @@ const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps
         </TabsList>
       </div>
       
-      <motion.div
-        key={activeTab}
-        initial={{ opacity: 0, x: activeTab === "login" ? -20 : 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: activeTab === "login" ? 20 : -20 }}
-        transition={{ type: "spring", stiffness: 200, damping: 20 }}
-      >
-        {children}
-      </motion.div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 200, 
+            damping: 20,
+            duration: 0.3
+          }}
+        >
+          {children}
+        </motion.div>
+      </AnimatePresence>
     </Tabs>
   );
 });

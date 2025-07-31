@@ -2,8 +2,8 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { Shield } from "lucide-react";
-import { PerformantFadeIn, PerformantScale } from "@/components/ui/performance-animations";
+import { Shield, Sparkles } from "lucide-react";
+import { PerformantFadeIn } from "@/components/ui/performance-animations";
 
 interface AuthContainerProps {
   children: React.ReactNode;
@@ -13,41 +13,71 @@ const AuthContainer = React.memo(({ children }: AuthContainerProps) => {
   return (
     <div className="container max-w-md mx-auto px-4 py-8 min-h-screen flex items-center justify-center">
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ type: "spring", stiffness: 200, damping: 20, duration: 0.6 }}
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ 
+          type: "spring", 
+          stiffness: 200, 
+          damping: 25,
+          duration: 0.6 
+        }}
         className="w-full max-w-md"
       >
-        <Card className="relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-xl border-border/50 shadow-2xl">
-          {/* Animated background elements */}
-          <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-primary/20 to-primary/10 rounded-full blur-3xl animate-pulse-subtle"></div>
-          <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-tr from-secondary/20 to-secondary/10 rounded-full blur-3xl animate-pulse-subtle delay-1000"></div>
+        <Card className="relative overflow-hidden bg-card/95 backdrop-blur-xl border border-border/50 shadow-2xl">
+          {/* Premium glass effect overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 pointer-events-none" />
           
-          {/* Logo section */}
+          {/* Subtle animated border */}
+          <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/20 via-transparent to-secondary/20 opacity-50 animate-pulse-subtle pointer-events-none" />
+          
+          {/* Logo section with enhanced design */}
           <CardHeader className="text-center pb-2 relative z-10">
             <PerformantFadeIn delay={0.2}>
-              <div className="flex justify-center mb-4">
+              <div className="flex justify-center mb-6">
                 <motion.div
-                  className="relative"
-                  whileHover={{ scale: 1.05, rotate: 5 }}
+                  className="relative group"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-xl animate-pulse-subtle"></div>
-                  <img 
-                    src="/lovable-uploads/1e18899e-2160-4944-9175-794607679d04.png" 
-                    alt="AdiNox Logo" 
-                    className="relative h-16 w-16 drop-shadow-lg"
-                  />
+                  {/* Glow effect behind logo */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-full blur-2xl animate-pulse-subtle opacity-60" />
+                  
+                  {/* Logo container with premium styling */}
+                  <div className="relative h-20 w-20 rounded-full bg-gradient-to-br from-card via-card/90 to-card/80 border border-border/30 flex items-center justify-center shadow-xl">
+                    <img 
+                      src="/lovable-uploads/1e18899e-2160-4944-9175-794607679d04.png" 
+                      alt="AdiNox Logo" 
+                      className="h-12 w-12 drop-shadow-lg"
+                    />
+                    
+                    {/* Sparkle animation */}
+                    <motion.div
+                      className="absolute -top-1 -right-1 text-primary/70"
+                      animate={{
+                        scale: [1, 1.2, 1],
+                        rotate: [0, 180, 360],
+                        opacity: [0.5, 1, 0.5]
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <Sparkles className="h-4 w-4" />
+                    </motion.div>
+                  </div>
                 </motion.div>
               </div>
             </PerformantFadeIn>
             
             <PerformantFadeIn delay={0.3}>
-              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary via-primary/90 to-secondary bg-clip-text text-transparent">
+              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent mb-2">
                 AdiNox Authenticator
               </CardTitle>
-              <CardDescription className="text-muted-foreground mt-2">
-                Secure authentication for your digital identity
+              <CardDescription className="text-muted-foreground/80 font-medium">
+                Secure • Fast • Reliable
               </CardDescription>
             </PerformantFadeIn>
           </CardHeader>
@@ -56,34 +86,41 @@ const AuthContainer = React.memo(({ children }: AuthContainerProps) => {
             {children}
           </CardContent>
           
-          <CardFooter className="text-center pb-8 pt-4 relative z-10">
+          <CardFooter className="text-center pb-8 pt-6 relative z-10">
             <PerformantFadeIn delay={0.4} className="w-full">
-              <div className="flex items-center justify-center gap-2 mb-3">
+              <div className="flex items-center justify-center gap-3 mb-4">
                 <motion.div
-                  className="h-8 w-8 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 flex items-center justify-center"
-                  whileHover={{ scale: 1.1, rotate: 180 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  className="h-10 w-10 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 flex items-center justify-center"
+                  whileHover={{ scale: 1.1, rotate: 360 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 15 }}
                 >
-                  <Shield className="h-4 w-4 text-primary" />
+                  <Shield className="h-5 w-5 text-primary" />
                 </motion.div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Developed by Adil Munawar
-                </p>
+                <div className="text-left">
+                  <p className="text-sm font-semibold text-foreground">
+                    Powered by AdiNox
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Enterprise Security
+                  </p>
+                </div>
               </div>
               
-              <div className="flex justify-center space-x-1">
-                {[0, 100, 200].map((delay, index) => (
+              {/* Enhanced status indicators */}
+              <div className="flex justify-center items-center space-x-2">
+                {[0, 150, 300].map((delay, index) => (
                   <motion.div 
                     key={index}
-                    className="h-1.5 w-1.5 rounded-full bg-primary/60"
+                    className="h-2 w-2 rounded-full bg-gradient-to-r from-primary to-secondary"
                     animate={{ 
-                      scale: [1, 1.2, 1],
-                      opacity: [0.6, 1, 0.6]
+                      scale: [1, 1.3, 1],
+                      opacity: [0.5, 1, 0.5]
                     }}
                     transition={{ 
                       duration: 2,
                       repeat: Infinity,
-                      delay: delay / 1000
+                      delay: delay / 1000,
+                      ease: "easeInOut"
                     }}
                   />
                 ))}

@@ -13,8 +13,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Eye, EyeOff, KeyRound, Mail, User } from "lucide-react";
-import { motion } from "framer-motion";
+import { Eye, EyeOff, KeyRound, Mail, User, Loader2, CheckCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { PerformantFadeIn } from "@/components/ui/performance-animations";
 
 const loginSchema = z.object({
@@ -45,6 +45,7 @@ interface AuthFormProps {
 const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const isLogin = type === "login";
   const schema = isLogin ? loginSchema : signupSchema;
@@ -60,155 +61,143 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
     await onSubmit(data);
   }, [onSubmit]);
 
-  const inputVariants = {
-    focus: { scale: 1.02, transition: { type: "spring", stiffness: 300, damping: 20 } },
-    blur: { scale: 1 }
-  };
+  const FormFieldComponent = ({ name, label, placeholder, icon: Icon, type: inputType = "text", showToggle = false }: {
+    name: string;
+    label: string;
+    placeholder: string;
+    icon: any;
+    type?: string;
+    showToggle?: boolean;
+  }) => (
+    <FormField
+      control={form.control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <FormItem>
+          <FormLabel className="text-foreground font-semibold text-sm flex items-center gap-2">
+            <Icon className="h-4 w-4 text-primary" />
+            {label}
+          </FormLabel>
+          <FormControl>
+            <motion.div 
+              className="relative group"
+              whileHover={{ scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            >
+              <div className={`
+                absolute inset-0 rounded-lg bg-gradient-to-r from-primary/20 to-secondary/20 opacity-0 
+                group-hover:opacity-100 transition-opacity duration-300 blur-sm -z-10
+                ${focusedField === name ? 'opacity-100' : ''}
+              `} />
+              
+              <Input 
+                placeholder={placeholder}
+                className={`
+                  h-12 px-4 bg-card/60 border border-border/50 rounded-lg
+                  focus:border-primary/60 focus:bg-card/80 focus:ring-2 focus:ring-primary/20
+                  transition-all duration-300 font-medium
+                  hover:border-primary/40 hover:bg-card/70
+                  ${fieldState.error ? 'border-destructive/50 focus:border-destructive/60' : ''}
+                  ${showToggle ? 'pr-12' : ''}
+                `}
+                type={showToggle ? (name === 'password' ? (showPassword ? 'text' : 'password') : (showConfirmPassword ? 'text' : 'password')) : inputType}
+                {...field}
+                disabled={isLoading}
+                autoComplete={name === 'email' ? 'email' : name === 'username' ? 'username' : name.includes('password') ? 'current-password' : 'off'}
+                onFocus={() => setFocusedField(name)}
+                onBlur={() => setFocusedField(null)}
+              />
+              
+              {showToggle && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 text-muted-foreground hover:text-primary transition-colors"
+                  onClick={() => name === 'password' ? setShowPassword(!showPassword) : setShowConfirmPassword(!showConfirmPassword)}
+                  tabIndex={-1}
+                >
+                  <motion.div
+                    initial={false}
+                    animate={{ rotate: (name === 'password' ? showPassword : showConfirmPassword) ? 0 : 180 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {(name === 'password' ? showPassword : showConfirmPassword) ? 
+                      <EyeOff className="h-4 w-4" /> : 
+                      <Eye className="h-4 w-4" />
+                    }
+                  </motion.div>
+                </Button>
+              )}
+              
+              {/* Success indicator */}
+              <AnimatePresence>
+                {field.value && !fieldState.error && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
+                  >
+                    <CheckCircle className="h-4 w-4" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </FormControl>
+          <FormMessage className="text-xs" />
+        </FormItem>
+      )}
+    />
+  );
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
-        <div className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <div className="space-y-5">
           {/* Email Field */}
           <PerformantFadeIn delay={0.1}>
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-foreground/80 font-medium">Email</FormLabel>
-                  <FormControl>
-                    <motion.div 
-                      variants={inputVariants}
-                      whileFocus="focus"
-                      className="relative group"
-                    >
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors duration-200" />
-                      <Input 
-                        placeholder="Enter your email" 
-                        className="pl-10 h-12 bg-card/60 border-border/60 focus:border-primary/80 focus:bg-card/80 transition-all duration-300 hover:border-primary/40" 
-                        {...field}
-                        disabled={isLoading} 
-                        autoComplete="email"
-                      />
-                    </motion.div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+            <FormFieldComponent 
+              name="email" 
+              label="Email Address" 
+              placeholder="Enter your email" 
+              icon={Mail} 
+              type="email" 
             />
           </PerformantFadeIn>
 
           {/* Username Field (Signup only) */}
           {!isLogin && (
             <PerformantFadeIn delay={0.2}>
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-foreground/80 font-medium">Username</FormLabel>
-                    <FormControl>
-                      <motion.div 
-                        variants={inputVariants}
-                        whileFocus="focus"
-                        className="relative group"
-                      >
-                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors duration-200" />
-                        <Input 
-                          placeholder="Choose a username" 
-                          className="pl-10 h-12 bg-card/60 border-border/60 focus:border-primary/80 focus:bg-card/80 transition-all duration-300 hover:border-primary/40" 
-                          {...field}
-                          disabled={isLoading} 
-                          autoComplete="username"
-                        />
-                      </motion.div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <FormFieldComponent 
+                name="username" 
+                label="Username" 
+                placeholder="Choose a username" 
+                icon={User} 
               />
             </PerformantFadeIn>
           )}
 
           {/* Password Field */}
           <PerformantFadeIn delay={isLogin ? 0.2 : 0.3}>
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-foreground/80 font-medium">Password</FormLabel>
-                  <FormControl>
-                    <motion.div 
-                      variants={inputVariants}
-                      whileFocus="focus"
-                      className="relative group"
-                    >
-                      <KeyRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors duration-200" />
-                      <Input 
-                        type={showPassword ? "text" : "password"} 
-                        placeholder={isLogin ? "Enter your password" : "Create a password"} 
-                        className="pl-10 pr-12 h-12 bg-card/60 border-border/60 focus:border-primary/80 focus:bg-card/80 transition-all duration-300 hover:border-primary/40"
-                        {...field}
-                        disabled={isLoading} 
-                        autoComplete={isLogin ? "current-password" : "new-password"}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        className="absolute right-1 top-1 h-10 w-10 p-0 text-muted-foreground hover:text-primary transition-colors duration-200"
-                        onClick={() => setShowPassword(!showPassword)}
-                        tabIndex={-1}
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </Button>
-                    </motion.div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+            <FormFieldComponent 
+              name="password" 
+              label="Password" 
+              placeholder={isLogin ? "Enter your password" : "Create a password"} 
+              icon={KeyRound} 
+              showToggle={true}
             />
           </PerformantFadeIn>
 
           {/* Confirm Password Field (Signup only) */}
           {!isLogin && (
             <PerformantFadeIn delay={0.4}>
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-foreground/80 font-medium">Confirm Password</FormLabel>
-                    <FormControl>
-                      <motion.div 
-                        variants={inputVariants}
-                        whileFocus="focus"
-                        className="relative group"
-                      >
-                        <KeyRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors duration-200" />
-                        <Input 
-                          type={showConfirmPassword ? "text" : "password"} 
-                          placeholder="Confirm your password" 
-                          className="pl-10 pr-12 h-12 bg-card/60 border-border/60 focus:border-primary/80 focus:bg-card/80 transition-all duration-300 hover:border-primary/40"
-                          {...field}
-                          disabled={isLoading} 
-                          autoComplete="new-password"
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          className="absolute right-1 top-1 h-10 w-10 p-0 text-muted-foreground hover:text-primary transition-colors duration-200"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          tabIndex={-1}
-                        >
-                          {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </Button>
-                      </motion.div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <FormFieldComponent 
+                name="confirmPassword" 
+                label="Confirm Password" 
+                placeholder="Confirm your password" 
+                icon={KeyRound} 
+                showToggle={true}
               />
             </PerformantFadeIn>
           )}
@@ -217,26 +206,43 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
         <PerformantFadeIn delay={isLogin ? 0.3 : 0.5}>
           <Button 
             type="submit" 
-            className="w-full h-12 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-medium transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-0.5"
+            className={`
+              w-full h-12 bg-gradient-to-r from-primary via-primary/90 to-primary/80 
+              hover:from-primary/90 hover:via-primary/80 hover:to-primary/70
+              text-primary-foreground font-semibold text-base
+              shadow-lg hover:shadow-xl hover:shadow-primary/25
+              transition-all duration-300 transform hover:-translate-y-0.5
+              disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-lg
+              border border-primary/20 hover:border-primary/30
+            `}
             disabled={isLoading}
           >
-            {isLoading ? (
-              <motion.div 
-                className="flex items-center gap-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <div className="h-4 w-4 rounded-full border-2 border-t-transparent border-primary-foreground animate-spin"></div>
-                {isLogin ? "Signing in..." : "Creating account..."}
-              </motion.div>
-            ) : (
-              <motion.span
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {isLogin ? "Sign In" : "Create Account"}
-              </motion.span>
-            )}
+            <AnimatePresence mode="wait">
+              {isLoading ? (
+                <motion.div 
+                  key="loading"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex items-center gap-2"
+                >
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>{isLogin ? "Signing in..." : "Creating account..."}</span>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="submit"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-2"
+                >
+                  <span>{isLogin ? "Sign In" : "Create Account"}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </Button>
         </PerformantFadeIn>
       </form>
