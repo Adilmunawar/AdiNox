@@ -52,6 +52,13 @@
   * {
     scroll-behavior: smooth;
   }
+  
+  /* Enhanced font rendering */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
 }
 
 /* High-performance animation utilities */
@@ -119,19 +126,33 @@
     opacity: 1;
   }
   
-  /* Optimized border animation */
-  .animated-border {
-    @apply relative rounded-xl p-[1px] overflow-hidden gpu-accelerated;
-    background: linear-gradient(90deg, #9B87F5, #D6BCFA, #ea384c, #9B87F5);
-    background-size: 300% 100%;
-    animation: gradientBorder 3s linear infinite;
+  /* Auth-specific optimizations */
+  .auth-input {
+    @apply gpu-accelerated transition-all duration-300;
+    transform: translateZ(0);
   }
   
-  .animated-border-content {
-    @apply bg-card/95 backdrop-blur-sm rounded-xl p-4 relative z-10;
+  .auth-input:focus {
+    transform: translateZ(0) scale(1.01);
   }
   
-  /* Enhanced mesh background */
+  .auth-button {
+    @apply gpu-accelerated transition-all duration-300;
+    transform: translateZ(0);
+  }
+  
+  .auth-button:hover {
+    transform: translateZ(0) translateY(-1px);
+    box-shadow: 
+      0 10px 25px -5px rgba(155, 135, 245, 0.25),
+      0 4px 6px -2px rgba(155, 135, 245, 0.1);
+  }
+  
+  .auth-button:active {
+    transform: translateZ(0) translateY(0px);
+  }
+  
+  /* Optimized mesh background */
   .bg-mesh {
     background-color: hsla(0, 0%, 100%, 1);
     background-image:
@@ -219,13 +240,14 @@
     }
   }
   
-  /* Enhanced hover effects */
-  .hover-scale {
-    @apply transition-transform duration-200 gpu-accelerated;
+  /* Enhanced form elements */
+  .auth-form-field {
+    @apply gpu-accelerated;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
   }
   
-  .hover-scale:hover {
-    transform: scale(1.03);
+  .auth-form-field:focus-within {
+    transform: translateY(-2px);
   }
   
   /* Premium glass morphism */
@@ -237,21 +259,16 @@
     @apply bg-slate-900/20 border-white/10;
   }
   
-  /* Enhanced token card styling */
-  .token-card-premium {
-    @apply relative overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-xl shadow-xl gpu-accelerated;
-    box-shadow: 
-      0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  /* Enhanced loading states */
+  .loading-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
   }
   
-  .token-card-premium:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 
-      0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
   }
 }
 
@@ -300,9 +317,41 @@ button {
   @apply gpu-accelerated;
 }
 
-/* Enhanced token display */
-.token-code {
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.15em;
-  @apply font-mono gpu-accelerated;
+/* Input optimizations for auth forms */
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  @apply gpu-accelerated;
+  font-variant-numeric: normal;
+}
+
+/* Auth specific animations */
+@keyframes authSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px) translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) translateZ(0);
+  }
+}
+
+.auth-slide-in {
+  animation: authSlideIn 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+@keyframes authFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+  }
+}
+
+.auth-fade-in {
+  animation: authFadeIn 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
