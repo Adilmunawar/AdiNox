@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { Logo } from '@/components/ui/logo';
 
 interface AuthContainerProps {
   children: React.ReactNode;
@@ -19,21 +18,18 @@ const AuthContainer: React.FC<AuthContainerProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5 relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5 dark:opacity-10">
-        <div 
-          className="w-full h-full bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url('/Adil-Munawar-Uploads/diagram (2).png')`
-          }}
-        />
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-primary/10 relative">
       {/* Header */}
-      <header className="relative z-10 bg-background/80 backdrop-blur-sm border-b border-border/50 px-4 py-3">
+      <header className="relative z-10 bg-background/90 backdrop-blur-sm border-b border-border/50 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Logo size="md" showText={true} />
+          <div className="flex items-center gap-3">
+            <img 
+              src="/Adil-Munawar-Uploads/1e18899e-2160-4944-9175-794607679d04.png" 
+              alt="AdiNox Logo" 
+              className="h-8 w-8 object-contain"
+            />
+            <span className="text-lg font-semibold text-foreground">AdiNox</span>
+          </div>
           
           {user && (
             <div className="flex items-center gap-2 sm:gap-4">
@@ -59,7 +55,7 @@ const AuthContainer: React.FC<AuthContainerProps> = ({ children }) => {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 bg-background/50 backdrop-blur-sm border-t border-border/30 py-4 text-center text-muted-foreground">
+      <footer className="relative z-10 bg-background/60 backdrop-blur-sm border-t border-border/30 py-4 text-center text-muted-foreground">
         <div className="space-y-1">
           <p className="text-xs">&copy; {new Date().getFullYear()} AdiNox. All rights reserved.</p>
           <p className="text-xs font-medium text-primary">
