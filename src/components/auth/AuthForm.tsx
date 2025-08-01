@@ -13,10 +13,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Eye, EyeOff, KeyRound, Mail, User, Loader2, CheckCircle, AlertTriangle } from "lucide-react";
+import { Eye, EyeOff, KeyRound, Mail, User, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { PerformantFadeIn } from "@/components/ui/performance-animations";
-import { useTheme } from "@/context/ThemeContext";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -29,7 +27,7 @@ const signupSchema = z.object({
     .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores."),
   password: z.string()
     .min(8, "Password must be at least 8 characters.")
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain at least one uppercase letter, one lowercase letter, and one number."),
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain uppercase, lowercase, and number."),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -38,7 +36,6 @@ const signupSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 type SignupFormValues = z.infer<typeof signupSchema>;
-type FormFieldName = "email" | "password" | "username" | "confirmPassword";
 
 interface AuthFormProps {
   type: "login" | "signup";
@@ -49,8 +46,6 @@ interface AuthFormProps {
 const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [focusedField, setFocusedField] = useState<string | null>(null);
-  const { theme } = useTheme();
 
   const isLogin = type === "login";
   const schema = isLogin ? loginSchema : signupSchema;
@@ -60,13 +55,17 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
     defaultValues: isLogin 
       ? { email: "", password: "" }
       : { email: "", username: "", password: "", confirmPassword: "" },
+    mode: "onChange",
   });
 
   const handleSubmit = useCallback(async (data: any) => {
-    await onSubmit(data);
+    try {
+      await onSubmit(data);
+    } catch (error) {
+      console.error("Form submission error:", error);
+    }
   }, [onSubmit]);
 
-  // Password strength indicator
   const getPasswordStrength = useCallback((password: string) => {
     if (!password) return { strength: 0, label: "", color: "" };
     
@@ -87,113 +86,105 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
     };
   }, []);
 
-  const FormFieldComponent = ({ name, label, placeholder, icon: Icon, type: inputType = "text", showToggle = false }: {
-    name: FormFieldName;
-    label: string;
-    placeholder: string;
-    icon: any;
-    type?: string;
-    showToggle?: boolean;
-  }) => (
-    <FormField
-      control={form.control}
-      name={name}
-      render={({ field, fieldState }) => {
-        const passwordStrength = name === 'password' && !isLogin ? getPasswordStrength(field.value) : null;
-        
-        return (
-          <FormItem>
-            <FormLabel className="text-foreground font-semibold text-sm flex items-center gap-2">
-              <Icon className="h-4 w-4 text-primary" />
-              {label}
-            </FormLabel>
-            <FormControl>
-              <motion.div 
-                className="relative group"
-                whileHover={{ scale: 1.005 }}
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              >
-                <div className={`
-                  absolute inset-0 rounded-lg opacity-0 transition-all duration-300 blur-sm -z-10
-                  ${focusedField === name ? 'opacity-100' : 'group-hover:opacity-100'}
-                  ${theme === 'dark'
-                    ? 'bg-gradient-to-r from-primary/25 to-secondary/25'
-                    : 'bg-gradient-to-r from-primary/15 to-secondary/15'
-                  }
-                `} />
-                
-                <Input 
-                  placeholder={placeholder}
-                  className={`
-                    h-12 px-4 rounded-lg transition-all duration-300 font-medium
-                    ${theme === 'dark'
-                      ? 'bg-card/70 border border-border/60 focus:border-primary/70 focus:bg-card/90 focus:ring-2 focus:ring-primary/25 hover:border-primary/50 hover:bg-card/80'
-                      : 'bg-card/80 border border-border/50 focus:border-primary/60 focus:bg-card/95 focus:ring-2 focus:ring-primary/15 hover:border-primary/40 hover:bg-card/90'
-                    }
-                    ${fieldState.error ? 'border-destructive/60 focus:border-destructive/70' : ''}
-                    ${showToggle ? 'pr-12' : ''}
-                  `}
-                  type={showToggle ? (name === 'password' ? (showPassword ? 'text' : 'password') : (showConfirmPassword ? 'text' : 'password')) : inputType}
-                  {...field}
-                  disabled={isLoading}
-                  autoComplete={name === 'email' ? 'email' : name === 'username' ? 'username' : name.includes('password') ? 'current-password' : 'off'}
-                  onFocus={() => setFocusedField(name)}
-                  onBlur={() => setFocusedField(null)}
-                />
-                
-                {showToggle && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className={`
-                      absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 transition-colors
-                      ${theme === 'dark'
-                        ? 'text-muted-foreground hover:text-primary'
-                        : 'text-muted-foreground hover:text-primary'
-                      }
-                    `}
-                    onClick={() => name === 'password' ? setShowPassword(!showPassword) : setShowConfirmPassword(!showConfirmPassword)}
-                    tabIndex={-1}
-                  >
-                    <motion.div
-                      initial={false}
-                      animate={{ rotate: (name === 'password' ? showPassword : showConfirmPassword) ? 0 : 180 }}
-                      transition={{ duration: 0.2, ease: "easeInOut" }}
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        {/* Email Field */}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Mail className="h-4 w-4 text-primary" />
+                Email Address
+              </FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Input 
+                    placeholder="Enter your email"
+                    className={`h-11 transition-all duration-200 bg-background border-input focus:border-primary focus:ring-2 focus:ring-primary/20 ${
+                      fieldState.error ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : ''
+                    }`}
+                    type="email"
+                    {...field}
+                    disabled={isLoading}
+                    autoComplete="email"
+                  />
+                </div>
+              </FormControl>
+              <FormMessage className="text-xs" />
+            </FormItem>
+          )}
+        />
+
+        {/* Username Field (Signup only) */}
+        {!isLogin && (
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field, fieldState }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <User className="h-4 w-4 text-primary" />
+                  Username
+                </FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Choose a username"
+                    className={`h-11 transition-all duration-200 bg-background border-input focus:border-primary focus:ring-2 focus:ring-primary/20 ${
+                      fieldState.error ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : ''
+                    }`}
+                    {...field}
+                    disabled={isLoading}
+                    autoComplete="username"
+                  />
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+        )}
+
+        {/* Password Field */}
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field, fieldState }) => {
+            const passwordStrength = !isLogin ? getPasswordStrength(field.value) : null;
+            
+            return (
+              <FormItem>
+                <FormLabel className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <KeyRound className="h-4 w-4 text-primary" />
+                  Password
+                </FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input 
+                      placeholder={isLogin ? "Enter your password" : "Create a strong password"}
+                      className={`h-11 pr-10 transition-all duration-200 bg-background border-input focus:border-primary focus:ring-2 focus:ring-primary/20 ${
+                        fieldState.error ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : ''
+                      }`}
+                      type={showPassword ? 'text' : 'password'}
+                      {...field}
+                      disabled={isLoading}
+                      autoComplete="current-password"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 p-0 hover:bg-transparent text-muted-foreground hover:text-foreground"
+                      onClick={() => setShowPassword(!showPassword)}
+                      tabIndex={-1}
                     >
-                      {(name === 'password' ? showPassword : showConfirmPassword) ? 
-                        <EyeOff className="h-4 w-4" /> : 
-                        <Eye className="h-4 w-4" />
-                      }
-                    </motion.div>
-                  </Button>
-                )}
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </FormControl>
                 
-                {/* Success/Error indicators */}
-                <AnimatePresence>
-                  {field.value && !fieldState.error && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0 }}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
-                    >
-                      <CheckCircle className="h-4 w-4" />
-                    </motion.div>
-                  )}
-                  {fieldState.error && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0 }}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-destructive"
-                    >
-                      <AlertTriangle className="h-4 w-4" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-                
-                {/* Password strength indicator */}
+                {/* Password Strength Indicator */}
                 {passwordStrength && field.value && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
@@ -201,7 +192,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                     className="mt-2"
                   >
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden">
+                      <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                         <motion.div
                           className={`h-full transition-all duration-300 ${
                             passwordStrength.strength === 1 ? 'bg-red-500' :
@@ -221,109 +212,84 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                     </div>
                   </motion.div>
                 )}
-              </motion.div>
-            </FormControl>
-            <FormMessage className="text-xs" />
-          </FormItem>
-        );
-      }}
-    />
-  );
+                
+                <FormMessage className="text-xs" />
+              </FormItem>
+            );
+          }}
+        />
 
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <div className="space-y-5">
-          {/* Email Field */}
-          <PerformantFadeIn delay={0.1}>
-            <FormFieldComponent 
-              name="email" 
-              label="Email Address" 
-              placeholder="Enter your email" 
-              icon={Mail} 
-              type="email" 
-            />
-          </PerformantFadeIn>
-
-          {/* Username Field (Signup only) */}
-          {!isLogin && (
-            <PerformantFadeIn delay={0.2}>
-              <FormFieldComponent 
-                name="username" 
-                label="Username" 
-                placeholder="Choose a username" 
-                icon={User} 
-              />
-            </PerformantFadeIn>
-          )}
-
-          {/* Password Field */}
-          <PerformantFadeIn delay={isLogin ? 0.2 : 0.3}>
-            <FormFieldComponent 
-              name="password" 
-              label="Password" 
-              placeholder={isLogin ? "Enter your password" : "Create a strong password"} 
-              icon={KeyRound} 
-              showToggle={true}
-            />
-          </PerformantFadeIn>
-
-          {/* Confirm Password Field (Signup only) */}
-          {!isLogin && (
-            <PerformantFadeIn delay={0.4}>
-              <FormFieldComponent 
-                name="confirmPassword" 
-                label="Confirm Password" 
-                placeholder="Confirm your password" 
-                icon={KeyRound} 
-                showToggle={true}
-              />
-            </PerformantFadeIn>
-          )}
-        </div>
+        {/* Confirm Password Field (Signup only) */}
+        {!isLogin && (
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field, fieldState }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <KeyRound className="h-4 w-4 text-primary" />
+                  Confirm Password
+                </FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input 
+                      placeholder="Confirm your password"
+                      className={`h-11 pr-10 transition-all duration-200 bg-background border-input focus:border-primary focus:ring-2 focus:ring-primary/20 ${
+                        fieldState.error ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : ''
+                      }`}
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      {...field}
+                      disabled={isLoading}
+                      autoComplete="new-password"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 p-0 hover:bg-transparent text-muted-foreground hover:text-foreground"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      tabIndex={-1}
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+        )}
         
-        <PerformantFadeIn delay={isLogin ? 0.3 : 0.5}>
-          <Button 
-            type="submit" 
-            className={`
-              w-full h-12 font-semibold text-base shadow-lg transition-all duration-300
-              transform hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0 
-              disabled:hover:shadow-lg border hover:shadow-xl
-              ${theme === 'dark'
-                ? 'bg-gradient-to-r from-primary via-primary/95 to-primary/90 hover:from-primary/95 hover:via-primary/85 hover:to-primary/80 text-primary-foreground hover:shadow-primary/25 border-primary/25 hover:border-primary/35'
-                : 'bg-gradient-to-r from-primary via-primary/90 to-primary/85 hover:from-primary/90 hover:via-primary/80 hover:to-primary/75 text-primary-foreground hover:shadow-primary/20 border-primary/20 hover:border-primary/30'
-              }
-            `}
-            disabled={isLoading}
-          >
-            <AnimatePresence mode="wait">
-              {isLoading ? (
-                <motion.div 
-                  key="loading"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex items-center gap-2"
-                >
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>{isLogin ? "Signing in..." : "Creating account..."}</span>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="submit"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  className="flex items-center gap-2"
-                >
-                  <span>{isLogin ? "Sign In" : "Create Account"}</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </Button>
-        </PerformantFadeIn>
+        {/* Submit Button */}
+        <Button 
+          type="submit" 
+          className="w-full h-11 font-semibold text-base bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground shadow-md hover:shadow-lg transition-all duration-200 mt-6"
+          disabled={isLoading}
+        >
+          <AnimatePresence mode="wait">
+            {isLoading ? (
+              <motion.div 
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center gap-2"
+              >
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>{isLogin ? "Signing in..." : "Creating account..."}</span>
+              </motion.div>
+            ) : (
+              <motion.span
+                key="submit"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                {isLogin ? "Sign In" : "Create Account"}
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </Button>
       </form>
     </Form>
   );

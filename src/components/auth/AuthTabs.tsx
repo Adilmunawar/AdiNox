@@ -1,9 +1,8 @@
 
 import React from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogIn, UserPlus, ArrowRight } from "lucide-react";
-import { useTheme } from "@/context/ThemeContext";
+import { LogIn, UserPlus } from "lucide-react";
 
 interface AuthTabsProps {
   activeTab: string;
@@ -12,129 +11,96 @@ interface AuthTabsProps {
 }
 
 const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps) => {
-  const { theme } = useTheme();
-  
   return (
-    <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-      <div className="relative mb-8">
-        <TabsList className={`
-          grid w-full grid-cols-2 h-14 p-1 backdrop-blur-sm border shadow-inner
-          ${theme === 'dark'
-            ? 'bg-muted/40 border-border/40'
-            : 'bg-muted/60 border-border/30'
-          }
-        `}>
-          <TabsTrigger 
-            value="login" 
-            className={`
-              relative h-12 font-semibold text-sm transition-all duration-300 group
-              ${theme === 'dark'
-                ? 'data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg'
-                : 'data-[state=active]:bg-card/95 data-[state=active]:text-primary data-[state=active]:shadow-md'
-              }
-            `}
-          >
-            <motion.div
-              className="flex items-center gap-2"
-              whileHover={{ x: 2 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <LogIn className="h-4 w-4 group-data-[state=active]:text-primary transition-colors" />
-              Sign In
-              <AnimatePresence>
-                {activeTab === "login" && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -5 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 5 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ArrowRight className="h-3 w-3 text-primary" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-            
-            {activeTab === "login" && (
-              <motion.div
-                layoutId="activeTabIndicator"
-                className={`
-                  absolute inset-0 rounded-md -z-10
-                  ${theme === 'dark'
-                    ? 'bg-gradient-to-r from-primary/15 via-primary/8 to-transparent'
-                    : 'bg-gradient-to-r from-primary/10 via-primary/5 to-transparent'
-                  }
-                `}
-                transition={{ type: "spring", stiffness: 400, damping: 35 }}
-              />
-            )}
-          </TabsTrigger>
-          
-          <TabsTrigger 
-            value="signup"
-            className={`
-              relative h-12 font-semibold text-sm transition-all duration-300 group
-              ${theme === 'dark'
-                ? 'data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg'
-                : 'data-[state=active]:bg-card/95 data-[state=active]:text-primary data-[state=active]:shadow-md'
-              }
-            `}
-          >
-            <motion.div
-              className="flex items-center gap-2"
-              whileHover={{ x: 2 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <UserPlus className="h-4 w-4 group-data-[state=active]:text-primary transition-colors" />
-              Sign Up
-              <AnimatePresence>
-                {activeTab === "signup" && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -5 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 5 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ArrowRight className="h-3 w-3 text-primary" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-            
-            {activeTab === "signup" && (
-              <motion.div
-                layoutId="activeTabIndicator"
-                className={`
-                  absolute inset-0 rounded-md -z-10
-                  ${theme === 'dark'
-                    ? 'bg-gradient-to-r from-primary/15 via-primary/8 to-transparent'
-                    : 'bg-gradient-to-r from-primary/10 via-primary/5 to-transparent'
-                  }
-                `}
-                transition={{ type: "spring", stiffness: 400, damping: 35 }}
-              />
-            )}
-          </TabsTrigger>
-        </TabsList>
-      </div>
-      
-      <AnimatePresence mode="wait">
+    <div className="w-full space-y-6">
+      {/* Header with Logo */}
+      <div className="text-center space-y-4">
         <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ 
-            type: "spring", 
-            stiffness: 300, 
-            damping: 25,
-            duration: 0.25
-          }}
+          transition={{ duration: 0.5 }}
+          className="space-y-2"
         >
-          {children}
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+            Welcome to{" "}
+            <span className="bg-gradient-to-r from-adinox-purple to-adinox-red bg-clip-text text-transparent">
+              AdiNox
+            </span>
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Secure authentication for your digital life
+          </p>
         </motion.div>
-      </AnimatePresence>
-    </Tabs>
+      </div>
+
+      {/* Auth Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl shadow-xl p-6 sm:p-8"
+      >
+        <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
+          {/* Tab Navigation */}
+          <TabsList className="grid w-full grid-cols-2 mb-6 h-12 p-1 bg-muted/50">
+            <TabsTrigger 
+              value="login" 
+              className="h-10 text-sm font-medium data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all duration-200"
+            >
+              <motion.div
+                className="flex items-center gap-2"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <LogIn className="h-4 w-4" />
+                <span className="hidden sm:inline">Sign In</span>
+                <span className="sm:hidden">Login</span>
+              </motion.div>
+            </TabsTrigger>
+            
+            <TabsTrigger 
+              value="signup"
+              className="h-10 text-sm font-medium data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all duration-200"
+            >
+              <motion.div
+                className="flex items-center gap-2"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <UserPlus className="h-4 w-4" />
+                <span className="hidden sm:inline">Sign Up</span>
+                <span className="sm:hidden">Register</span>
+              </motion.div>
+            </TabsTrigger>
+          </TabsList>
+          
+          {/* Tab Content */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, x: activeTab === "login" ? -20 : 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: activeTab === "login" ? 20 : -20 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        </Tabs>
+      </motion.div>
+
+      {/* Security Notice */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="text-center"
+      >
+        <p className="text-xs text-muted-foreground">
+          🔒 Your data is encrypted and secure with AdiNox
+        </p>
+      </motion.div>
+    </div>
   );
 });
 
