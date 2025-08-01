@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { Shield, Sparkles, Lock, Globe } from "lucide-react";
+import { Shield, Sparkles, Lock, Globe, Eye, EyeOff } from "lucide-react";
 import { PerformantFadeIn } from "@/components/ui/performance-animations";
 import { useTheme } from "@/context/ThemeContext";
 
