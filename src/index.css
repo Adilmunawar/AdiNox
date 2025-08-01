@@ -53,11 +53,12 @@
     scroll-behavior: smooth;
   }
   
-  /* Enhanced font rendering */
+  /* Enhanced font rendering for better performance */
   * {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    font-feature-settings: "liga" 1, "kern" 1;
   }
 }
 
@@ -89,7 +90,7 @@
     animation-name: slideInFromBottom3;
   }
   
-  /* Simple hover effects for performance */
+  /* Optimized hover effects */
   .hover-glow {
     @apply transition-all duration-200 gpu-accelerated;
   }
@@ -124,7 +125,7 @@
     opacity: 1;
   }
   
-  /* Enhanced auth form styles */
+  /* Enhanced auth form styles - optimized */
   .auth-input {
     @apply gpu-accelerated transition-all duration-200;
     transform: translateZ(0);
@@ -150,61 +151,62 @@
     transform: translateZ(0) translateY(0px);
   }
 
-  /* Simple keyframes for performance */
+  /* Optimized keyframes for smooth performance */
   @keyframes fadeIn {
     from {
       opacity: 0;
-      transform: translateY(8px);
+      transform: translateY(8px) translateZ(0);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) translateZ(0);
     }
   }
 
   @keyframes slideInFromTop3 {
     from {
-      transform: translateY(-8px);
+      transform: translateY(-8px) translateZ(0);
       opacity: 0;
     }
     to {
-      transform: translateY(0);
+      transform: translateY(0) translateZ(0);
       opacity: 1;
     }
   }
 
   @keyframes slideInFromBottom3 {
     from {
-      transform: translateY(8px);
+      transform: translateY(8px) translateZ(0);
       opacity: 0;
     }
     to {
-      transform: translateY(0);
+      transform: translateY(0) translateZ(0);
       opacity: 1;
     }
   }
   
+  /* Subtle pulse animation for better performance */
   @keyframes pulseSubtle {
     0%, 100% {
       opacity: 0.8;
-      transform: scale(1);
+      transform: scale(1) translateZ(0);
     }
     50% {
       opacity: 1;
-      transform: scale(1.01);
+      transform: scale(1.01) translateZ(0);
     }
   }
   
   .animate-pulse-subtle {
-    animation: pulseSubtle 3s ease-in-out infinite;
+    animation: pulseSubtle 4s ease-in-out infinite;
   }
   
-  /* Premium glass morphism */
+  /* Enhanced glass morphism */
   .glass-morphism {
-    @apply bg-card/80 backdrop-blur-md border border-border/30 shadow-xl gpu-accelerated;
+    @apply bg-card/85 backdrop-blur-md border border-border/30 shadow-xl gpu-accelerated;
   }
   
-  /* Enhanced loading states */
+  /* Optimized loading states */
   .loading-shimmer {
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
     background-size: 200% 100%;
@@ -215,11 +217,27 @@
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
   }
+
+  /* Security indicator animations */
+  @keyframes securityPulse {
+    0%, 100% {
+      opacity: 0.7;
+      transform: scale(1) translateZ(0);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05) translateZ(0);
+    }
+  }
+
+  .security-pulse {
+    animation: securityPulse 2s ease-in-out infinite;
+  }
 }
 
-/* Enhanced focus styles */
+/* Enhanced focus styles for accessibility */
 *:focus-visible {
-  @apply outline-none ring-2 ring-primary/40 ring-offset-2 ring-offset-background;
+  @apply outline-none ring-2 ring-primary/50 ring-offset-2 ring-offset-background;
 }
 
 /* Optimized scrollbar */
@@ -253,7 +271,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Performance optimizations */
+/* Performance optimizations for critical elements */
 img {
   @apply gpu-accelerated;
 }
@@ -270,7 +288,7 @@ input[type="text"] {
   font-variant-numeric: normal;
 }
 
-/* Auth specific animations - optimized */
+/* Auth specific animations - highly optimized */
 @keyframes authSlideIn {
   from {
     opacity: 0;
@@ -283,7 +301,7 @@ input[type="text"] {
 }
 
 .auth-slide-in {
-  animation: authSlideIn 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  animation: authSlideIn 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 @keyframes authFadeIn {
@@ -298,5 +316,10 @@ input[type="text"] {
 }
 
 .auth-fade-in {
-  animation: authFadeIn 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+  animation: authFadeIn 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Enhanced theme transitions */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
