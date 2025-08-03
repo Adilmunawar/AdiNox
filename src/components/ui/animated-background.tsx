@@ -20,14 +20,6 @@ const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
           : "bg-gradient-to-br from-slate-50 via-white to-slate-100",
         className
       )} />
-      
-      {/* Subtle overlay for texture */}
-      <div className={cn(
-        "fixed inset-0 -z-10 opacity-40",
-        theme === 'dark'
-          ? "bg-[radial-gradient(circle_at_50%_50%,rgba(155,135,245,0.1)_0%,transparent_50%)]"
-          : "bg-[radial-gradient(circle_at_50%_50%,rgba(155,135,245,0.05)_0%,transparent_50%)]"
-      )} />
     </>
   );
 };
