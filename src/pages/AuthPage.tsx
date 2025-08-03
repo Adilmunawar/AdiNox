@@ -8,7 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import AuthContainer from "@/components/auth/AuthContainer";
 import AuthTabs from "@/components/auth/AuthTabs";
 import AuthForm from "@/components/auth/AuthForm";
-import { PageHeader } from "@/components/ui/page-header";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -106,28 +105,25 @@ const AuthPage: React.FC = () => {
   }, [toast]);
 
   return (
-    <>
-      <PageHeader showAuth={false} />
-      <AuthContainer>
-        <AuthTabs activeTab={activeTab} onTabChange={setActiveTab}>
-          <TabsContent value="login" className="mt-0">
-            <AuthForm 
-              type="login" 
-              onSubmit={handleLogin} 
-              isLoading={isLoading} 
-            />
-          </TabsContent>
-          
-          <TabsContent value="signup" className="mt-0">
-            <AuthForm 
-              type="signup" 
-              onSubmit={handleSignup} 
-              isLoading={isLoading} 
-            />
-          </TabsContent>
-        </AuthTabs>
-      </AuthContainer>
-    </>
+    <AuthContainer>
+      <AuthTabs activeTab={activeTab} onTabChange={setActiveTab}>
+        <TabsContent value="login" className="mt-0">
+          <AuthForm 
+            type="login" 
+            onSubmit={handleLogin} 
+            isLoading={isLoading} 
+          />
+        </TabsContent>
+        
+        <TabsContent value="signup" className="mt-0">
+          <AuthForm 
+            type="signup" 
+            onSubmit={handleSignup} 
+            isLoading={isLoading} 
+          />
+        </TabsContent>
+      </AuthTabs>
+    </AuthContainer>
   );
 };
 
