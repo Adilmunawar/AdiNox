@@ -2,7 +2,7 @@
 import React from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogIn, UserPlus, Shield, Sparkles, Lock } from "lucide-react";
+import { LogIn, UserPlus } from "lucide-react";
 
 interface AuthTabsProps {
   activeTab: string;
@@ -13,144 +13,80 @@ interface AuthTabsProps {
 const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       className="w-full space-y-8"
     >
       {/* Main Auth Card */}
       <div className="relative">
-        {/* Glassmorphism Container */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-2xl rounded-3xl border border-white/20 shadow-2xl" />
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 rounded-3xl" />
-        
-        <div className="relative p-8 sm:p-10">
-          {/* Logo and Branding Section */}
+        {/* Card Background */}
+        <div className="relative bg-slate-900/60 backdrop-blur-xl border border-slate-800/60 rounded-2xl p-8 shadow-2xl">
+          {/* Logo and Title Section */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-center mb-10"
+            transition={{ duration: 0.5 }}
+            className="text-center mb-8"
           >
-            {/* Logo with Advanced Effects */}
+            {/* Logo */}
             <div className="relative mb-6">
-              <motion.div
-                animate={{ 
-                  rotate: [0, 5, 0, -5, 0],
-                  scale: [1, 1.05, 1]
-                }}
-                transition={{ 
-                  duration: 6, 
-                  repeat: Infinity, 
-                  ease: "easeInOut" 
-                }}
-                className="relative mx-auto w-20 h-20 mb-6"
-              >
-                {/* Glowing Ring */}
-                <motion.div
-                  animate={{
-                    rotate: 360,
-                    scale: [1, 1.2, 1]
-                  }}
-                  transition={{
-                    rotate: { duration: 10, repeat: Infinity, ease: "linear" },
-                    scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-                  }}
-                  className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 opacity-30 blur-lg"
+              <div className="mx-auto w-16 h-16 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-3 shadow-lg">
+                <img 
+                  src="/Adil-Munawar-Uploads/1e18899e-2160-4944-9175-794607679d04.png" 
+                  alt="AdiNox Logo" 
+                  className="w-full h-full object-contain"
                 />
-                
-                {/* Logo Container */}
-                <div className="relative bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/20 shadow-xl">
-                  <img 
-                    src="/Adil-Munawar-Uploads/1e18899e-2160-4944-9175-794607679d04.png" 
-                    alt="AdiNox Logo" 
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              </motion.div>
-              
-              {/* Brand Title */}
-              <motion.h1 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="text-4xl sm:text-5xl font-black mb-3"
-              >
-                <span className="bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
-                  AdiNox
-                </span>
-              </motion.h1>
-              
-              {/* Subtitle with Animation */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                className="flex items-center justify-center gap-2 text-white/80 mb-2"
-              >
-                <Sparkles className="h-4 w-4 text-purple-400" />
-                <span className="text-base font-medium">Premium Authentication</span>
-                <Sparkles className="h-4 w-4 text-pink-400" />
-              </motion.div>
-              
-              <motion.p 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                className="text-sm text-white/60 flex items-center justify-center gap-2"
-              >
-                <Lock className="h-3 w-3 text-purple-400" />
-                Bank-grade security for your digital identity
-              </motion.p>
+              </div>
             </div>
+            
+            {/* Title */}
+            <h1 className="text-3xl font-bold text-white mb-2">
+              AdiNox
+            </h1>
+            <p className="text-slate-400 text-sm">
+              Secure Authentication Portal
+            </p>
           </motion.div>
 
           <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-            {/* Enhanced Tab Navigation */}
+            {/* Tab Navigation */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
             >
-              <TabsList className="grid w-full grid-cols-2 mb-8 h-14 p-1 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 shadow-lg">
+              <TabsList className="grid w-full grid-cols-2 mb-6 h-12 p-1 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50">
                 <TabsTrigger 
                   value="login" 
-                  className="h-12 text-base font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all duration-300 rounded-xl border-0 text-white/70 hover:text-white hover:bg-white/10"
+                  className="h-10 text-sm font-medium data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 rounded-lg border-0 text-slate-300 hover:text-white"
                 >
-                  <motion.div
-                    className="flex items-center gap-3"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <LogIn className="h-5 w-5" />
+                  <div className="flex items-center gap-2">
+                    <LogIn className="h-4 w-4" />
                     <span>Sign In</span>
-                  </motion.div>
+                  </div>
                 </TabsTrigger>
                 
                 <TabsTrigger 
                   value="signup"
-                  className="h-12 text-base font-semibold data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-xl transition-all duration-300 rounded-xl border-0 text-white/70 hover:text-white hover:bg-white/10"
+                  className="h-10 text-sm font-medium data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 rounded-lg border-0 text-slate-300 hover:text-white"
                 >
-                  <motion.div
-                    className="flex items-center gap-3"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <UserPlus className="h-5 w-5" />
+                  <div className="flex items-center gap-2">
+                    <UserPlus className="h-4 w-4" />
                     <span>Sign Up</span>
-                  </motion.div>
+                  </div>
                 </TabsTrigger>
               </TabsList>
             </motion.div>
             
-            {/* Tab Content with Advanced Animation */}
+            {/* Tab Content */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
                 initial={{ 
                   opacity: 0, 
-                  x: activeTab === "login" ? -50 : 50,
-                  scale: 0.95 
+                  x: activeTab === "login" ? -20 : 20,
+                  scale: 0.98 
                 }}
                 animate={{ 
                   opacity: 1, 
@@ -159,14 +95,14 @@ const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps
                 }}
                 exit={{ 
                   opacity: 0, 
-                  x: activeTab === "login" ? 50 : -50,
-                  scale: 0.95 
+                  x: activeTab === "login" ? 20 : -20,
+                  scale: 0.98 
                 }}
                 transition={{ 
-                  duration: 0.4, 
-                  ease: [0.4, 0, 0.2, 1] 
+                  duration: 0.3, 
+                  ease: "easeInOut" 
                 }}
-                className="min-h-[400px] flex items-center justify-center"
+                className="min-h-[350px]"
               >
                 {children}
               </motion.div>
@@ -175,31 +111,16 @@ const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps
         </div>
       </div>
 
-      {/* Security Badge */}
+      {/* Footer */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.8 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
         className="text-center"
       >
-        <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/5 backdrop-blur-xl rounded-full border border-white/20 shadow-lg">
-          <motion.div
-            animate={{ 
-              scale: [1, 1.2, 1],
-              rotate: [0, 360] 
-            }}
-            transition={{ 
-              scale: { duration: 2, repeat: Infinity },
-              rotate: { duration: 10, repeat: Infinity, ease: "linear" }
-            }}
-          >
-            <Shield className="h-4 w-4 text-green-400" />
-          </motion.div>
-          <span className="text-sm text-white/80 font-medium">
-            256-bit SSL Encryption Active
-          </span>
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-        </div>
+        <p className="text-slate-500 text-sm">
+          &copy; {new Date().getFullYear()} AdiNox. All rights reserved.
+        </p>
       </motion.div>
     </motion.div>
   );
