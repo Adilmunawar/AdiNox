@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -82,11 +81,11 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
     strength = checks.filter(Boolean).length;
     
     const configs = [
-      { label: "Very Weak", color: "text-red-400", bgColor: "bg-red-400" },
-      { label: "Weak", color: "text-orange-400", bgColor: "bg-orange-400" },
-      { label: "Fair", color: "text-yellow-400", bgColor: "bg-yellow-400" },
-      { label: "Good", color: "text-blue-400", bgColor: "bg-blue-400" },
-      { label: "Strong", color: "text-green-400", bgColor: "bg-green-400" },
+      { label: "Very Weak", color: "text-red-400", bgColor: "bg-red-500" },
+      { label: "Weak", color: "text-orange-400", bgColor: "bg-orange-500" },
+      { label: "Fair", color: "text-yellow-400", bgColor: "bg-yellow-500" },
+      { label: "Good", color: "text-blue-400", bgColor: "bg-blue-500" },
+      { label: "Strong", color: "text-green-400", bgColor: "bg-green-500" },
     ];
     
     const config = configs[Math.min(strength - 1, 4)] || configs[0];
@@ -125,7 +124,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
       className="w-full"
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           {/* Email Field */}
           <motion.div variants={itemVariants}>
             <FormField
@@ -133,7 +132,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
               name="email"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel className="text-slate-200 font-medium flex items-center gap-2 mb-2">
+                  <FormLabel className="text-slate-200 font-semibold flex items-center gap-2 mb-3">
                     <Mail className="h-4 w-4 text-slate-400" />
                     Email Address
                   </FormLabel>
@@ -141,10 +140,10 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                     <div className="relative">
                       <Input 
                         placeholder="Enter your email address"
-                        className={`h-12 bg-slate-800/50 border rounded-lg text-white placeholder:text-slate-400 font-medium transition-all duration-200 focus:ring-2 focus:ring-slate-600 focus:border-slate-600 ${
+                        className={`h-12 bg-slate-800/30 border rounded-xl text-white placeholder:text-slate-400 font-medium transition-all duration-300 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 backdrop-blur-sm ${
                           fieldState.error 
                             ? 'border-red-500/50 focus:ring-red-500/50' 
-                            : 'border-slate-700/50 hover:border-slate-600/50'
+                            : 'border-slate-600/40 hover:border-slate-500/50'
                         }`}
                         type="email"
                         {...field}
@@ -155,7 +154,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                       />
                       {!fieldState.error && field.value && field.value.includes('@') && (
                         <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <CheckCircle className="h-4 w-4 text-green-400" />
                         </div>
                       )}
                     </div>
@@ -167,7 +166,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
                       >
-                        <FormMessage className="text-red-400 flex items-center gap-2 mt-2 text-sm">
+                        <FormMessage className="text-red-400 flex items-center gap-2 mt-2 text-sm font-medium">
                           <AlertCircle className="h-3 w-3" />
                           {fieldState.error.message}
                         </FormMessage>
@@ -187,7 +186,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                 name="username"
                 render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className="text-slate-200 font-medium flex items-center gap-2 mb-2">
+                    <FormLabel className="text-slate-200 font-semibold flex items-center gap-2 mb-3">
                       <User className="h-4 w-4 text-slate-400" />
                       Username
                     </FormLabel>
@@ -195,10 +194,10 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                       <div className="relative">
                         <Input 
                           placeholder="Choose your username"
-                          className={`h-12 bg-slate-800/50 border rounded-lg text-white placeholder:text-slate-400 font-medium transition-all duration-200 focus:ring-2 focus:ring-slate-600 focus:border-slate-600 ${
+                          className={`h-12 bg-slate-800/30 border rounded-xl text-white placeholder:text-slate-400 font-medium transition-all duration-300 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 backdrop-blur-sm ${
                             fieldState.error 
                               ? 'border-red-500/50 focus:ring-red-500/50' 
-                              : 'border-slate-700/50 hover:border-slate-600/50'
+                              : 'border-slate-600/40 hover:border-slate-500/50'
                           }`}
                           {...field}
                           disabled={isLoading}
@@ -208,7 +207,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                         />
                         {!fieldState.error && field.value && field.value.length >= 3 && (
                           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <CheckCircle className="h-4 w-4 text-green-400" />
                           </div>
                         )}
                       </div>
@@ -220,7 +219,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
                         >
-                          <FormMessage className="text-red-400 flex items-center gap-2 mt-2 text-sm">
+                          <FormMessage className="text-red-400 flex items-center gap-2 mt-2 text-sm font-medium">
                             <AlertCircle className="h-3 w-3" />
                             {fieldState.error.message}
                           </FormMessage>
@@ -243,7 +242,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                 
                 return (
                   <FormItem>
-                    <FormLabel className="text-slate-200 font-medium flex items-center gap-2 mb-2">
+                    <FormLabel className="text-slate-200 font-semibold flex items-center gap-2 mb-3">
                       <KeyRound className="h-4 w-4 text-slate-400" />
                       Password
                     </FormLabel>
@@ -251,10 +250,10 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                       <div className="relative">
                         <Input 
                           placeholder={isLogin ? "Enter your password" : "Create a strong password"}
-                          className={`h-12 pr-12 bg-slate-800/50 border rounded-lg text-white placeholder:text-slate-400 font-medium transition-all duration-200 focus:ring-2 focus:ring-slate-600 focus:border-slate-600 ${
+                          className={`h-12 pr-12 bg-slate-800/30 border rounded-xl text-white placeholder:text-slate-400 font-medium transition-all duration-300 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 backdrop-blur-sm ${
                             fieldState.error 
                               ? 'border-red-500/50 focus:ring-red-500/50' 
-                              : 'border-slate-700/50 hover:border-slate-600/50'
+                              : 'border-slate-600/40 hover:border-slate-500/50'
                           }`}
                           type={showPassword ? 'text' : 'password'}
                           {...field}
@@ -267,7 +266,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-slate-700/40 text-slate-400 hover:text-white transition-colors rounded-lg"
                           onClick={() => setShowPassword(!showPassword)}
                           tabIndex={-1}
                         >
@@ -284,12 +283,12 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                         className="mt-3 space-y-2"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-slate-400">Password Strength</span>
-                          <span className={`text-xs font-medium ${passwordStrength.color}`}>
+                          <span className="text-xs text-slate-400 font-medium">Password Strength</span>
+                          <span className={`text-xs font-semibold ${passwordStrength.color}`}>
                             {passwordStrength.label}
                           </span>
                         </div>
-                        <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                        <div className="w-full bg-slate-800/50 rounded-full h-2 overflow-hidden backdrop-blur-sm">
                           <motion.div
                             className={`h-full ${passwordStrength.bgColor} rounded-full`}
                             initial={{ width: 0 }}
@@ -307,7 +306,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
                         >
-                          <FormMessage className="text-red-400 flex items-center gap-2 mt-2 text-sm">
+                          <FormMessage className="text-red-400 flex items-center gap-2 mt-2 text-sm font-medium">
                             <AlertCircle className="h-3 w-3" />
                             {fieldState.error.message}
                           </FormMessage>
@@ -328,7 +327,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                 name="confirmPassword"
                 render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className="text-slate-200 font-medium flex items-center gap-2 mb-2">
+                    <FormLabel className="text-slate-200 font-semibold flex items-center gap-2 mb-3">
                       <KeyRound className="h-4 w-4 text-slate-400" />
                       Confirm Password
                     </FormLabel>
@@ -336,10 +335,10 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                       <div className="relative">
                         <Input 
                           placeholder="Confirm your password"
-                          className={`h-12 pr-12 bg-slate-800/50 border rounded-lg text-white placeholder:text-slate-400 font-medium transition-all duration-200 focus:ring-2 focus:ring-slate-600 focus:border-slate-600 ${
+                          className={`h-12 pr-12 bg-slate-800/30 border rounded-xl text-white placeholder:text-slate-400 font-medium transition-all duration-300 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 backdrop-blur-sm ${
                             fieldState.error 
                               ? 'border-red-500/50 focus:ring-red-500/50' 
-                              : 'border-slate-700/50 hover:border-slate-600/50'
+                              : 'border-slate-600/40 hover:border-slate-500/50'
                           }`}
                           type={showConfirmPassword ? 'text' : 'password'}
                           {...field}
@@ -352,7 +351,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-slate-700/50 text-slate-400 hover:text-white transition-colors"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-slate-700/40 text-slate-400 hover:text-white transition-colors rounded-lg"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                           tabIndex={-1}
                         >
@@ -360,7 +359,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                         </Button>
                         {!fieldState.error && field.value && form.watch('password') === field.value && (
                           <div className="absolute right-10 top-1/2 -translate-y-1/2">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <CheckCircle className="h-4 w-4 text-green-400" />
                           </div>
                         )}
                       </div>
@@ -372,7 +371,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
                         >
-                          <FormMessage className="text-red-400 flex items-center gap-2 mt-2 text-sm">
+                          <FormMessage className="text-red-400 flex items-center gap-2 mt-2 text-sm font-medium">
                             <AlertCircle className="h-3 w-3" />
                             {fieldState.error.message}
                           </FormMessage>
@@ -385,15 +384,15 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
             </motion.div>
           )}
           
-          {/* Submit Button */}
-          <motion.div variants={itemVariants} className="pt-2">
+          {/* Enhanced Submit Button */}
+          <motion.div variants={itemVariants} className="pt-4">
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               <Button 
                 type="submit" 
-                className="w-full h-12 font-semibold bg-slate-800 hover:bg-slate-700 text-white border border-slate-700/50 hover:border-slate-600 transition-all duration-200 rounded-lg disabled:opacity-50"
+                className="w-full h-14 font-bold text-base bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white border-0 transition-all duration-300 rounded-xl disabled:opacity-50 shadow-lg hover:shadow-xl backdrop-blur-sm"
                 disabled={isLoading}
               >
                 <AnimatePresence mode="wait">
@@ -403,9 +402,9 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="flex items-center justify-center gap-2"
+                      className="flex items-center justify-center gap-3"
                     >
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-5 w-5 animate-spin" />
                       <span>{isLogin ? "Signing in..." : "Creating account..."}</span>
                     </motion.div>
                   ) : (

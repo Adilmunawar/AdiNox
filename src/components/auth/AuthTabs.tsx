@@ -20,8 +20,8 @@ const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps
     >
       {/* Main Auth Card */}
       <div className="relative">
-        {/* Card Background */}
-        <div className="relative bg-slate-900/60 backdrop-blur-xl border border-slate-800/60 rounded-2xl p-8 shadow-2xl">
+        {/* Card Background with improved colors */}
+        <div className="relative bg-slate-900/70 backdrop-blur-xl border border-slate-700/40 rounded-2xl p-8 shadow-2xl">
           {/* Logo and Title Section */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -31,7 +31,7 @@ const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps
           >
             {/* Logo */}
             <div className="relative mb-6">
-              <div className="mx-auto w-16 h-16 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-3 shadow-lg">
+              <div className="mx-auto w-20 h-20 bg-slate-800/40 backdrop-blur-sm rounded-2xl border border-slate-600/30 p-4 shadow-xl">
                 <img 
                   src="/Adil-Munawar-Uploads/1e18899e-2160-4944-9175-794607679d04.png" 
                   alt="AdiNox Logo" 
@@ -41,25 +41,25 @@ const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps
             </div>
             
             {/* Title */}
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <h1 className="text-4xl font-bold text-white mb-3">
               AdiNox
             </h1>
-            <p className="text-slate-400 text-sm">
+            <p className="text-slate-400 text-base">
               Secure Authentication Portal
             </p>
           </motion.div>
 
           <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-            {/* Tab Navigation */}
+            {/* Tab Navigation with improved styling */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: 0.1 }}
             >
-              <TabsList className="grid w-full grid-cols-2 mb-6 h-12 p-1 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50">
+              <TabsList className="grid w-full grid-cols-2 mb-8 h-14 p-1 bg-slate-800/40 backdrop-blur-sm rounded-xl border border-slate-600/30">
                 <TabsTrigger 
                   value="login" 
-                  className="h-10 text-sm font-medium data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 rounded-lg border-0 text-slate-300 hover:text-white"
+                  className="h-12 text-sm font-semibold data-[state=active]:bg-slate-700/60 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-lg border-0 text-slate-300 hover:text-white hover:bg-slate-700/30"
                 >
                   <div className="flex items-center gap-2">
                     <LogIn className="h-4 w-4" />
@@ -69,7 +69,7 @@ const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps
                 
                 <TabsTrigger 
                   value="signup"
-                  className="h-10 text-sm font-medium data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all duration-200 rounded-lg border-0 text-slate-300 hover:text-white"
+                  className="h-12 text-sm font-semibold data-[state=active]:bg-slate-700/60 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300 rounded-lg border-0 text-slate-300 hover:text-white hover:bg-slate-700/30"
                 >
                   <div className="flex items-center gap-2">
                     <UserPlus className="h-4 w-4" />
@@ -102,7 +102,7 @@ const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps
                   duration: 0.3, 
                   ease: "easeInOut" 
                 }}
-                className="min-h-[350px]"
+                className="min-h-[400px]"
               >
                 {children}
               </motion.div>
@@ -111,15 +111,18 @@ const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps
         </div>
       </div>
 
-      {/* Footer */}
+      {/* Developer Credit */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
-        className="text-center"
+        transition={{ duration: 0.5, delay: 0.8 }}
+        className="text-center space-y-2"
       >
         <p className="text-slate-500 text-sm">
           &copy; {new Date().getFullYear()} AdiNox. All rights reserved.
+        </p>
+        <p className="text-slate-400 text-sm font-medium">
+          Proudly Developed by Adil Munawar
         </p>
       </motion.div>
     </motion.div>
