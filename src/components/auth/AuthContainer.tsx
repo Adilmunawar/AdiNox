@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
 import { LogOut } from 'lucide-react';
-
 interface AuthContainerProps {
   children: React.ReactNode;
 }
