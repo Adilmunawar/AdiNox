@@ -5,10 +5,8 @@ import { LogOut } from 'lucide-react';
 interface AuthContainerProps {
   children: React.ReactNode;
 }
-
 const AuthContainer: React.FC<AuthContainerProps> = ({ children }) => {
   const { user, signOut } = useAuth();
-
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -16,18 +14,15 @@ const AuthContainer: React.FC<AuthContainerProps> = ({ children }) => {
       console.error('Error signing out:', error);
     }
   };
-
   return (
     <div className="min-h-screen bg-slate-950 text-white relative overflow-hidden">
       {/* Enhanced background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
-      
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />  
       {/* Subtle background elements */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-purple-600/10 to-blue-600/10 rounded-full blur-3xl" />
       </div>
-
       {/* Header for authenticated users */}
       {user && (
         <motion.header
@@ -67,5 +62,4 @@ const AuthContainer: React.FC<AuthContainerProps> = ({ children }) => {
     </div>
   );
 };
-
 export default AuthContainer;
