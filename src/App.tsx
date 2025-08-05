@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/NotFound";
@@ -9,7 +8,6 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import AnimatedBackground from "@/components/ui/animated-background";
 import { motion } from "framer-motion";
 import React, { Suspense } from "react";
-
 // High-performance loading component
 const LoadingSpinner = React.memo(() => (
   <div className="flex items-center justify-center h-screen bg-background">
@@ -20,17 +18,13 @@ const LoadingSpinner = React.memo(() => (
     />
   </div>
 ));
-
 LoadingSpinner.displayName = "LoadingSpinner";
-
 // Optimized protected route component
 const ProtectedRoute = React.memo(({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
-  
   if (isLoading) {
     return <LoadingSpinner />;
   }
-  
   if (!isAuthenticated) {
     return <Navigate to="/auth" replace />;
   }
