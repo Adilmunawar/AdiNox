@@ -12,14 +12,10 @@ interface AuthTabsProps {
 const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps) => {
   return (
     <div className="w-full space-y-8">
-      {/* Professional Auth Card */}
       <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 sm:p-8 shadow-2xl shadow-adinox-purple/10 relative overflow-hidden">
-        {/* Subtle gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-adinox-purple/5 via-transparent to-adinox-purple/5 rounded-2xl"></div>
         
-        {/* Header Section */}
         <div className="relative z-10 text-center mb-8">
-          {/* Logo with enhanced styling */}
           <div className="mx-auto w-20 h-20 bg-gradient-to-br from-adinox-purple via-adinox-purple to-adinox-light-purple rounded-2xl p-4 mb-6 shadow-lg shadow-adinox-purple/25 relative">
             <Shield className="w-full h-full text-white" />
             <div className="absolute -top-1 -right-1 w-6 h-6 bg-adinox-purple/30 rounded-full animate-pulse">
@@ -27,7 +23,6 @@ const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps
             </div>
           </div>
           
-          {/* Title with gradient text */}
           <div className="space-y-3">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-adinox-light-purple to-adinox-purple bg-clip-text text-transparent">
               AdiNox
