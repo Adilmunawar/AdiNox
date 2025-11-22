@@ -50,9 +50,13 @@ const generateHMAC = async (
     hash: { name: algorithmMap[algorithm] || "SHA-1" }
   };
   
+  // Create clean ArrayBuffer-backed Uint8Arrays for Web Crypto API
+  const keyBuffer = Uint8Array.from(key);
+  const messageBuffer = Uint8Array.from(message);
+  
   const cryptoKey = await window.crypto.subtle.importKey(
     'raw',
-    key,
+    keyBuffer,
     cryptoAlgorithm,
     false,
     ['sign']
@@ -61,7 +65,7 @@ const generateHMAC = async (
   const signature = await window.crypto.subtle.sign(
     cryptoAlgorithm,
     cryptoKey,
-    message
+    messageBuffer
   );
   
   return new Uint8Array(signature);
@@ -83,7 +87,9 @@ export async function generateTOTP(secret: string, options: TOTPOptions = {}): P
     try {
       // Decode the base32 secret
       const decoded = base32.decode.asBytes(normalizedSecret);
-      key = new Uint8Array(decoded);
+      // Create a new Uint8Array with proper ArrayBuffer to satisfy Web Crypto API types
+      key = new Uint8Array(new ArrayBuffer(decoded.length));
+      key.set(decoded);
     } catch (e) {
       console.error('Error decoding base32 secret:', e);
       // If base32 decoding fails, try using the raw secret
