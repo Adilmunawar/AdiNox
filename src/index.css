@@ -7,95 +7,45 @@
 
 @layer base {
   :root {
-    --background: 240 4% 95%;
-    --foreground: 240 5% 10%;
-    --card: 0 0% 98%;
-    --card-foreground: 240 5% 10%;
-    --popover: 240 5% 90%;
-    --popover-foreground: 240 5% 10%;
-    --primary: 258 89% 66%;
-    --primary-foreground: 250 100% 97%;
-    --secondary: 240 5% 33%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 4% 83%;
-    --muted-foreground: 240 5% 10%;
-    --accent: 269 100% 98%;
-    --accent-foreground: 270 91% 65%;
-    --destructive: 0 72% 50%;
-    --destructive-foreground: 0 85% 97%;
-    --border: 240 4% 83%;
-    --input: 240 4% 83%;
-    --ring: 258 89% 66%;
-    --radius: 0.5rem;
-    --chart-1: 255 91% 76%;
-    --chart-2: 270 95% 75%;
-    --chart-3: 234 89% 73%;
-    --chart-4: 258 89% 66%;
-    --chart-5: 240 3% 46%;
-    --sidebar: 0 0% 98%;
-    --sidebar-foreground: 240 5% 10%;
-    --sidebar-primary: 258 89% 66%;
-    --sidebar-primary-foreground: 250 100% 97%;
-    --sidebar-accent: 240 5% 33%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 4% 83%;
-    --sidebar-ring: 258 89% 66%;
-    --font-sans: 'Montserrat', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-    --font-serif: 'Cormorant Garamond', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-    --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
-    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
-    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
-    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
-    --tracking-normal: 0em;
-    --spacing: 0.25rem;
-  }
-
-  .dark {
+    /* Dark theme only - professional purple palette */
     --background: 240 5% 10%;
     --foreground: 0 0% 98%;
     --card: 240 3% 15%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 5% 26%;
+    --popover: 240 5% 18%;
     --popover-foreground: 0 0% 98%;
     --primary: 255 91% 76%;
     --primary-foreground: 261 72% 22%;
-    --secondary: 240 3% 46%;
+    --secondary: 240 3% 25%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 3% 46%;
-    --muted-foreground: 0 0% 98%;
+    --muted: 240 3% 25%;
+    --muted-foreground: 240 5% 70%;
     --accent: 273 86% 20%;
     --accent-foreground: 270 95% 75%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 85% 97%;
-    --border: 240 5% 33%;
-    --input: 240 5% 33%;
+    --border: 240 5% 26%;
+    --input: 240 5% 26%;
     --ring: 255 91% 76%;
+    --radius: 0.75rem;
     --chart-1: 252 94% 85%;
     --chart-2: 269 97% 85%;
     --chart-3: 229 93% 81%;
     --chart-4: 255 91% 76%;
     --chart-5: 240 3% 46%;
-    --sidebar: 240 3% 15%;
+    --sidebar: 240 3% 12%;
     --sidebar-foreground: 0 0% 98%;
     --sidebar-primary: 255 91% 76%;
     --sidebar-primary-foreground: 261 72% 22%;
     --sidebar-accent: 270 95% 75%;
     --sidebar-accent-foreground: 273 86% 20%;
-    --sidebar-border: 240 5% 33%;
+    --sidebar-border: 240 5% 20%;
     --sidebar-ring: 255 91% 76%;
-    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
-    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
-    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
-    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+    --font-sans: 'Montserrat', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    --font-serif: 'Cormorant Garamond', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --shadow-glow: 0 0 20px rgba(155, 135, 245, 0.15);
+    --shadow-glow-lg: 0 0 40px rgba(155, 135, 245, 0.25);
   }
 
   * {
@@ -139,22 +89,28 @@
     animation-name: slideInFromBottom3;
   }
 
-  /* Optimized hover effects */
+  /* Enhanced hover effects - highly optimized */
   .hover-glow {
-    @apply transition-all duration-200 gpu-accelerated;
+    @apply transition-all duration-300 gpu-accelerated;
+    transform: translateZ(0);
   }
 
   .hover-glow:hover {
-    @apply scale-[1.02];
-    filter: drop-shadow(0 4px 12px theme('colors.primary.DEFAULT / 0.2'));
+    transform: translateZ(0) scale(1.02);
+    filter: drop-shadow(0 4px 16px rgba(155, 135, 245, 0.3));
   }
 
   .glass-card {
-    @apply backdrop-blur-sm bg-card/90 border border-border/40 shadow-lg gpu-accelerated;
+    @apply backdrop-blur-md bg-card/90 border border-border/40 shadow-xl gpu-accelerated;
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06),
+      0 0 0 1px rgba(155, 135, 245, 0.1);
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/90 to-secondary;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-primary;
+    background-size: 200% auto;
   }
 
   /* Optimized button animations */
@@ -250,9 +206,13 @@
     animation: pulseSubtle 4s ease-in-out infinite;
   }
 
-  /* Enhanced glass morphism */
+  /* Enhanced glass morphism with better depth */
   .glass-morphism {
-    @apply bg-card/85 backdrop-blur-md border border-border/30 shadow-xl gpu-accelerated;
+    @apply bg-card/90 backdrop-blur-xl border border-border/30 gpu-accelerated;
+    box-shadow: 
+      0 8px 32px 0 rgba(0, 0, 0, 0.37),
+      0 0 0 1px rgba(155, 135, 245, 0.1),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
   }
 
   /* Optimized loading states */
@@ -289,23 +249,28 @@
   @apply outline-none ring-2 ring-primary/50 ring-offset-2 ring-offset-background;
 }
 
-/* Optimized scrollbar */
+/* Enhanced professional scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-transparent;
+  @apply bg-background;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/20 rounded-full;
-  transition: background-color 0.2s ease;
+  @apply bg-primary/30 rounded-full;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-muted-foreground/40;
+  @apply bg-primary/50;
+  transform: scaleY(1.1);
+}
+
+::-webkit-scrollbar-thumb:active {
+  @apply bg-primary/70;
 }
 
 html, body, #root {
@@ -313,26 +278,30 @@ html, body, #root {
 }
 
 body {
-  @apply bg-background text-foreground transition-colors duration-200 gpu-accelerated;
+  @apply bg-background text-foreground gpu-accelerated;
   font-feature-settings: "liga" 1, "kern" 1;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Performance optimizations for critical elements */
-img {
+/* Enhanced performance optimizations */
+img, video, canvas {
   @apply gpu-accelerated;
 }
 
-button {
+button, a, [role="button"] {
   @apply gpu-accelerated;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Input optimizations for auth forms */
+/* Enhanced input optimizations */
 input[type="email"],
 input[type="password"],
-input[type="text"] {
+input[type="text"],
+textarea,
+select {
   @apply gpu-accelerated;
   font-variant-numeric: normal;
 }
