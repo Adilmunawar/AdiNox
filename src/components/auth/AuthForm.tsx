@@ -105,29 +105,29 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
             name="email"
             render={({ field, fieldState }) => (
               <FormItem>
-                <FormLabel className="text-slate-200 font-semibold flex items-center gap-2 text-sm">
-                  <Mail className="h-4 w-4 text-adinox-purple" />
+                <FormLabel className="text-foreground font-semibold flex items-center gap-2 text-sm">
+                  <Mail className="h-4 w-4 text-primary" />
                   Email Address
                 </FormLabel>
                 <FormControl>
                   <div className="relative group">
                     <Input 
                       placeholder="Enter your email address"
-                      className={`h-12 bg-slate-800/50 backdrop-blur-sm border-2 rounded-xl text-white placeholder:text-slate-400 transition-all duration-300 ${
+                      className={`h-12 bg-secondary/50 backdrop-blur-sm border-2 rounded-xl placeholder:text-muted-foreground transition-all duration-300 ${
                         fieldState.error 
-                          ? 'border-red-500/50 focus:border-red-400 focus:ring-red-400/20' 
-                          : 'border-slate-600/50 focus:border-adinox-purple focus:ring-adinox-purple/20 group-hover:border-slate-500/70'
+                          ? 'border-destructive/50 focus:border-destructive focus:ring-destructive/20' 
+                          : 'border-border focus:border-primary focus:ring-primary/20 group-hover:border-border/70'
                       } focus:ring-2 focus:ring-offset-0`}
                       type="email"
                       {...field}
                       disabled={isLoading}
                       autoComplete="email"
                     />
-                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-adinox-purple/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   </div>
                 </FormControl>
                 {fieldState.error && (
-                  <FormMessage className="text-red-400 flex items-center gap-2 text-sm bg-red-500/10 p-3 rounded-lg border border-red-500/20 backdrop-blur-sm">
+                  <FormMessage className="text-destructive flex items-center gap-2 text-sm bg-destructive/10 p-3 rounded-lg border border-destructive/20 backdrop-blur-sm">
                     <AlertCircle className="h-4 w-4 flex-shrink-0" />
                     {fieldState.error.message}
                   </FormMessage>
@@ -143,28 +143,28 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
               name="username"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel className="text-slate-200 font-semibold flex items-center gap-2 text-sm">
-                    <User className="h-4 w-4 text-adinox-purple" />
+                  <FormLabel className="text-foreground font-semibold flex items-center gap-2 text-sm">
+                    <User className="h-4 w-4 text-primary" />
                     Username
                   </FormLabel>
                   <FormControl>
                     <div className="relative group">
                       <Input 
                         placeholder="Choose your username"
-                        className={`h-12 bg-slate-800/50 backdrop-blur-sm border-2 rounded-xl text-white placeholder:text-slate-400 transition-all duration-300 ${
+                        className={`h-12 bg-secondary/50 backdrop-blur-sm border-2 rounded-xl placeholder:text-muted-foreground transition-all duration-300 ${
                           fieldState.error 
-                            ? 'border-red-500/50 focus:border-red-400 focus:ring-red-400/20' 
-                            : 'border-slate-600/50 focus:border-adinox-purple focus:ring-adinox-purple/20 group-hover:border-slate-500/70'
+                            ? 'border-destructive/50 focus:border-destructive focus:ring-destructive/20' 
+                            : 'border-border focus:border-primary focus:ring-primary/20 group-hover:border-border/70'
                         } focus:ring-2 focus:ring-offset-0`}
                         {...field}
                         disabled={isLoading}
                         autoComplete="username"
                       />
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-adinox-purple/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                     </div>
                   </FormControl>
                   {fieldState.error && (
-                    <FormMessage className="text-red-400 flex items-center gap-2 text-sm bg-red-500/10 p-3 rounded-lg border border-red-500/20 backdrop-blur-sm">
+                    <FormMessage className="text-destructive flex items-center gap-2 text-sm bg-destructive/10 p-3 rounded-lg border border-destructive/20 backdrop-blur-sm">
                       <AlertCircle className="h-4 w-4 flex-shrink-0" />
                       {fieldState.error.message}
                     </FormMessage>
@@ -183,18 +183,18 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
               
               return (
                 <FormItem>
-                  <FormLabel className="text-slate-200 font-semibold flex items-center gap-2 text-sm">
-                    <Lock className="h-4 w-4 text-adinox-purple" />
+                  <FormLabel className="text-foreground font-semibold flex items-center gap-2 text-sm">
+                    <Lock className="h-4 w-4 text-primary" />
                     Password
                   </FormLabel>
                   <FormControl>
                     <div className="relative group">
                       <Input 
                         placeholder={isLogin ? "Enter your password" : "Create a strong password"}
-                        className={`h-12 pr-12 bg-slate-800/50 backdrop-blur-sm border-2 rounded-xl text-white placeholder:text-slate-400 transition-all duration-300 ${
+                        className={`h-12 pr-12 bg-secondary/50 backdrop-blur-sm border-2 rounded-xl placeholder:text-muted-foreground transition-all duration-300 ${
                           fieldState.error 
-                            ? 'border-red-500/50 focus:border-red-400 focus:ring-red-400/20' 
-                            : 'border-slate-600/50 focus:border-adinox-purple focus:ring-adinox-purple/20 group-hover:border-slate-500/70'
+                            ? 'border-destructive/50 focus:border-destructive focus:ring-destructive/20' 
+                            : 'border-border focus:border-primary focus:ring-primary/20 group-hover:border-border/70'
                         } focus:ring-2 focus:ring-offset-0`}
                         type={showPassword ? 'text' : 'password'}
                         {...field}
@@ -205,30 +205,30 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-slate-700/50 text-slate-400 hover:text-adinox-light-purple transition-colors"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-secondary/80 text-muted-foreground hover:text-primary transition-colors"
                         onClick={() => setShowPassword(!showPassword)}
                         tabIndex={-1}
                       >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-adinox-purple/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                     </div>
                   </FormControl>
                   
                   {/* Enhanced Password Strength Indicator */}
                   {passwordStrength && field.value && (
-                    <div className="mt-3 space-y-3 p-4 bg-slate-800/30 backdrop-blur-sm rounded-xl border border-slate-700/30">
+                    <div className="mt-3 space-y-3 p-4 bg-secondary/30 backdrop-blur-sm rounded-xl border border-border/30">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-slate-300 font-medium">
+                        <span className="text-xs text-foreground font-medium">
                           Password Strength
                         </span>
                         <span className={`text-xs font-bold ${passwordStrength.color}`}>
                           {passwordStrength.label}
                         </span>
                       </div>
-                      <div className="w-full bg-slate-700/50 rounded-full h-2 overflow-hidden">
+                      <div className="w-full bg-secondary rounded-full h-2 overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-adinox-purple to-adinox-light-purple rounded-full transition-all duration-500 ease-out"
+                          className="h-full bg-gradient-to-r from-primary to-purple-500 rounded-full transition-all duration-500 ease-out"
                           style={{ width: `${(passwordStrength.strength / 5) * 100}%` }}
                         />
                       </div>
@@ -236,7 +236,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                   )}
                   
                   {fieldState.error && (
-                    <FormMessage className="text-red-400 flex items-center gap-2 text-sm bg-red-500/10 p-3 rounded-lg border border-red-500/20 backdrop-blur-sm">
+                    <FormMessage className="text-destructive flex items-center gap-2 text-sm bg-destructive/10 p-3 rounded-lg border border-destructive/20 backdrop-blur-sm">
                       <AlertCircle className="h-4 w-4 flex-shrink-0" />
                       {fieldState.error.message}
                     </FormMessage>
@@ -253,18 +253,18 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
               name="confirmPassword"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel className="text-slate-200 font-semibold flex items-center gap-2 text-sm">
-                    <Shield className="h-4 w-4 text-adinox-purple" />
+                  <FormLabel className="text-foreground font-semibold flex items-center gap-2 text-sm">
+                    <Shield className="h-4 w-4 text-primary" />
                     Confirm Password
                   </FormLabel>
                   <FormControl>
                     <div className="relative group">
                       <Input 
                         placeholder="Confirm your password"
-                        className={`h-12 pr-12 bg-slate-800/50 backdrop-blur-sm border-2 rounded-xl text-white placeholder:text-slate-400 transition-all duration-300 ${
+                        className={`h-12 pr-12 bg-secondary/50 backdrop-blur-sm border-2 rounded-xl placeholder:text-muted-foreground transition-all duration-300 ${
                           fieldState.error 
-                            ? 'border-red-500/50 focus:border-red-400 focus:ring-red-400/20' 
-                            : 'border-slate-600/50 focus:border-adinox-purple focus:ring-adinox-purple/20 group-hover:border-slate-500/70'
+                            ? 'border-destructive/50 focus:border-destructive focus:ring-destructive/20' 
+                            : 'border-border focus:border-primary focus:ring-primary/20 group-hover:border-border/70'
                         } focus:ring-2 focus:ring-offset-0`}
                         type={showConfirmPassword ? 'text' : 'password'}
                         {...field}
@@ -275,17 +275,17 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-slate-700/50 text-slate-400 hover:text-adinox-light-purple transition-colors"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-secondary/80 text-muted-foreground hover:text-primary transition-colors"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         tabIndex={-1}
                       >
                         {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-adinox-purple/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                     </div>
                   </FormControl>
                   {fieldState.error && (
-                    <FormMessage className="text-red-400 flex items-center gap-2 text-sm bg-red-500/10 p-3 rounded-lg border border-red-500/20 backdrop-blur-sm">
+                    <FormMessage className="text-destructive flex items-center gap-2 text-sm bg-destructive/10 p-3 rounded-lg border border-destructive/20 backdrop-blur-sm">
                       <AlertCircle className="h-4 w-4 flex-shrink-0" />
                       {fieldState.error.message}
                     </FormMessage>
@@ -299,7 +299,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
           <div className="pt-6">
             <Button 
               type="submit" 
-              className="w-full h-14 font-bold text-base bg-gradient-to-r from-adinox-purple to-adinox-purple/90 hover:from-adinox-purple/90 hover:to-adinox-purple text-white border-0 transition-all duration-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-adinox-purple/25 hover:shadow-xl hover:shadow-adinox-purple/30 hover:scale-[1.02] active:scale-[0.98] backdrop-blur-sm relative overflow-hidden group"
+              className="w-full h-14 font-bold text-base bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground border-0 transition-all duration-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] backdrop-blur-sm relative overflow-hidden group"
               disabled={isLoading}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
