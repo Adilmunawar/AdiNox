@@ -19,20 +19,20 @@ const AuthContainer: React.FC<AuthContainerProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/98 to-primary/5 text-foreground relative overflow-hidden flex flex-col">
       {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
 
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 opacity-20">
+      {/* Subtle grid pattern overlay */}
+      <div className="absolute inset-0 opacity-[0.02]">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-              <circle cx="30" cy="30" r="1" fill="#9333ea" fillOpacity="0.3"/>
+            <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+              <path d="M 32 0 L 0 0 0 32" fill="none" stroke="currentColor" strokeWidth="1"/>
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#grid)"/>
@@ -41,23 +41,23 @@ const AuthContainer: React.FC<AuthContainerProps> = ({ children }) => {
 
       {/* Header for authenticated users */}
       {user && (
-        <header className="relative z-10 border-b border-purple-500/20 bg-slate-900/80 backdrop-blur-md px-4 sm:px-6 py-4">
+        <header className="relative z-10 border-b border-border/50 bg-card/50 backdrop-blur-md px-4 sm:px-6 py-4">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl shadow-lg shadow-purple-500/25">
-                <Shield className="h-6 w-6 text-white" />
+              <div className="p-3 bg-gradient-to-br from-primary to-primary/80 rounded-xl shadow-lg shadow-primary/25">
+                <Shield className="h-6 w-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-white to-purple-300 bg-clip-text text-transparent">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
                   AdiNox
                 </h1>
-                <p className="text-sm text-slate-400">Enterprise Security Portal</p>
+                <p className="text-sm text-muted-foreground">Enterprise Security Portal</p>
               </div>
             </div>
             
             <button
               onClick={handleSignOut}
-              className="flex items-center gap-2 px-4 py-2 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 hover:border-purple-500/50 rounded-lg text-sm font-medium transition-all duration-200 backdrop-blur-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 border border-border rounded-lg text-sm font-medium transition-all duration-200"
             >
               <LogOut className="h-4 w-4" />
               Sign Out
@@ -66,12 +66,24 @@ const AuthContainer: React.FC<AuthContainerProps> = ({ children }) => {
         </header>
       )}
 
-      {/* Main content */}
-      <main className="relative z-10 flex items-center justify-center min-h-screen p-4 sm:p-6">
+      {/* Main content - flex-1 to push footer down */}
+      <main className="relative z-10 flex items-center justify-center flex-1 p-4 sm:p-6">
         <div className="w-full max-w-md">
           {children}
         </div>
       </main>
+
+      {/* Professional Footer */}
+      <footer className="relative z-10 py-6 border-t border-border/50 bg-card/30 backdrop-blur-sm">
+        <div className="container mx-auto px-4">
+          <p className="text-center text-sm text-muted-foreground">
+            Proudly Developed by{" "}
+            <span className="font-semibold bg-gradient-to-r from-primary via-purple-500 to-primary bg-clip-text text-transparent">
+              Adil Munawar
+            </span>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
