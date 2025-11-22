@@ -1,58 +1,107 @@
-
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 225 25% 98%;
-    --foreground: 222 47% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 262 83% 58%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 250 25% 95%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 262 60% 95%;
-    --accent-foreground: 222 47% 11%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 262 83% 58%;
-    --radius: 0.75rem;
+    --background: 240 4% 95%;
+    --foreground: 240 5% 10%;
+    --card: 0 0% 98%;
+    --card-foreground: 240 5% 10%;
+    --popover: 240 5% 90%;
+    --popover-foreground: 240 5% 10%;
+    --primary: 258 89% 66%;
+    --primary-foreground: 250 100% 97%;
+    --secondary: 240 5% 33%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 4% 83%;
+    --muted-foreground: 240 5% 10%;
+    --accent: 269 100% 98%;
+    --accent-foreground: 270 91% 65%;
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 85% 97%;
+    --border: 240 4% 83%;
+    --input: 240 4% 83%;
+    --ring: 258 89% 66%;
+    --radius: 0.5rem;
+    --chart-1: 255 91% 76%;
+    --chart-2: 270 95% 75%;
+    --chart-3: 234 89% 73%;
+    --chart-4: 258 89% 66%;
+    --chart-5: 240 3% 46%;
+    --sidebar: 0 0% 98%;
+    --sidebar-foreground: 240 5% 10%;
+    --sidebar-primary: 258 89% 66%;
+    --sidebar-primary-foreground: 250 100% 97%;
+    --sidebar-accent: 240 5% 33%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 4% 83%;
+    --sidebar-ring: 258 89% 66%;
+    --font-sans: 'Montserrat', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    --font-serif: 'Cormorant Garamond', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
+    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
+    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+    --tracking-normal: 0em;
+    --spacing: 0.25rem;
   }
 
   .dark {
-    --background: 222 47% 10%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 12%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 12%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 263 70% 65%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217 32% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 32% 17%;
-    --muted-foreground: 215 20% 75%;
-    --accent: 263 63% 20%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 32% 20%;
-    --input: 217 32% 20%;
-    --ring: 263 70% 65%;
+    --background: 240 5% 10%;
+    --foreground: 0 0% 98%;
+    --card: 240 3% 15%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 5% 26%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 255 91% 76%;
+    --primary-foreground: 261 72% 22%;
+    --secondary: 240 3% 46%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3% 46%;
+    --muted-foreground: 0 0% 98%;
+    --accent: 273 86% 20%;
+    --accent-foreground: 270 95% 75%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 85% 97%;
+    --border: 240 5% 33%;
+    --input: 240 5% 33%;
+    --ring: 255 91% 76%;
+    --chart-1: 252 94% 85%;
+    --chart-2: 269 97% 85%;
+    --chart-3: 229 93% 81%;
+    --chart-4: 255 91% 76%;
+    --chart-5: 240 3% 46%;
+    --sidebar: 240 3% 15%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 255 91% 76%;
+    --sidebar-primary-foreground: 261 72% 22%;
+    --sidebar-accent: 270 95% 75%;
+    --sidebar-accent-foreground: 273 86% 20%;
+    --sidebar-border: 240 5% 33%;
+    --sidebar-ring: 255 91% 76%;
+    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
+    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
+    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
   }
-  
+
   * {
     scroll-behavior: smooth;
   }
-  
+
   /* Enhanced font rendering for better performance */
   * {
     -webkit-font-smoothing: antialiased;
@@ -71,7 +120,7 @@
     backface-visibility: hidden;
     perspective: 1000px;
   }
-  
+
   .animate-in {
     animation-duration: 0.2s;
     animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -89,17 +138,17 @@
   .slide-in-from-bottom-3 {
     animation-name: slideInFromBottom3;
   }
-  
+
   /* Optimized hover effects */
   .hover-glow {
     @apply transition-all duration-200 gpu-accelerated;
   }
-  
+
   .hover-glow:hover {
     @apply scale-[1.02];
     filter: drop-shadow(0 4px 12px theme('colors.primary.DEFAULT / 0.2'));
   }
-  
+
   .glass-card {
     @apply backdrop-blur-sm bg-card/90 border border-border/40 shadow-lg gpu-accelerated;
   }
@@ -112,41 +161,41 @@
   .btn-premium {
     @apply relative overflow-hidden gpu-accelerated transition-all duration-200;
   }
-  
+
   .btn-premium::after {
     content: '';
     @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0;
     transform: translateX(-100%);
     transition: transform 0.4s ease;
   }
-  
+
   .btn-premium:hover::after {
     transform: translateX(100%);
     opacity: 1;
   }
-  
+
   /* Enhanced auth form styles - optimized */
   .auth-input {
     @apply gpu-accelerated transition-all duration-200;
     transform: translateZ(0);
   }
-  
+
   .auth-input:focus {
     transform: translateZ(0) scale(1.005);
   }
-  
+
   .auth-button {
     @apply gpu-accelerated transition-all duration-200;
     transform: translateZ(0);
   }
-  
+
   .auth-button:hover:not(:disabled) {
     transform: translateZ(0) translateY(-1px);
     box-shadow: 
       0 8px 25px -5px rgba(155, 135, 245, 0.3),
       0 4px 6px -2px rgba(155, 135, 245, 0.1);
   }
-  
+
   .auth-button:active {
     transform: translateZ(0) translateY(0px);
   }
@@ -184,7 +233,7 @@
       opacity: 1;
     }
   }
-  
+
   /* Subtle pulse animation for better performance */
   @keyframes pulseSubtle {
     0%, 100% {
@@ -196,23 +245,23 @@
       transform: scale(1.01) translateZ(0);
     }
   }
-  
+
   .animate-pulse-subtle {
     animation: pulseSubtle 4s ease-in-out infinite;
   }
-  
+
   /* Enhanced glass morphism */
   .glass-morphism {
     @apply bg-card/85 backdrop-blur-md border border-border/30 shadow-xl gpu-accelerated;
   }
-  
+
   /* Optimized loading states */
   .loading-shimmer {
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
     background-size: 200% 100%;
     animation: shimmer 1.2s infinite;
   }
-  
+
   @keyframes shimmer {
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
@@ -322,4 +371,13 @@ input[type="text"] {
 /* Enhanced theme transitions */
 .theme-transition {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
