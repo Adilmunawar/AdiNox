@@ -244,15 +244,18 @@ const AddTokenForm = () => {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="w-full flex items-center justify-center gap-2">
-          <Plus className="h-4 w-4" /> Add Token
+        <Button className="w-full flex items-center justify-center gap-2 btn-premium shadow-glow-md hover:shadow-glow-lg transition-all duration-300 group">
+          <Plus className="h-5 w-5 transition-transform group-hover:rotate-90 duration-300" /> 
+          <span className="font-semibold">Add Token</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] bg-card">
+      <DialogContent className="sm:max-w-[500px] glass-morphism border-primary/20 shadow-glow-lg">
         <DialogHeader>
-          <DialogTitle>Add New Token</DialogTitle>
-          <DialogDescription>
-            Enter the details for your new authentication token.
+          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+            Add New Token
+          </DialogTitle>
+          <DialogDescription className="text-muted-foreground/90">
+            Enter the details for your new authentication token or scan a QR code.
           </DialogDescription>
         </DialogHeader>
         <Tabs value={activeTab} onValueChange={handleTabChange}>
