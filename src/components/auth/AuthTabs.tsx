@@ -11,69 +11,67 @@ interface AuthTabsProps {
 
 const AuthTabs = React.memo(({ activeTab, onTabChange, children }: AuthTabsProps) => {
   return (
-    <div className="w-full space-y-8">
-      <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 sm:p-8 shadow-2xl shadow-adinox-purple/10 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-adinox-purple/5 via-transparent to-adinox-purple/5 rounded-2xl"></div>
+    <div className="w-full space-y-6">
+      {/* Professional Auth Card */}
+      <div className="relative group">
+        {/* Glow effect */}
+        <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 via-purple-500/30 to-primary/30 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500" />
         
-        <div className="relative z-10 text-center mb-8">
-          <div className="mx-auto w-20 h-20 bg-gradient-to-br from-adinox-purple via-adinox-purple to-adinox-light-purple rounded-2xl p-4 mb-6 shadow-lg shadow-adinox-purple/25 relative">
-            <Shield className="w-full h-full text-white" />
-            <div className="absolute -top-1 -right-1 w-6 h-6 bg-adinox-purple/30 rounded-full animate-pulse">
-              <Sparkles className="w-3 h-3 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+        {/* Card */}
+        <div className="relative bg-card/90 backdrop-blur-xl border border-border/50 rounded-2xl p-6 sm:p-8 shadow-2xl">
+          {/* Logo and Title Section */}
+          <div className="text-center mb-8">
+            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary via-primary to-purple-500 rounded-xl p-3.5 mb-4 shadow-lg shadow-primary/30 relative animate-fade-in">
+              <Shield className="w-full h-full text-primary-foreground" />
+              <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary/40 rounded-full animate-pulse">
+                <Sparkles className="w-2.5 h-2.5 text-primary-foreground absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-foreground via-primary to-purple-500 bg-clip-text text-transparent">
+                AdiNox
+              </h1>
+              <p className="text-muted-foreground text-sm">Enterprise Security Portal</p>
             </div>
           </div>
-          
-          <div className="space-y-3">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-adinox-light-purple to-adinox-purple bg-clip-text text-transparent">
-              AdiNox
-            </h1>
-            <p className="text-slate-400 text-base font-medium">Enterprise Security Portal</p>
-            <div className="w-16 h-px bg-gradient-to-r from-transparent via-adinox-purple to-transparent mx-auto"></div>
-          </div>
-        </div>
 
-        <Tabs value={activeTab} onValueChange={onTabChange} className="w-full relative z-10">
-          {/* Enhanced Tab Navigation */}
-          <TabsList className="grid w-full grid-cols-2 mb-8 h-14 p-1 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50">
-            <TabsTrigger 
-              value="login" 
-              className="h-12 text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-adinox-purple data-[state=active]:to-adinox-purple/80 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-adinox-purple/25 rounded-lg transition-all duration-300 text-slate-300 hover:text-white"
-            >
-              <div className="flex items-center gap-2">
-                <LogIn className="h-4 w-4" />
-                <span>Sign In</span>
-              </div>
-            </TabsTrigger>
+          <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
+            {/* Tab Navigation */}
+            <TabsList className="grid w-full grid-cols-2 mb-6 h-12 p-1 bg-secondary/50 backdrop-blur-sm rounded-xl border border-border/50">
+              <TabsTrigger 
+                value="login" 
+                className="h-10 text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/90 data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:shadow-primary/30 rounded-lg transition-all duration-300"
+              >
+                <div className="flex items-center gap-2">
+                  <LogIn className="h-4 w-4" />
+                  <span>Sign In</span>
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="signup"
+                className="h-10 text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/90 data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:shadow-primary/30 rounded-lg transition-all duration-300"
+              >
+                <div className="flex items-center gap-2">
+                  <UserPlus className="h-4 w-4" />
+                  <span>Sign Up</span>
+                </div>
+              </TabsTrigger>
+            </TabsList>
             
-            <TabsTrigger 
-              value="signup"
-              className="h-12 text-sm font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-adinox-purple data-[state=active]:to-adinox-purple/80 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-adinox-purple/25 rounded-lg transition-all duration-300 text-slate-300 hover:text-white"
-            >
-              <div className="flex items-center gap-2">
-                <UserPlus className="h-4 w-4" />
-                <span>Sign Up</span>
-              </div>
-            </TabsTrigger>
-          </TabsList>
-          
-          {/* Tab Content with enhanced styling */}
-          <div className="min-h-[450px] relative">
-            {children}
-          </div>
-        </Tabs>
+            {/* Tab Content */}
+            <div className="min-h-[400px]">
+              {children}
+            </div>
+          </Tabs>
+        </div>
       </div>
 
-      {/* Enhanced Footer */}
-      <div className="text-center space-y-3 relative z-10">
-        <div className="flex items-center justify-center gap-2 text-slate-500 text-sm">
-          <div className="w-8 h-px bg-gradient-to-r from-transparent to-slate-600"></div>
-          <span>&copy; {new Date().getFullYear()} AdiNox. All rights reserved.</span>
-          <div className="w-8 h-px bg-gradient-to-l from-transparent to-slate-600"></div>
-        </div>
-        <p className="text-adinox-light-purple text-sm font-medium flex items-center justify-center gap-2">
-          <Sparkles className="h-3 w-3" />
-          Developed by Adil Munawar
-          <Sparkles className="h-3 w-3" />
+      {/* Copyright Footer */}
+      <div className="text-center">
+        <p className="text-xs text-muted-foreground">
+          &copy; {new Date().getFullYear()} AdiNox. All rights reserved.
         </p>
       </div>
     </div>
