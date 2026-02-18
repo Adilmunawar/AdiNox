@@ -13,7 +13,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Eye, EyeOff, Mail, User, Loader2, AlertCircle, Shield, Lock } from "lucide-react";
+import { Eye, EyeOff, Mail, User, Loader2, AlertCircle, Shield, Lock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -42,6 +43,15 @@ interface AuthFormProps {
   isLoading: boolean;
 }
 
+const fieldVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.08, duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }
+  })
+};
+
 const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -66,7 +76,7 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
   }, [onSubmit]);
 
   const getPasswordStrength = useCallback((password: string) => {
-    if (!password) return { strength: 0, label: "", color: "" };
+    if (!password) return { strength: 0, label: "", color: "bg-muted" };
     
     let strength = 0;
     const checks = [
@@ -80,11 +90,11 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
     strength = checks.filter(Boolean).length;
     
     const configs = [
-      { label: "Very Weak", color: "text-red-400" },
-      { label: "Weak", color: "text-orange-400" },
-      { label: "Fair", color: "text-yellow-400" },
-      { label: "Good", color: "text-blue-400" },
-      { label: "Strong", color: "text-green-400" },
+      { label: "Very Weak", color: "bg-destructive" },
+      { label: "Weak", color: "bg-orange-500" },
+      { label: "Fair", color: "bg-yellow-500" },
+      { label: "Good", color: "bg-blue-500" },
+      { label: "Strong", color: "bg-green-500" },
     ];
     
     const config = configs[Math.min(strength - 1, 4)] || configs[0];
@@ -95,227 +105,251 @@ const AuthForm = React.memo(({ type, onSubmit, isLoading }: AuthFormProps) => {
     };
   }, []);
 
+  const inputClasses = (hasError: boolean) => 
+    `h-11 bg-secondary/30 border border-border/50 rounded-xl placeholder:text-muted-foreground/50 transition-all duration-200 text-sm ${
+      hasError 
+        ? 'border-destructive/50 focus:border-destructive' 
+        : 'focus:border-primary/60 hover:border-border/80'
+    } focus:ring-1 focus:ring-primary/20 focus:ring-offset-0`;
+
   return (
     <div className="w-full">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
           {/* Email Field */}
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field, fieldState }) => (
-              <FormItem>
-                <FormLabel className="text-foreground font-semibold flex items-center gap-2 text-sm">
-                  <Mail className="h-4 w-4 text-primary" />
-                  Email Address
-                </FormLabel>
-                <FormControl>
-                  <div className="relative group">
+          <motion.div custom={0} variants={fieldVariants} initial="hidden" animate="visible">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel className="text-foreground/80 font-medium flex items-center gap-1.5 text-xs uppercase tracking-wider mb-1.5">
+                    <Mail className="h-3.5 w-3.5 text-primary/70" />
+                    Email
+                  </FormLabel>
+                  <FormControl>
                     <Input 
-                      placeholder="Enter your email address"
-                      className={`h-12 bg-secondary/50 backdrop-blur-sm border-2 rounded-xl placeholder:text-muted-foreground transition-all duration-300 ${
-                        fieldState.error 
-                          ? 'border-destructive/50 focus:border-destructive focus:ring-destructive/20' 
-                          : 'border-border focus:border-primary focus:ring-primary/20 group-hover:border-border/70'
-                      } focus:ring-2 focus:ring-offset-0`}
+                      placeholder="you@example.com"
+                      className={inputClasses(!!fieldState.error)}
                       type="email"
                       {...field}
                       disabled={isLoading}
                       autoComplete="email"
                     />
-                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                  </div>
-                </FormControl>
-                {fieldState.error && (
-                  <FormMessage className="text-destructive flex items-center gap-2 text-sm bg-destructive/10 p-3 rounded-lg border border-destructive/20 backdrop-blur-sm">
-                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                    {fieldState.error.message}
-                  </FormMessage>
-                )}
-              </FormItem>
-            )}
-          />
+                  </FormControl>
+                  <AnimatePresence>
+                    {fieldState.error && (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+                        <FormMessage className="text-destructive flex items-center gap-1.5 text-xs mt-1.5">
+                          <AlertCircle className="h-3 w-3 flex-shrink-0" />
+                          {fieldState.error.message}
+                        </FormMessage>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </FormItem>
+              )}
+            />
+          </motion.div>
 
-          {/* Username Field (Signup only) */}
+          {/* Username Field */}
           {!isLogin && (
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="text-foreground font-semibold flex items-center gap-2 text-sm">
-                    <User className="h-4 w-4 text-primary" />
-                    Username
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative group">
+            <motion.div custom={1} variants={fieldVariants} initial="hidden" animate="visible">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel className="text-foreground/80 font-medium flex items-center gap-1.5 text-xs uppercase tracking-wider mb-1.5">
+                      <User className="h-3.5 w-3.5 text-primary/70" />
+                      Username
+                    </FormLabel>
+                    <FormControl>
                       <Input 
-                        placeholder="Choose your username"
-                        className={`h-12 bg-secondary/50 backdrop-blur-sm border-2 rounded-xl placeholder:text-muted-foreground transition-all duration-300 ${
-                          fieldState.error 
-                            ? 'border-destructive/50 focus:border-destructive focus:ring-destructive/20' 
-                            : 'border-border focus:border-primary focus:ring-primary/20 group-hover:border-border/70'
-                        } focus:ring-2 focus:ring-offset-0`}
+                        placeholder="Choose a username"
+                        className={inputClasses(!!fieldState.error)}
                         {...field}
                         disabled={isLoading}
                         autoComplete="username"
                       />
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                    </div>
-                  </FormControl>
-                  {fieldState.error && (
-                    <FormMessage className="text-destructive flex items-center gap-2 text-sm bg-destructive/10 p-3 rounded-lg border border-destructive/20 backdrop-blur-sm">
-                      <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                      {fieldState.error.message}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <AnimatePresence>
+                      {fieldState.error && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+                          <FormMessage className="text-destructive flex items-center gap-1.5 text-xs mt-1.5">
+                            <AlertCircle className="h-3 w-3 flex-shrink-0" />
+                            {fieldState.error.message}
+                          </FormMessage>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </FormItem>
+                )}
+              />
+            </motion.div>
           )}
 
           {/* Password Field */}
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field, fieldState }) => {
-              const passwordStrength = !isLogin ? getPasswordStrength(field.value) : null;
-              
-              return (
-                <FormItem>
-                  <FormLabel className="text-foreground font-semibold flex items-center gap-2 text-sm">
-                    <Lock className="h-4 w-4 text-primary" />
-                    Password
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative group">
-                      <Input 
-                        placeholder={isLogin ? "Enter your password" : "Create a strong password"}
-                        className={`h-12 pr-12 bg-secondary/50 backdrop-blur-sm border-2 rounded-xl placeholder:text-muted-foreground transition-all duration-300 ${
-                          fieldState.error 
-                            ? 'border-destructive/50 focus:border-destructive focus:ring-destructive/20' 
-                            : 'border-border focus:border-primary focus:ring-primary/20 group-hover:border-border/70'
-                        } focus:ring-2 focus:ring-offset-0`}
-                        type={showPassword ? 'text' : 'password'}
-                        {...field}
-                        disabled={isLoading}
-                        autoComplete="current-password"
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-secondary/80 text-muted-foreground hover:text-primary transition-colors"
-                        onClick={() => setShowPassword(!showPassword)}
-                        tabIndex={-1}
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </Button>
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                    </div>
-                  </FormControl>
-                  
-                  {/* Enhanced Password Strength Indicator */}
-                  {passwordStrength && field.value && (
-                    <div className="mt-3 space-y-3 p-4 bg-secondary/30 backdrop-blur-sm rounded-xl border border-border/30">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-foreground font-medium">
-                          Password Strength
-                        </span>
-                        <span className={`text-xs font-bold ${passwordStrength.color}`}>
-                          {passwordStrength.label}
-                        </span>
-                      </div>
-                      <div className="w-full bg-secondary rounded-full h-2 overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-primary to-purple-500 rounded-full transition-all duration-500 ease-out"
-                          style={{ width: `${(passwordStrength.strength / 5) * 100}%` }}
-                        />
-                      </div>
-                    </div>
-                  )}
-                  
-                  {fieldState.error && (
-                    <FormMessage className="text-destructive flex items-center gap-2 text-sm bg-destructive/10 p-3 rounded-lg border border-destructive/20 backdrop-blur-sm">
-                      <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                      {fieldState.error.message}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              );
-            }}
-          />
-
-          {/* Confirm Password Field (Signup only) */}
-          {!isLogin && (
+          <motion.div custom={isLogin ? 1 : 2} variants={fieldVariants} initial="hidden" animate="visible">
             <FormField
               control={form.control}
-              name="confirmPassword"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel className="text-foreground font-semibold flex items-center gap-2 text-sm">
-                    <Shield className="h-4 w-4 text-primary" />
-                    Confirm Password
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative group">
-                      <Input 
-                        placeholder="Confirm your password"
-                        className={`h-12 pr-12 bg-secondary/50 backdrop-blur-sm border-2 rounded-xl placeholder:text-muted-foreground transition-all duration-300 ${
-                          fieldState.error 
-                            ? 'border-destructive/50 focus:border-destructive focus:ring-destructive/20' 
-                            : 'border-border focus:border-primary focus:ring-primary/20 group-hover:border-border/70'
-                        } focus:ring-2 focus:ring-offset-0`}
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        {...field}
-                        disabled={isLoading}
-                        autoComplete="new-password"
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-secondary/80 text-muted-foreground hover:text-primary transition-colors"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        tabIndex={-1}
-                      >
-                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </Button>
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                    </div>
-                  </FormControl>
-                  {fieldState.error && (
-                    <FormMessage className="text-destructive flex items-center gap-2 text-sm bg-destructive/10 p-3 rounded-lg border border-destructive/20 backdrop-blur-sm">
-                      <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                      {fieldState.error.message}
-                    </FormMessage>
-                  )}
-                </FormItem>
-              )}
+              name="password"
+              render={({ field, fieldState }) => {
+                const passwordStrength = !isLogin ? getPasswordStrength(field.value) : null;
+                
+                return (
+                  <FormItem>
+                    <FormLabel className="text-foreground/80 font-medium flex items-center gap-1.5 text-xs uppercase tracking-wider mb-1.5">
+                      <Lock className="h-3.5 w-3.5 text-primary/70" />
+                      Password
+                    </FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input 
+                          placeholder={isLogin ? "Enter password" : "Create a strong password"}
+                          className={`${inputClasses(!!fieldState.error)} pr-10`}
+                          type={showPassword ? 'text' : 'password'}
+                          {...field}
+                          disabled={isLoading}
+                          autoComplete="current-password"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-primary transition-colors"
+                          onClick={() => setShowPassword(!showPassword)}
+                          tabIndex={-1}
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </FormControl>
+                    
+                    {/* Password Strength */}
+                    <AnimatePresence>
+                      {passwordStrength && field.value && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="mt-2"
+                        >
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Strength</span>
+                            <span className="text-[10px] font-semibold text-muted-foreground">{passwordStrength.label}</span>
+                          </div>
+                          <div className="flex gap-1">
+                            {[1, 2, 3, 4, 5].map((i) => (
+                              <motion.div
+                                key={i}
+                                className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                                  i <= passwordStrength.strength ? passwordStrength.color : 'bg-secondary'
+                                }`}
+                                initial={{ scaleX: 0 }}
+                                animate={{ scaleX: 1 }}
+                                transition={{ delay: i * 0.05 }}
+                              />
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    
+                    <AnimatePresence>
+                      {fieldState.error && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+                          <FormMessage className="text-destructive flex items-center gap-1.5 text-xs mt-1.5">
+                            <AlertCircle className="h-3 w-3 flex-shrink-0" />
+                            {fieldState.error.message}
+                          </FormMessage>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </FormItem>
+                );
+              }}
             />
+          </motion.div>
+
+          {/* Confirm Password */}
+          {!isLogin && (
+            <motion.div custom={3} variants={fieldVariants} initial="hidden" animate="visible">
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel className="text-foreground/80 font-medium flex items-center gap-1.5 text-xs uppercase tracking-wider mb-1.5">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-primary/70" />
+                      Confirm Password
+                    </FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input 
+                          placeholder="Confirm your password"
+                          className={`${inputClasses(!!fieldState.error)} pr-10`}
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          {...field}
+                          disabled={isLoading}
+                          autoComplete="new-password"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-primary transition-colors"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          tabIndex={-1}
+                        >
+                          {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <AnimatePresence>
+                      {fieldState.error && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+                          <FormMessage className="text-destructive flex items-center gap-1.5 text-xs mt-1.5">
+                            <AlertCircle className="h-3 w-3 flex-shrink-0" />
+                            {fieldState.error.message}
+                          </FormMessage>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </FormItem>
+                )}
+              />
+            </motion.div>
           )}
           
-          {/* Enhanced Submit Button */}
-          <div className="pt-6">
+          {/* Submit Button */}
+          <motion.div 
+            custom={isLogin ? 2 : 4} 
+            variants={fieldVariants} 
+            initial="hidden" 
+            animate="visible"
+            className="pt-3"
+          >
             <Button 
               type="submit" 
-              className="w-full h-14 font-bold text-base bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground border-0 transition-all duration-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] backdrop-blur-sm relative overflow-hidden group"
+              className="w-full h-12 font-semibold text-sm bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl transition-all duration-300 disabled:opacity-40 shadow-lg shadow-primary/15 hover:shadow-xl hover:shadow-primary/25 group relative overflow-hidden"
               disabled={isLoading}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <motion.div 
+                className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0"
+                initial={{ x: '-100%' }}
+                whileHover={{ x: '100%' }}
+                transition={{ duration: 0.6 }}
+              />
               {isLoading ? (
-                <div className="flex items-center justify-center gap-3 relative z-10">
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                <div className="flex items-center justify-center gap-2 relative z-10">
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   <span>{isLogin ? "Signing in..." : "Creating account..."}</span>
                 </div>
               ) : (
-                <div className="flex items-center justify-center gap-3 relative z-10">
-                  <Shield className="h-5 w-5" />
+                <div className="flex items-center justify-center gap-2 relative z-10">
                   <span>{isLogin ? "Sign In" : "Create Account"}</span>
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                 </div>
               )}
             </Button>
-          </div>
+          </motion.div>
         </form>
       </Form>
     </div>

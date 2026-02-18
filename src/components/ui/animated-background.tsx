@@ -1,6 +1,7 @@
 
 import { cn } from "@/lib/utils";
 import React from "react";
+import { motion } from "framer-motion";
 
 interface AnimatedBackgroundProps {
   className?: string;
@@ -8,18 +9,39 @@ interface AnimatedBackgroundProps {
 
 const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
   return (
-    <>
-      {/* Enhanced professional dark gradient background */}
-      <div className={cn(
-        "fixed inset-0 -z-10 bg-gradient-to-br from-background via-background to-primary/5",
-        className
-      )}>
-        {/* Subtle animated orbs for depth */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse-subtle" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl animate-pulse-subtle" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/3 rounded-full blur-3xl animate-pulse-subtle" style={{ animationDelay: '2s' }} />
-      </div>
-    </>
+    <div className={cn("fixed inset-0 -z-10 bg-background overflow-hidden", className)}>
+      {/* Large ambient orbs */}
+      <motion.div 
+        className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary/6 rounded-full blur-[100px]"
+        animate={{ 
+          x: [0, 30, -20, 0], 
+          y: [0, -30, 20, 0],
+        }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div 
+        className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-purple-500/4 rounded-full blur-[80px]"
+        animate={{ 
+          x: [0, -30, 20, 0], 
+          y: [0, 20, -30, 0],
+        }}
+        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div 
+        className="absolute top-[40%] left-[30%] w-[300px] h-[300px] bg-primary/3 rounded-full blur-[60px]"
+        animate={{ 
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+      />
+      
+      {/* Grid pattern */}
+      <div className="absolute inset-0 opacity-[0.015]" style={{
+        backgroundImage: `linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)`,
+        backgroundSize: '60px 60px'
+      }} />
+    </div>
   );
 };
 
