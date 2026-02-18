@@ -22,8 +22,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { useTokens } from "@/context/TokenContext";
-import { Plus, ScanLine, X } from "lucide-react";
+import { Plus, ScanLine, X, KeyRound } from "lucide-react";
 import jsQR from "jsqr";
+import { motion } from "framer-motion";
 
 const AddTokenForm = () => {
   const { addToken } = useTokens();
@@ -65,19 +66,13 @@ const AddTokenForm = () => {
   const startScanner = async () => {
     try {
       setScannerActive(true);
-      const constraints = {
-        video: {
-          facingMode: "environment"
-        }
-      };
-      
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" }
+      });
       
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.play();
-        
-        // Start scanning for QR codes
         scanIntervalRef.current = window.setInterval(scanQRCode, 500);
       }
     } catch (error) {
@@ -96,11 +91,9 @@ const AddTokenForm = () => {
       clearInterval(scanIntervalRef.current);
       scanIntervalRef.current = null;
     }
-    
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
-      const tracks = stream.getTracks();
-      tracks.forEach((track) => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
       videoRef.current.srcObject = null;
     }
     setScannerActive(false);
@@ -109,10 +102,7 @@ const AddTokenForm = () => {
   const scanQRCode = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    
-    if (!video || !canvas || video.readyState !== video.HAVE_ENOUGH_DATA) {
-      return;
-    }
+    if (!video || !canvas || video.readyState !== video.HAVE_ENOUGH_DATA) return;
 
     const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) return;
@@ -120,18 +110,11 @@ const AddTokenForm = () => {
     canvas.height = video.videoHeight;
     canvas.width = video.videoWidth;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     
     try {
-      const code = jsQR(imageData.data, imageData.width, imageData.height, {
-        inversionAttempts: "dontInvert",
-      });
-      
-      if (code) {
-        console.log("Found QR code", code.data);
-        processScannedCode(code.data);
-      }
+      const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
+      if (code) processScannedCode(code.data);
     } catch (error) {
       console.error("QR scanning error:", error);
     }
@@ -139,17 +122,11 @@ const AddTokenForm = () => {
 
   const processScannedCode = (qrCode: string) => {
     try {
-      // Parse the otpauth URI
-      // Format: otpauth://totp/ISSUER:ACCOUNT?secret=SECRET&issuer=ISSUER&algorithm=ALGORITHM&digits=DIGITS&period=PERIOD
       if (qrCode.startsWith("otpauth://")) {
-        // Stop the scanner
         stopScanner();
-        
         const uri = new URL(qrCode);
         const params = new URLSearchParams(uri.search);
-        
-        // Extract the path components
-        const path = uri.pathname.substring(1); // Remove leading slash
+        const path = uri.pathname.substring(1);
         const pathParts = path.split(":");
         
         let issuer = params.get("issuer") || "";
@@ -157,59 +134,30 @@ const AddTokenForm = () => {
         const algorithm = params.get("algorithm") || "SHA1";
         const digits = parseInt(params.get("digits") || "6", 10);
         const period = parseInt(params.get("period") || "30", 10);
-        
         let name = "";
         
         if (pathParts.length > 1) {
-          // If path is in format ISSUER:ACCOUNT
           if (!issuer) issuer = pathParts[0];
           name = pathParts[1];
         } else {
-          // If path is just ACCOUNT
           name = pathParts[0];
         }
         
-        // Update form data with extracted values
-        setFormData({
-          name,
-          issuer,
-          secret,
-          algorithm: algorithm as "SHA1" | "SHA256" | "SHA512",
-          digits,
-          period
-        });
-        
-        // Switch back to manual tab to review the scanned data
+        setFormData({ name, issuer, secret, algorithm: algorithm as string, digits, period });
         setActiveTab("manual");
-        
-        toast({
-          title: "QR Code Scanned",
-          description: "Token details extracted successfully. Please review before adding.",
-        });
+        toast({ title: "QR Code Scanned", description: "Token details extracted. Please review before adding." });
       } else {
-        toast({
-          title: "Invalid QR Code",
-          description: "The scanned code is not a valid authentication token.",
-          variant: "destructive",
-        });
+        toast({ title: "Invalid QR Code", description: "Not a valid authentication token.", variant: "destructive" });
       }
     } catch (error) {
       console.error("Error processing QR code:", error);
-      toast({
-        title: "Processing Error",
-        description: "Could not process the QR code.",
-        variant: "destructive",
-      });
+      toast({ title: "Processing Error", description: "Could not process the QR code.", variant: "destructive" });
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Basic validation
-    if (!formData.name || !formData.secret) {
-      return;
-    }
+    if (!formData.name || !formData.secret) return;
 
     addToken({
       name: formData.name,
@@ -220,19 +168,10 @@ const AddTokenForm = () => {
       algorithm: formData.algorithm,
     });
 
-    // Reset form and close dialog
-    setFormData({
-      name: "",
-      issuer: "",
-      secret: "",
-      period: 30,
-      digits: 6,
-      algorithm: "SHA1",
-    });
+    setFormData({ name: "", issuer: "", secret: "", period: 30, digits: 6, algorithm: "SHA1" });
     setOpen(false);
   };
 
-  // Cleanup scanner when dialog is closed
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     if (!newOpen) {
@@ -241,83 +180,52 @@ const AddTokenForm = () => {
     }
   };
 
+  const inputClass = "h-10 bg-secondary/30 border-border/50 rounded-lg text-sm focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all";
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="w-full flex items-center justify-center gap-2 btn-premium shadow-glow-md hover:shadow-glow-lg transition-all duration-300 group">
-          <Plus className="h-5 w-5 transition-transform group-hover:rotate-90 duration-300" /> 
-          <span className="font-semibold">Add Token</span>
-        </Button>
+        <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+          <Button className="w-full h-11 flex items-center justify-center gap-2 rounded-xl shadow-lg shadow-primary/10 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 group">
+            <Plus className="h-4 w-4 transition-transform group-hover:rotate-90 duration-300" /> 
+            <span className="font-medium text-sm">Add Token</span>
+          </Button>
+        </motion.div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] glass-morphism border-primary/20 shadow-glow-lg">
+      <DialogContent className="sm:max-w-[460px] bg-card/95 backdrop-blur-xl border-border/30 rounded-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+          <DialogTitle className="flex items-center gap-2 text-lg">
+            <KeyRound className="h-4 w-4 text-primary" />
             Add New Token
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground/90">
-            Enter the details for your new authentication token or scan a QR code.
+          <DialogDescription className="text-xs text-muted-foreground/70">
+            Enter token details manually or scan a QR code.
           </DialogDescription>
         </DialogHeader>
         <Tabs value={activeTab} onValueChange={handleTabChange}>
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="manual">Manual Entry</TabsTrigger>
-            <TabsTrigger value="scan">Scan QR Code</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 h-9 p-0.5 bg-secondary/30 rounded-lg">
+            <TabsTrigger value="manual" className="text-xs rounded-md h-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Manual Entry</TabsTrigger>
+            <TabsTrigger value="scan" className="text-xs rounded-md h-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Scan QR Code</TabsTrigger>
           </TabsList>
           <TabsContent value="manual">
             <form onSubmit={handleSubmit}>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Account
-                  </Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="col-span-3"
-                    placeholder="username@example.com"
-                    required
-                  />
+              <div className="grid gap-3 py-4">
+                <div className="grid grid-cols-4 items-center gap-3">
+                  <Label htmlFor="name" className="text-right text-xs text-muted-foreground">Account</Label>
+                  <Input id="name" name="name" value={formData.name} onChange={handleChange} className={`col-span-3 ${inputClass}`} placeholder="username@example.com" required />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="issuer" className="text-right">
-                    Issuer
-                  </Label>
-                  <Input
-                    id="issuer"
-                    name="issuer"
-                    value={formData.issuer}
-                    onChange={handleChange}
-                    className="col-span-3"
-                    placeholder="Google, GitHub, etc."
-                  />
+                <div className="grid grid-cols-4 items-center gap-3">
+                  <Label htmlFor="issuer" className="text-right text-xs text-muted-foreground">Issuer</Label>
+                  <Input id="issuer" name="issuer" value={formData.issuer} onChange={handleChange} className={`col-span-3 ${inputClass}`} placeholder="Google, GitHub, etc." />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="secret" className="text-right">
-                    Secret Key
-                  </Label>
-                  <Input
-                    id="secret"
-                    name="secret"
-                    value={formData.secret}
-                    onChange={handleChange}
-                    className="col-span-3"
-                    placeholder="Base32 secret key"
-                    required
-                  />
+                <div className="grid grid-cols-4 items-center gap-3">
+                  <Label htmlFor="secret" className="text-right text-xs text-muted-foreground">Secret</Label>
+                  <Input id="secret" name="secret" value={formData.secret} onChange={handleChange} className={`col-span-3 ${inputClass}`} placeholder="Base32 secret key" required />
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="algorithm" className="text-right">
-                    Algorithm
-                  </Label>
-                  <Select
-                    value={formData.algorithm}
-                    onValueChange={(value) => handleSelectChange("algorithm", value)}
-                  >
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Algorithm" />
-                    </SelectTrigger>
+                <div className="grid grid-cols-4 items-center gap-3">
+                  <Label className="text-right text-xs text-muted-foreground">Algorithm</Label>
+                  <Select value={formData.algorithm} onValueChange={(v) => handleSelectChange("algorithm", v)}>
+                    <SelectTrigger className={`col-span-3 ${inputClass}`}><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="SHA1">SHA1</SelectItem>
                       <SelectItem value="SHA256">SHA256</SelectItem>
@@ -325,34 +233,20 @@ const AddTokenForm = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="period" className="text-right">
-                    Period
-                  </Label>
-                  <Select
-                    value={formData.period.toString()}
-                    onValueChange={(value) => handleSelectChange("period", value)}
-                  >
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Period" />
-                    </SelectTrigger>
+                <div className="grid grid-cols-4 items-center gap-3">
+                  <Label className="text-right text-xs text-muted-foreground">Period</Label>
+                  <Select value={formData.period.toString()} onValueChange={(v) => handleSelectChange("period", v)}>
+                    <SelectTrigger className={`col-span-3 ${inputClass}`}><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="30">30 seconds</SelectItem>
                       <SelectItem value="60">60 seconds</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="digits" className="text-right">
-                    Digits
-                  </Label>
-                  <Select
-                    value={formData.digits.toString()}
-                    onValueChange={(value) => handleSelectChange("digits", value)}
-                  >
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Digits" />
-                    </SelectTrigger>
+                <div className="grid grid-cols-4 items-center gap-3">
+                  <Label className="text-right text-xs text-muted-foreground">Digits</Label>
+                  <Select value={formData.digits.toString()} onValueChange={(v) => handleSelectChange("digits", v)}>
+                    <SelectTrigger className={`col-span-3 ${inputClass}`}><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="6">6 digits</SelectItem>
                       <SelectItem value="8">8 digits</SelectItem>
@@ -361,40 +255,39 @@ const AddTokenForm = () => {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit">Add Token</Button>
+                <Button type="submit" className="w-full rounded-xl h-10 text-sm shadow-md shadow-primary/10">
+                  <Plus className="h-4 w-4 mr-1.5" />
+                  Add Token
+                </Button>
               </DialogFooter>
             </form>
           </TabsContent>
           <TabsContent value="scan" className="flex flex-col items-center justify-center">
-            <div className="relative w-full aspect-square border border-dashed border-gray-300 rounded-md overflow-hidden mb-4">
+            <div className="relative w-full aspect-square border border-border/30 rounded-xl overflow-hidden mb-4 bg-secondary/20">
               {scannerActive ? (
                 <>
-                  <video
-                    ref={videoRef}
-                    className="absolute inset-0 h-full w-full object-cover"
-                    muted
-                    playsInline
-                  />
-                  <canvas
-                    ref={canvasRef}
-                    className="absolute inset-0 h-full w-full object-cover hidden"
-                  />
+                  <video ref={videoRef} className="absolute inset-0 h-full w-full object-cover" muted playsInline />
+                  <canvas ref={canvasRef} className="absolute inset-0 h-full w-full object-cover hidden" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <div className="relative w-3/4 aspect-square border-2 border-primary border-opacity-80 rounded-lg">
-                      <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary"></div>
-                      <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary"></div>
-                      <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary"></div>
-                      <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary"></div>
+                    <div className="relative w-3/4 aspect-square border-2 border-primary/60 rounded-xl">
+                      <div className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2 border-primary rounded-tl-lg" />
+                      <div className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2 border-primary rounded-tr-lg" />
+                      <div className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2 border-primary rounded-bl-lg" />
+                      <div className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2 border-primary rounded-br-lg" />
+                      {/* Scan line animation */}
+                      <motion.div
+                        className="absolute inset-x-2 h-0.5 bg-primary/60"
+                        animate={{ y: ['0%', '100%', '0%'] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                      />
                     </div>
-                    <p className="text-sm text-muted-foreground mt-2">Position the QR code within the frame</p>
+                    <p className="text-xs text-muted-foreground mt-3">Position QR code within frame</p>
                   </div>
                 </>
               ) : (
-                <div className="flex flex-col items-center justify-center h-full">
-                  <ScanLine className="h-12 w-12 text-muted-foreground mb-2" />
-                  <p className="text-center text-sm text-muted-foreground">
-                    Camera access required to scan QR codes
-                  </p>
+                <div className="flex flex-col items-center justify-center h-full gap-2">
+                  <ScanLine className="h-10 w-10 text-muted-foreground/40" />
+                  <p className="text-xs text-muted-foreground/60">Camera access required</p>
                 </div>
               )}
             </div>
@@ -402,21 +295,14 @@ const AddTokenForm = () => {
               type="button" 
               variant={scannerActive ? "destructive" : "default"} 
               onClick={scannerActive ? stopScanner : startScanner}
-              className="w-full"
+              className="w-full rounded-xl h-10 text-sm"
             >
               {scannerActive ? (
-                <>
-                  <X className="h-4 w-4 mr-2" /> Stop Scanner
-                </>
+                <><X className="h-4 w-4 mr-1.5" /> Stop Scanner</>
               ) : (
-                <>
-                  <ScanLine className="h-4 w-4 mr-2" /> Start Scanner
-                </>
+                <><ScanLine className="h-4 w-4 mr-1.5" /> Start Scanner</>
               )}
             </Button>
-            <p className="text-xs text-muted-foreground mt-4 text-center">
-              Scan a QR code from your authenticator app or service provider
-            </p>
           </TabsContent>
         </Tabs>
       </DialogContent>
