@@ -14,7 +14,6 @@ import {
 import { formatTOTPDisplay, getTimeRemaining } from "@/utils/tokenUtils";
 import { useToast } from "@/components/ui/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
   DialogContent,
@@ -23,7 +22,6 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { GlowPulse, ScaleIn } from "@/components/ui/animations";
 
 interface TokenCardProps {
   token: TokenType;
@@ -36,7 +34,6 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
   const [progress, setProgress] = useState(0);
   const [showQR, setShowQR] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
   
@@ -44,10 +41,7 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
     const interval = setInterval(() => {
       const remaining = getTimeRemaining(token.period);
       setTimeRemaining(remaining);
-      
-      // Calculate progress percentage for the timer
-      const progressValue = (remaining / token.period) * 100;
-      setProgress(progressValue);
+      setProgress((remaining / token.period) * 100);
     }, 1000);
     
     return () => clearInterval(interval);
@@ -56,20 +50,12 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(token.currentCode);
     setCopied(true);
-    
     toast({
       title: "Code copied",
       description: "The code has been copied to your clipboard.",
       duration: 2000,
     });
-    
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
-  };
-
-  const handleShowQR = () => {
-    setShowQR(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const handleRemove = () => {
@@ -84,189 +70,117 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
     return "text-primary";
   };
 
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-    hover: { scale: 1.02, boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)" }
-  };
-
-  const animatedDigits = (code: string) => {
-    return formatTOTPDisplay(code).split('').map((digit, index) => (
-      <motion.span 
-        key={index} 
-        className="inline-block transform transition-all duration-300 hover:scale-110 hover:text-primary"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.05 }}
-      >
-        {digit}
-      </motion.span>
-    ));
-  };
-
-  const progressVariants = {
-    initial: { width: "100%" },
-    animate: { width: `${progress}%` }
+  const getBarColor = () => {
+    if (timeRemaining <= 5) return "bg-destructive";
+    if (timeRemaining <= 10) return "bg-amber-500";
+    return "bg-primary";
   };
 
   return (
     <>
       <motion.div
-        initial="hidden"
-        animate="visible"
-        whileHover="hover"
-        variants={cardVariants}
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+        whileHover={{ y: -2 }}
         layoutId={`token-card-${token.id}`}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
       >
         <Card className={cn(
-          "token-card backdrop-blur-md border-l-4",
-          "p-4 relative overflow-hidden",
-          timeRemaining <= 5 ? "border-l-destructive" : "border-l-primary",
-          isHovered ? "bg-card/95" : "bg-card/90"
+          "relative overflow-hidden border-border/40 bg-card/60 backdrop-blur-sm",
+          "p-4 transition-all duration-300",
+          "hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5",
+          timeRemaining <= 5 && "border-l-2 border-l-destructive"
         )}>
-          {/* Animated background gradient */}
-          <motion.div 
-            className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 -z-10"
-            animate={{
-              backgroundPosition: ['0% 0%', '100% 0%', '0% 0%'],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: 'linear',
-            }}
-          />
-          
-          <div className="flex justify-between items-start mb-2">
-            <div className="max-w-[70%]">
-              <div className="flex items-center">
-                <motion.div
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="mr-2"
-                >
-                  <ShieldCheck className="h-5 w-5 text-primary" />
-                </motion.div>
-                <h3 className="font-semibold text-lg line-clamp-1 group flex items-center">
-                  {token.issuer}
-                  <motion.span 
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : -10 }}
-                    className="ml-2 text-xs bg-primary/20 text-primary px-1 py-0.5 rounded"
-                  >
-                    {token.algorithm}
-                  </motion.span>
-                </h3>
+          {/* Top section */}
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <div className="p-1.5 bg-primary/10 rounded-lg shrink-0">
+                <ShieldCheck className="h-4 w-4 text-primary" />
               </div>
-              <p className="text-sm text-muted-foreground line-clamp-1 ml-7">{token.name}</p>
+              <div className="min-w-0">
+                <h3 className="font-semibold text-sm truncate">{token.issuer}</h3>
+                <p className="text-xs text-muted-foreground/70 truncate">{token.name}</p>
+              </div>
             </div>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full hover:bg-primary/20">
-                  <motion.div whileHover={{ rotate: 90 }} transition={{ duration: 0.2 }}>
-                    <MoreVertical className="h-4 w-4" />
-                  </motion.div>
+                <Button variant="ghost" size="sm" className="h-7 w-7 p-0 rounded-lg hover:bg-secondary/80 shrink-0">
+                  <MoreVertical className="h-3.5 w-3.5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="z-50 w-56 animate-in slide-in-from-top-5 fade-in-20">
-                <DropdownMenuItem onClick={handleCopy} className="cursor-pointer">
-                  <Copy className="h-4 w-4 mr-2" /> Copy Code
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={handleCopy} className="cursor-pointer text-sm">
+                  <Copy className="h-3.5 w-3.5 mr-2" /> Copy Code
                 </DropdownMenuItem>
                 {onEdit && (
-                  <DropdownMenuItem onClick={() => onEdit(token)} className="cursor-pointer">
-                    <Edit className="h-4 w-4 mr-2" /> Edit Token
+                  <DropdownMenuItem onClick={() => onEdit(token)} className="cursor-pointer text-sm">
+                    <Edit className="h-3.5 w-3.5 mr-2" /> Edit Token
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={handleShowQR} className="cursor-pointer">
-                  <QrCode className="h-4 w-4 mr-2" /> Show QR Code
+                <DropdownMenuItem onClick={() => setShowQR(true)} className="cursor-pointer text-sm">
+                  <QrCode className="h-3.5 w-3.5 mr-2" /> Show QR Code
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
-                  className="text-destructive focus:text-destructive cursor-pointer" 
+                  className="text-destructive focus:text-destructive cursor-pointer text-sm" 
                   onClick={handleRemove}
                 >
-                  <Trash2 className="h-4 w-4 mr-2" /> Remove
+                  <Trash2 className="h-3.5 w-3.5 mr-2" /> Remove
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
           
-          <div className={`mt-6 p-3 bg-background/50 backdrop-blur-sm rounded-lg flex ${isMobile ? 'flex-col gap-2' : 'justify-between items-center'} animated-border`}>
-            <div className="token-code text-2xl font-mono font-bold select-all flex animated-border-content">
-              {animatedDigits(token.currentCode)}
+          {/* Code display */}
+          <div className={`p-3 bg-secondary/30 rounded-xl flex ${isMobile ? 'flex-col gap-2' : 'justify-between items-center'}`}>
+            <div className="text-2xl font-mono font-bold tracking-[0.15em] select-all text-foreground">
+              {formatTOTPDisplay(token.currentCode)}
             </div>
-            <Button 
-              variant={copied ? "secondary" : "outline"} 
-              size="sm" 
-              className={cn(
-                "flex gap-1 items-center transition-all duration-300",
-                copied ? "bg-green-600 text-white hover:bg-green-700" : "",
-                "btn-shine"
-              )}
-              onClick={handleCopy}
-            >
-              {copied ? (
-                <>
-                  <Check className="h-4 w-4" />
-                  <span>Copied</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="h-4 w-4" />
-                  {!isMobile && <span>Copy</span>}
-                </>
-              )}
-            </Button>
+            <motion.div whileTap={{ scale: 0.95 }}>
+              <Button 
+                variant={copied ? "secondary" : "outline"} 
+                size="sm" 
+                className={cn(
+                  "h-8 text-xs transition-all duration-200 rounded-lg",
+                  copied && "bg-green-500/20 text-green-400 border-green-500/30"
+                )}
+                onClick={handleCopy}
+              >
+                {copied ? (
+                  <><Check className="h-3.5 w-3.5 mr-1" /> Copied</>
+                ) : (
+                  <><Copy className="h-3.5 w-3.5 mr-1" /> {!isMobile && "Copy"}</>
+                )}
+              </Button>
+            </motion.div>
           </div>
           
-          <div className="mt-4 relative">
-            <div className="flex justify-between mb-1">
-              <span className="text-xs text-muted-foreground">Refreshes in</span>
-              <motion.span 
-                className={`text-sm font-medium ${getTimerColor()} transition-colors duration-300`}
-                animate={timeRemaining <= 5 ? {
-                  scale: [1, 1.1, 1],
-                } : {}}
-                transition={{ 
-                  duration: 0.5, 
-                  repeat: timeRemaining <= 5 ? Infinity : 0,
-                  repeatType: "reverse"
-                }}
-              >
+          {/* Timer */}
+          <div className="mt-3">
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="text-[10px] text-muted-foreground/60 uppercase tracking-wider">Refresh</span>
+              <span className={`text-xs font-mono font-medium ${getTimerColor()} transition-colors`}>
                 {timeRemaining}s
-              </motion.span>
+              </span>
             </div>
-            <div className="relative h-2 bg-muted/40 rounded-full overflow-hidden">
+            <div className="h-1 bg-secondary/50 rounded-full overflow-hidden">
               <motion.div 
-                className={cn(
-                  "absolute h-full left-0 rounded-full",
-                  timeRemaining <= 5 ? "bg-destructive" : 
-                  timeRemaining <= 10 ? "bg-amber-500" : "bg-primary"
-                )}
-                variants={progressVariants}
-                initial="initial"
-                animate="animate"
+                className={`h-full rounded-full ${getBarColor()} transition-colors duration-300`}
+                animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.3, ease: "linear" }}
               />
             </div>
             <AnimatePresence>
               {timeRemaining <= 5 && (
                 <motion.div 
-                  className="absolute -bottom-3 left-1/2 transform -translate-x-1/2"
-                  initial={{ opacity: 0, y: 5 }}
+                  initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  className="flex items-center gap-1 mt-1.5"
                 >
-                  <GlowPulse color="rgba(239, 68, 68, 0.5)" className="rounded-full">
-                    <div className="text-destructive flex items-center gap-1 text-xs">
-                      <AlertCircle className="h-3 w-3" />
-                      <span>Expiring soon</span>
-                    </div>
-                  </GlowPulse>
+                  <AlertCircle className="h-3 w-3 text-destructive" />
+                  <span className="text-[10px] text-destructive font-medium">Expiring soon</span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -276,51 +190,35 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
       
       {/* QR Code Dialog */}
       <Dialog open={showQR} onOpenChange={setShowQR}>
-        <DialogContent className="sm:max-w-md bg-card/95 backdrop-blur-md border-primary/20">
+        <DialogContent className="sm:max-w-sm bg-card/95 backdrop-blur-xl border-border/30">
           <DialogHeader>
-            <DialogTitle className="text-center">Token QR Code</DialogTitle>
+            <DialogTitle className="text-center text-base">Token Details</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col items-center justify-center p-6">
-            <ScaleIn className="bg-white p-4 rounded-lg shadow-inner">
-              <div className="w-48 h-48 flex items-center justify-center bg-muted text-center p-4 relative overflow-hidden">
-                <motion.div 
-                  className="absolute inset-0 flex items-center justify-center"
-                  animate={{ 
-                    background: ["linear-gradient(45deg, rgba(124,58,237,0.1) 0%, rgba(124,58,237,0.2) 50%, rgba(124,58,237,0.1) 100%)"],
-                    rotate: [0, 360] 
-                  }}
-                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                >
-                  <div className="w-32 h-32 rounded-lg bg-gradient-to-br from-primary/20 via-primary/40 to-primary/20" />
-                </motion.div>
-                <div className="relative z-10 glass-morphism rounded-lg">
-                  <p className="text-sm text-muted-foreground bg-white/80 p-2 rounded backdrop-blur-sm">
-                    For security reasons, the original QR code cannot be regenerated without the original secret.
-                  </p>
-                </div>
+          <div className="flex flex-col items-center justify-center py-4">
+            <div className="bg-secondary/30 p-6 rounded-xl border border-border/30 mb-4">
+              <div className="w-40 h-40 flex items-center justify-center">
+                <p className="text-xs text-muted-foreground/70 text-center leading-relaxed">
+                  For security reasons, the original QR code cannot be regenerated without the original secret.
+                </p>
               </div>
-            </ScaleIn>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="mt-4"
+            </div>
+            <div className="text-center space-y-1">
+              <p className="text-sm font-medium">{token.issuer}</p>
+              <p className="text-xs text-muted-foreground">{token.name}</p>
+              <div className="flex items-center justify-center gap-2 mt-2">
+                <span className="text-[10px] px-2 py-0.5 bg-secondary/50 rounded-md text-muted-foreground">TOTP</span>
+                <span className="text-[10px] px-2 py-0.5 bg-secondary/50 rounded-md text-muted-foreground">{token.algorithm}</span>
+                <span className="text-[10px] px-2 py-0.5 bg-secondary/50 rounded-md text-muted-foreground">{token.digits} digits</span>
+              </div>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowQR(false)} 
+              className="mt-5 w-full rounded-xl"
             >
-              <p className="text-sm text-center">
-                <span className="font-semibold">{token.issuer}</span> ({token.name})
-              </p>
-              <p className="mt-1 text-xs text-center text-muted-foreground">
-                Type: TOTP | Algorithm: {token.algorithm} | Digits: {token.digits}
-              </p>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowQR(false)} 
-                className="mt-4 w-full btn-shine"
-              >
-                Close
-              </Button>
-            </motion.div>
+              Close
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
