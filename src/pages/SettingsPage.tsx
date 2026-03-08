@@ -122,7 +122,6 @@ const SettingsPage = React.memo(() => {
         biometric_enabled: (data as any).biometric_enabled ?? false,
         face_scan_enabled: (data as any).face_scan_enabled ?? false,
       });
-      });
     } else if (!error) {
       await supabase.from("user_settings").insert({ user_id: user.id });
     }
@@ -171,6 +170,18 @@ const SettingsPage = React.memo(() => {
     if (enrolledDevices.length <= 1) {
       updateSetting("biometric_enabled", false);
     }
+  };
+
+  const handleFaceEnrollSuccess = () => {
+    setShowFaceScanner(false);
+    updateSetting("face_scan_enabled", true);
+    toast({ title: "Face enrolled!", description: "Your face has been scanned and stored securely." });
+  };
+
+  const handleRemoveFaceData = async () => {
+    await removeFaceData();
+    updateSetting("face_scan_enabled", false);
+    toast({ title: "Face data removed", description: "Your face scan data has been deleted." });
   };
 
   if (loading) {
@@ -228,7 +239,7 @@ const SettingsPage = React.memo(() => {
           </div>
         </SettingsSection>
 
-        {/* Biometric Authentication — NEW */}
+        {/* Biometric Authentication */}
         <SettingsSection icon={Fingerprint} title="Biometric Authentication" description="Secure your vault with biometrics" index={1} accent>
           <div className="space-y-5">
             {/* Device capability detection */}
@@ -250,7 +261,7 @@ const SettingsPage = React.memo(() => {
                   <p className="text-[10px] text-muted-foreground/40">
                     {capability.available
                       ? `${capability.type === "face" ? "Facial recognition" : "Fingerprint sensor"} detected on this device`
-                      : "No biometric hardware detected on this device"
+                      : "No biometric hardware detected — use Face Scan below instead"
                     }
                   </p>
                 </div>
@@ -278,86 +289,180 @@ const SettingsPage = React.memo(() => {
             </div>
 
             {/* Biometric toggle */}
+            {capability.available && (
+              <>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />
+                    <div>
+                      <span className="text-xs text-muted-foreground block">Biometric Lock</span>
+                      <span className="text-[10px] text-muted-foreground/30">Lock vault after inactivity timeout</span>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={settings.biometric_enabled}
+                    onCheckedChange={v => {
+                      if (v && !isEnrolled) {
+                        handleEnrollBiometric();
+                      } else {
+                        updateSetting("biometric_enabled", v);
+                      }
+                    }}
+                  />
+                </div>
+
+                {enrolledDevices.length > 0 && (
+                  <div>
+                    <p className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-[0.15em] mb-3">
+                      Enrolled Devices
+                    </p>
+                    <div className="space-y-2">
+                      {enrolledDevices.map((device: any) => (
+                        <motion.div
+                          key={device.id}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="flex items-center justify-between p-3 rounded-xl bg-secondary/15 border border-border/10"
+                        >
+                          <div className="flex items-center gap-3">
+                            <DeviceIcon name={device.device_name} />
+                            <div>
+                              <p className="text-xs font-medium text-foreground">{device.device_name || "Unknown"}</p>
+                              <p className="text-[9px] text-muted-foreground/30">
+                                {device.authenticator_type === "face" ? "Face ID" : "Fingerprint"} •
+                                Added {new Date(device.created_at).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 text-[10px] text-destructive/60 hover:text-destructive hover:bg-destructive/5"
+                            onClick={() => handleRemoveDevice(device.id, device.device_name)}
+                          >
+                            Remove
+                          </Button>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <Button
+                  variant="outline"
+                  className="w-full h-10 rounded-xl gap-2 text-xs border-dashed border-border/30 hover:border-primary/20 hover:bg-primary/[0.03]"
+                  onClick={handleEnrollBiometric}
+                  disabled={enrolling}
+                >
+                  {enrolling ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+                  {enrolling ? "Enrolling..." : `Add ${capability.label}`}
+                </Button>
+              </>
+            )}
+          </div>
+        </SettingsSection>
+
+        {/* Face Scan — Camera-based face recognition */}
+        <SettingsSection icon={ScanFace} title="Face Scan Authentication" description="Camera-based deep face scan — works on any device" index={2} accent>
+          <div className="space-y-5">
+            {/* Face scan info */}
+            <div className="rounded-xl bg-secondary/20 border border-border/15 p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center">
+                  <Camera className="h-4 w-4 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-foreground">AI Face Recognition</p>
+                  <p className="text-[10px] text-muted-foreground/40">
+                    Deep neural network scans your face via camera and creates a unique 128-point descriptor for secure authentication
+                  </p>
+                </div>
+                <Badge variant="outline" className="text-[9px] border-primary/20 text-primary/70 gap-1 shrink-0">
+                  <ScanFace className="h-2.5 w-2.5" /> Universal
+                </Badge>
+              </div>
+              <div className="text-[10px] text-muted-foreground/30 bg-secondary/20 rounded-lg px-3 py-2 border border-border/10">
+                <span className="font-semibold text-foreground/50">How it works: </span>
+                5 deep scans are captured during enrollment to create a robust facial profile. Your face data is encrypted and stored securely.
+              </div>
+            </div>
+
+            {/* Face scan toggle */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />
+                <ScanFace className="h-3.5 w-3.5 text-muted-foreground/50" />
                 <div>
-                  <span className="text-xs text-muted-foreground block">Biometric Lock</span>
-                  <span className="text-[10px] text-muted-foreground/30">Lock vault after inactivity timeout</span>
+                  <span className="text-xs text-muted-foreground block">Face Scan Lock</span>
+                  <span className="text-[10px] text-muted-foreground/30">Use camera face scan to unlock vault</span>
                 </div>
               </div>
               <Switch
-                checked={settings.biometric_enabled}
+                checked={settings.face_scan_enabled}
                 onCheckedChange={v => {
-                  if (v && !isEnrolled) {
-                    handleEnrollBiometric();
+                  if (v && !faceEnrolled) {
+                    setShowFaceScanner(true);
                   } else {
-                    updateSetting("biometric_enabled", v);
+                    updateSetting("face_scan_enabled", v);
                   }
                 }}
-                disabled={!capability.available}
               />
             </div>
 
-            {/* Enrolled devices */}
-            {enrolledDevices.length > 0 && (
-              <div>
-                <p className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-[0.15em] mb-3">
-                  Enrolled Devices
-                </p>
-                <div className="space-y-2">
-                  {enrolledDevices.map((device: any) => (
-                    <motion.div
-                      key={device.id}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex items-center justify-between p-3 rounded-xl bg-secondary/15 border border-border/10"
-                    >
-                      <div className="flex items-center gap-3">
-                        <DeviceIcon name={device.device_name} />
-                        <div>
-                          <p className="text-xs font-medium text-foreground">{device.device_name || "Unknown"}</p>
-                          <p className="text-[9px] text-muted-foreground/30">
-                            {device.authenticator_type === "face" ? "Face ID" : "Fingerprint"} •
-                            Added {new Date(device.created_at).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 text-[10px] text-destructive/60 hover:text-destructive hover:bg-destructive/5"
-                        onClick={() => handleRemoveDevice(device.id, device.device_name)}
-                      >
-                        Remove
-                      </Button>
-                    </motion.div>
-                  ))}
+            {/* Enrollment status */}
+            {faceEnrolled && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center justify-between p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/15"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-xl bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-foreground">Face Enrolled</p>
+                    <p className="text-[9px] text-muted-foreground/30">
+                      Your face scan is stored and ready for authentication
+                    </p>
+                  </div>
                 </div>
-              </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-[10px] rounded-lg"
+                    onClick={() => setShowFaceScanner(true)}
+                  >
+                    Re-scan
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-[10px] text-destructive/60 hover:text-destructive hover:bg-destructive/5"
+                    onClick={handleRemoveFaceData}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              </motion.div>
             )}
 
-            {/* Add new device */}
-            {capability.available && (
+            {/* Enroll button */}
+            {!faceEnrolled && (
               <Button
                 variant="outline"
                 className="w-full h-10 rounded-xl gap-2 text-xs border-dashed border-border/30 hover:border-primary/20 hover:bg-primary/[0.03]"
-                onClick={handleEnrollBiometric}
-                disabled={enrolling || !capability.available}
+                onClick={() => setShowFaceScanner(true)}
               >
-                {enrolling ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Plus className="h-3.5 w-3.5" />
-                )}
-                {enrolling ? "Enrolling..." : `Add ${capability.label}`}
+                <Camera className="h-3.5 w-3.5" />
+                Scan Your Face
               </Button>
             )}
           </div>
         </SettingsSection>
 
         {/* Security */}
-        <SettingsSection icon={Shield} title="Security" description="Vault protection preferences" index={2}>
+        <SettingsSection icon={Shield} title="Security" description="Vault protection preferences" index={3}>
           <div className="space-y-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -412,7 +517,7 @@ const SettingsPage = React.memo(() => {
         </SettingsSection>
 
         {/* Vault Preferences */}
-        <SettingsSection icon={Key} title="Vault Preferences" description="Default behaviors for your vault" index={3}>
+        <SettingsSection icon={Key} title="Vault Preferences" description="Default behaviors for your vault" index={4}>
           <div className="space-y-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -422,12 +527,8 @@ const SettingsPage = React.memo(() => {
                   <span className="text-[10px] text-muted-foreground/30">Display site icons in password list</span>
                 </div>
               </div>
-              <Switch
-                checked={settings.show_favicons}
-                onCheckedChange={v => updateSetting("show_favicons", v)}
-              />
+              <Switch checked={settings.show_favicons} onCheckedChange={v => updateSetting("show_favicons", v)} />
             </div>
-
             <div>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
@@ -436,18 +537,12 @@ const SettingsPage = React.memo(() => {
                 </div>
                 <span className="text-xs font-mono text-muted-foreground/70">{settings.default_password_length} chars</span>
               </div>
-              <Slider
-                value={[settings.default_password_length]}
-                onValueChange={v => updateSetting("default_password_length", v[0])}
-                min={8} max={64} step={1}
-                className="w-full"
-              />
+              <Slider value={[settings.default_password_length]} onValueChange={v => updateSetting("default_password_length", v[0])} min={8} max={64} step={1} className="w-full" />
               <div className="flex justify-between mt-1">
                 <span className="text-[9px] text-muted-foreground/30">8</span>
                 <span className="text-[9px] text-muted-foreground/30">64</span>
               </div>
             </div>
-
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Bell className="h-3.5 w-3.5 text-muted-foreground/50" />
@@ -456,16 +551,13 @@ const SettingsPage = React.memo(() => {
                   <span className="text-[10px] text-muted-foreground/30">Security alerts and reminders</span>
                 </div>
               </div>
-              <Switch
-                checked={settings.notifications_enabled}
-                onCheckedChange={v => updateSetting("notifications_enabled", v)}
-              />
+              <Switch checked={settings.notifications_enabled} onCheckedChange={v => updateSetting("notifications_enabled", v)} />
             </div>
           </div>
         </SettingsSection>
 
         {/* Appearance */}
-        <SettingsSection icon={Palette} title="Appearance" description="Theme and display preferences" index={4}>
+        <SettingsSection icon={Palette} title="Appearance" description="Theme and display preferences" index={5}>
           <div className="flex items-center justify-between">
             <span className="text-xs text-muted-foreground">Theme</span>
             <Badge variant="secondary" className="text-[10px]">Dark Mode</Badge>
@@ -473,11 +565,11 @@ const SettingsPage = React.memo(() => {
         </SettingsSection>
 
         {/* About */}
-        <SettingsSection icon={Info} title="About" description="App information and credits" index={5}>
+        <SettingsSection icon={Info} title="About" description="App information and credits" index={6}>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Version</span>
-              <span className="text-xs font-mono text-muted-foreground/70">2.2.0</span>
+              <span className="text-xs font-mono text-muted-foreground/70">2.3.0</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Developer</span>
@@ -487,7 +579,7 @@ const SettingsPage = React.memo(() => {
         </SettingsSection>
 
         {/* Danger Zone */}
-        <motion.div custom={6} variants={stagger} initial="hidden" animate="visible">
+        <motion.div custom={7} variants={stagger} initial="hidden" animate="visible">
           <Card className="p-6 border-destructive/20 bg-destructive/[0.03]">
             <div className="flex items-start gap-3 mb-4">
               <div className="h-9 w-9 rounded-xl bg-destructive/10 border border-destructive/15 flex items-center justify-center shrink-0">
@@ -511,6 +603,28 @@ const SettingsPage = React.memo(() => {
           </Card>
         </motion.div>
       </div>
+
+      {/* Face Scanner Dialog */}
+      <Dialog open={showFaceScanner} onOpenChange={setShowFaceScanner}>
+        <DialogContent className="sm:max-w-lg bg-card/95 backdrop-blur-2xl border-border/20">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ScanFace className="h-5 w-5 text-primary" />
+              Face Scan Enrollment
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground/50">
+              Position your face in the frame. The AI will perform 5 deep scans to create your unique facial profile.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <FaceScanner
+              mode="enroll"
+              onSuccess={handleFaceEnrollSuccess}
+              onCancel={() => setShowFaceScanner(false)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 });
