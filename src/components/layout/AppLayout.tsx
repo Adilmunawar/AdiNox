@@ -63,29 +63,32 @@ const AppLayout = React.memo(() => {
 
         <div className="flex-1 h-screen flex flex-col overflow-hidden">
           {/* Sticky header */}
-          <header className="sticky top-0 z-40 h-14 flex items-center justify-between border-b border-border/30 bg-background/80 backdrop-blur-xl px-4">
+          <header className="sticky top-0 z-40 h-14 flex items-center justify-between border-b border-border/20 bg-background/70 backdrop-blur-2xl px-4 relative">
+            {/* Top glow accent */}
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/15 to-transparent" />
+            
             <div className="flex items-center gap-3">
-              {!isMobile && <SidebarTrigger className="text-muted-foreground hover:text-foreground" />}
-              <div className="h-4 w-px bg-border/30 hidden md:block" />
-              <h2 className="text-sm font-semibold text-foreground">{currentLabel}</h2>
+              {!isMobile && <SidebarTrigger className="text-muted-foreground/50 hover:text-foreground transition-colors" />}
+              <div className="h-4 w-px bg-border/20 hidden md:block" />
+              <h2 className="text-sm font-semibold text-foreground/90">{currentLabel}</h2>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 gap-2 text-xs text-muted-foreground hover:text-foreground"
+                className="h-8 gap-2 text-xs text-muted-foreground/50 hover:text-foreground"
                 onClick={() => setCommandOpen(true)}
               >
                 <Search className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Search</span>
-                <kbd className="hidden sm:inline-flex h-5 items-center gap-0.5 rounded border border-border/40 bg-secondary/30 px-1.5 text-[10px] font-mono text-muted-foreground/50">
+                <kbd className="hidden sm:inline-flex h-5 items-center gap-0.5 rounded border border-border/30 bg-secondary/20 px-1.5 text-[10px] font-mono text-muted-foreground/40">
                   ⌘K
                 </kbd>
               </Button>
               <Button variant="ghost" size="icon" className="h-8 w-8 relative">
-                <Bell className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
+                <Bell className="h-3.5 w-3.5 text-muted-foreground/50" />
+                <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
               </Button>
             </div>
           </header>
@@ -102,7 +105,7 @@ const AppLayout = React.memo(() => {
 
         {/* Mobile bottom tab bar */}
         {isMobile && (
-          <nav className="fixed bottom-0 inset-x-0 z-50 h-16 bg-card/90 backdrop-blur-xl border-t border-border/30 flex items-center justify-around px-1 safe-area-bottom">
+          <nav className="fixed bottom-0 inset-x-0 z-50 h-16 bg-card/80 backdrop-blur-2xl border-t border-border/20 flex items-center justify-around px-1 safe-area-bottom">
             {mobileNavItems.map((item) => {
               const active = item.path === "/"
                 ? location.pathname === "/"
@@ -112,16 +115,16 @@ const AppLayout = React.memo(() => {
                   key={item.path}
                   onClick={() => navigate(item.path)}
                   className={cn(
-                    "flex flex-col items-center gap-0.5 py-1.5 px-2 rounded-xl transition-colors relative",
-                    active ? "text-primary" : "text-muted-foreground/50"
+                    "flex flex-col items-center gap-0.5 py-1.5 px-2 rounded-xl transition-all duration-200 relative",
+                    active ? "text-primary" : "text-muted-foreground/40"
                   )}
                 >
-                  <item.icon className={cn("h-4.5 w-4.5", active && "drop-shadow-[0_0_6px_hsl(var(--primary)/0.5)]")} />
-                  <span className="text-[9px] font-medium">{item.label}</span>
+                  <item.icon className={cn("h-5 w-5", active && "drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]")} />
+                  <span className="text-[9px] font-semibold">{item.label}</span>
                   {active && (
                     <motion.div
                       layoutId="mobile-tab-indicator"
-                      className="absolute top-0 h-0.5 w-6 bg-primary rounded-full"
+                      className="absolute -top-0.5 h-0.5 w-8 bg-gradient-to-r from-primary/50 via-primary to-primary/50 rounded-full"
                     />
                   )}
                 </button>
