@@ -2,14 +2,18 @@ import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from "r
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/NotFound";
 import AuthPage from "@/pages/AuthPage";
-import Index from "@/pages/Index";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import AnimatedBackground from "@/components/ui/animated-background";
 import PageTransition from "@/components/ui/page-transition";
 import { AnimatePresence } from "framer-motion";
-import React, { Suspense } from "react";
+import React, { Suspense, lazy } from "react";
 import { motion } from "framer-motion";
+import AppLayout from "@/components/layout/AppLayout";
+
+const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
+const TokensPage = lazy(() => import("@/pages/TokensPage"));
+const SettingsPage = lazy(() => import("@/pages/SettingsPage"));
 
 const LoadingSpinner = React.memo(() => (
   <div className="flex items-center justify-center h-screen bg-background">
@@ -30,18 +34,13 @@ const ProtectedRoute = React.memo(({ children }: { children: React.ReactNode }) 
 });
 ProtectedRoute.displayName = "ProtectedRoute";
 
-const AnimatedRoutes = () => {
-  const location = useLocation();
-  return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<ProtectedRoute><PageTransition><Index /></PageTransition></ProtectedRoute>} />
-        <Route path="/auth" element={<PageTransition><AuthPage /></PageTransition>} />
-        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
-      </Routes>
-    </AnimatePresence>
-  );
-};
+const AuthRoute = React.memo(() => {
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) return <LoadingSpinner />;
+  if (isAuthenticated) return <Navigate to="/" replace />;
+  return <PageTransition><AuthPage /></PageTransition>;
+});
+AuthRoute.displayName = "AuthRoute";
 
 const App = () => (
   <Router>
@@ -50,7 +49,21 @@ const App = () => (
         <div className="min-h-screen bg-background gpu-accelerated overflow-hidden">
           <AnimatedBackground />
           <Suspense fallback={<LoadingSpinner />}>
-            <AnimatedRoutes />
+            <Routes>
+              <Route path="/auth" element={<AuthRoute />} />
+              <Route
+                element={
+                  <ProtectedRoute>
+                    <AppLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route path="/" element={<DashboardPage />} />
+                <Route path="/tokens" element={<TokensPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+              </Route>
+              <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+            </Routes>
           </Suspense>
           <Toaster />
         </div>
