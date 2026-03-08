@@ -41,13 +41,13 @@ const detectCardBrand = (num: string): string => {
 };
 
 const brandColors: Record<string, string> = {
-  Visa: "from-blue-600/80 to-blue-900/90",
-  Mastercard: "from-red-600/70 to-orange-700/80",
-  Amex: "from-emerald-600/70 to-teal-800/80",
-  Discover: "from-orange-500/70 to-amber-700/80",
-  JCB: "from-green-600/70 to-green-900/80",
-  Diners: "from-cyan-600/70 to-cyan-900/80",
-  Other: "from-primary/50 to-primary/80",
+  Visa: "from-blue-500 to-blue-700",
+  Mastercard: "from-red-500 to-orange-600",
+  Amex: "from-primary to-primary/80",
+  Discover: "from-orange-400 to-amber-600",
+  JCB: "from-green-500 to-green-700",
+  Diners: "from-cyan-500 to-cyan-700",
+  Other: "from-primary/60 to-primary/90",
 };
 
 const maskNumber = (num: string) => {
@@ -85,15 +85,15 @@ const FlipCard = React.memo(({ card, onDelete }: { card: VaultCard; onDelete: (i
         {/* Front */}
         <div
           className={cn(
-            "absolute inset-0 rounded-2xl p-6 flex flex-col justify-between bg-gradient-to-br border border-white/10 shadow-xl",
+            "absolute inset-0 rounded-2xl p-6 flex flex-col justify-between bg-gradient-to-br border border-white/10 shadow-lg",
             gradient
           )}
           style={{ backfaceVisibility: "hidden" }}
         >
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-[10px] text-white/50 uppercase tracking-widest font-medium">{card.card_type}</p>
-              <p className="text-xs text-white/70 mt-0.5">{card.issuer_bank || brand}</p>
+              <p className="text-[10px] text-white/60 uppercase tracking-widest font-medium">{card.card_type}</p>
+              <p className="text-xs text-white/80 mt-0.5">{card.issuer_bank || brand}</p>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -113,7 +113,6 @@ const FlipCard = React.memo(({ card, onDelete }: { card: VaultCard; onDelete: (i
             </DropdownMenu>
           </div>
 
-          {/* Chip */}
           <div className="w-10 h-7 rounded-md bg-gradient-to-br from-yellow-300/80 to-yellow-500/60 border border-yellow-400/30" />
 
           <div>
@@ -136,7 +135,7 @@ const FlipCard = React.memo(({ card, onDelete }: { card: VaultCard; onDelete: (i
         {/* Back */}
         <div
           className={cn(
-            "absolute inset-0 rounded-2xl flex flex-col justify-between bg-gradient-to-br border border-white/10 shadow-xl overflow-hidden",
+            "absolute inset-0 rounded-2xl flex flex-col justify-between bg-gradient-to-br border border-white/10 shadow-lg overflow-hidden",
             gradient
           )}
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
@@ -178,7 +177,7 @@ const CardsPage = () => {
   const isMobile = useIsMobile();
 
   const [form, setForm] = useState({
-    card_type: "credit", card_holder: "", card_number: "", expiry_date: "", cvv: "", issuer_bank: "", color_theme: "purple", notes: "",
+    card_type: "credit", card_holder: "", card_number: "", expiry_date: "", cvv: "", issuer_bank: "", color_theme: "teal", notes: "",
   });
 
   const fetchCards = useCallback(async () => {
@@ -200,7 +199,7 @@ const CardsPage = () => {
     });
     if (error) { toast({ title: "Error", description: "Failed to add card.", variant: "destructive" }); return; }
     toast({ title: "Card added", description: `${brand} card saved to vault.` });
-    setForm({ card_type: "credit", card_holder: "", card_number: "", expiry_date: "", cvv: "", issuer_bank: "", color_theme: "purple", notes: "" });
+    setForm({ card_type: "credit", card_holder: "", card_number: "", expiry_date: "", cvv: "", issuer_bank: "", color_theme: "teal", notes: "" });
     setIsAdding(false);
     fetchCards();
   };
@@ -213,12 +212,12 @@ const CardsPage = () => {
     setCards(cards.filter(c => c.id !== id));
   };
 
-  const inputCls = "h-10 bg-secondary/30 border-border/40 rounded-lg text-sm focus:border-primary/50 focus:ring-1 focus:ring-primary/15";
+  const inputCls = "h-10 bg-muted/40 border-border/40 rounded-xl text-sm focus:border-primary/50 focus:ring-1 focus:ring-primary/15";
 
   const formContent = (
     <div className="space-y-4 py-2">
       <div className="grid grid-cols-2 gap-3">
-        <div><Label className="text-[11px] text-muted-foreground mb-1 block">Card Type</Label>
+        <div><Label className="text-[11px] text-muted-foreground/70 mb-1.5 block font-medium">Card Type</Label>
           <Select value={form.card_type} onValueChange={v => setForm(f => ({ ...f, card_type: v }))}>
             <SelectTrigger className={inputCls}><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -229,28 +228,28 @@ const CardsPage = () => {
             </SelectContent>
           </Select>
         </div>
-        <div><Label className="text-[11px] text-muted-foreground mb-1 block">Issuer Bank</Label>
+        <div><Label className="text-[11px] text-muted-foreground/70 mb-1.5 block font-medium">Issuer Bank</Label>
           <Input className={inputCls} value={form.issuer_bank} onChange={e => setForm(f => ({ ...f, issuer_bank: e.target.value }))} placeholder="e.g. Chase" />
         </div>
       </div>
-      <div><Label className="text-[11px] text-muted-foreground mb-1 block">Card Holder Name</Label>
+      <div><Label className="text-[11px] text-muted-foreground/70 mb-1.5 block font-medium">Card Holder Name</Label>
         <Input className={inputCls} value={form.card_holder} onChange={e => setForm(f => ({ ...f, card_holder: e.target.value }))} placeholder="JOHN DOE" required />
       </div>
-      <div><Label className="text-[11px] text-muted-foreground mb-1 block">Card Number</Label>
+      <div><Label className="text-[11px] text-muted-foreground/70 mb-1.5 block font-medium">Card Number</Label>
         <Input className={inputCls} value={form.card_number} onChange={e => setForm(f => ({ ...f, card_number: e.target.value }))} placeholder="4242 4242 4242 4242" maxLength={19} required />
         {form.card_number.length >= 4 && (
-          <p className="text-[10px] text-primary/70 mt-1">Detected: {detectCardBrand(form.card_number)}</p>
+          <p className="text-[10px] text-primary mt-1 font-medium">Detected: {detectCardBrand(form.card_number)}</p>
         )}
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <div><Label className="text-[11px] text-muted-foreground mb-1 block">Expiry Date</Label>
+        <div><Label className="text-[11px] text-muted-foreground/70 mb-1.5 block font-medium">Expiry Date</Label>
           <Input className={inputCls} value={form.expiry_date} onChange={e => setForm(f => ({ ...f, expiry_date: e.target.value }))} placeholder="MM/YY" maxLength={5} />
         </div>
-        <div><Label className="text-[11px] text-muted-foreground mb-1 block">CVV</Label>
+        <div><Label className="text-[11px] text-muted-foreground/70 mb-1.5 block font-medium">CVV</Label>
           <Input className={inputCls} value={form.cvv} onChange={e => setForm(f => ({ ...f, cvv: e.target.value }))} placeholder="•••" maxLength={4} type="password" />
         </div>
       </div>
-      <Button onClick={handleAdd} className="w-full h-11 rounded-xl btn-premium" disabled={!form.card_holder || !form.card_number}>
+      <Button onClick={handleAdd} className="w-full h-11 rounded-xl shadow-[var(--shadow-glow-primary)]" disabled={!form.card_holder || !form.card_number}>
         <Plus className="h-4 w-4 mr-1.5" /> Save Card
       </Button>
     </div>
@@ -260,12 +259,17 @@ const CardsPage = () => {
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">Identity Cards</h1>
-            <p className="text-sm text-muted-foreground/60 mt-1">Securely store your bank cards and identity documents.</p>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/12 flex items-center justify-center">
+              <CreditCard className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground tracking-tight">Identity Cards</h1>
+              <p className="text-sm text-muted-foreground/60 mt-0.5">Securely store your bank cards and identity documents.</p>
+            </div>
           </div>
           {!isMobile && (
-            <Button onClick={() => setIsAdding(true)} className="rounded-xl gap-2 btn-premium">
+            <Button onClick={() => setIsAdding(true)} className="rounded-xl gap-2 shadow-[var(--shadow-glow-primary)]">
               <Plus className="h-4 w-4" /> Add Card
             </Button>
           )}
@@ -274,16 +278,16 @@ const CardsPage = () => {
 
       {loading ? (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map(i => <div key={i} className="h-[210px] rounded-2xl bg-card/40 animate-pulse border border-border/20" />)}
+          {[1, 2, 3].map(i => <div key={i} className="h-[210px] rounded-2xl bg-muted/30 animate-pulse border border-border/20" />)}
         </div>
       ) : cards.length === 0 ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 bg-card/30 rounded-xl border border-dashed border-border/40">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 bg-white rounded-2xl border border-dashed border-border/50 shadow-[var(--shadow-xs)]">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 border border-primary/15 flex items-center justify-center mb-4">
             <CreditCard className="h-7 w-7 text-primary/50" />
           </div>
-          <p className="text-lg font-medium">No cards saved yet</p>
-          <p className="text-sm text-muted-foreground/60 mt-1 mb-4">Add your first card to the vault.</p>
-          <Button onClick={() => setIsAdding(true)} className="rounded-xl btn-premium"><Plus className="h-4 w-4 mr-1.5" /> Add Card</Button>
+          <p className="text-lg font-semibold text-foreground">No cards saved yet</p>
+          <p className="text-sm text-muted-foreground/60 mt-1 mb-5">Add your first card to the vault.</p>
+          <Button onClick={() => setIsAdding(true)} className="rounded-xl shadow-[var(--shadow-glow-primary)]"><Plus className="h-4 w-4 mr-1.5" /> Add Card</Button>
         </motion.div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -297,7 +301,7 @@ const CardsPage = () => {
 
       {isMobile && (
         <motion.div className="fixed bottom-20 right-4 z-50" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3, type: "spring" }}>
-          <Button size="lg" className="h-14 w-14 rounded-full shadow-lg shadow-primary/25 p-0" onClick={() => setIsAdding(true)}>
+          <Button size="lg" className="h-14 w-14 rounded-full shadow-[var(--shadow-glow-primary)] p-0" onClick={() => setIsAdding(true)}>
             <Plus className="h-6 w-6" />
           </Button>
         </motion.div>
@@ -312,7 +316,7 @@ const CardsPage = () => {
         </Drawer>
       ) : (
         <Dialog open={isAdding} onOpenChange={setIsAdding}>
-          <DialogContent className="sm:max-w-md bg-card/95 backdrop-blur-xl border-border/30 rounded-2xl">
+          <DialogContent className="sm:max-w-md bg-white border-border/40 rounded-2xl shadow-lg">
             <DialogHeader><DialogTitle className="flex items-center gap-2"><CreditCard className="h-4 w-4 text-primary" /> Add Card</DialogTitle></DialogHeader>
             {formContent}
           </DialogContent>

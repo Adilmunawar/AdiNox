@@ -560,7 +560,7 @@ const SettingsPage = React.memo(() => {
         <SettingsSection icon={Palette} title="Appearance" description="Theme and display preferences" index={5}>
           <div className="flex items-center justify-between">
             <span className="text-xs text-muted-foreground">Theme</span>
-            <Badge variant="secondary" className="text-[10px]">Dark Mode</Badge>
+            <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary border-primary/15">Light Mode</Badge>
           </div>
         </SettingsSection>
 
