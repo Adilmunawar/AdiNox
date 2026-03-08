@@ -8,13 +8,18 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useBiometric } from "@/hooks/useBiometric";
+import { useFaceAuth } from "@/hooks/useFaceAuth";
+import FaceScanner from "@/components/auth/FaceScanner";
 import {
   User, Shield, Palette, Info, Trash2, Mail, Lock, Bell, Timer, Eye, Key, Save, Loader2,
-  Fingerprint, ScanFace, Smartphone, Monitor, Ban, CheckCircle2, XCircle, Plus,
+  Fingerprint, ScanFace, Smartphone, Monitor, Ban, CheckCircle2, XCircle, Plus, Camera,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
 
 type UserSettings = {
   auto_lock_timeout: number;
