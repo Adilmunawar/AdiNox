@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -7,7 +7,11 @@ import { Slider } from "@/components/ui/slider";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Shield, Palette, Info, Trash2, Mail, Lock, Bell, Timer, Eye, Key, Save, Loader2 } from "lucide-react";
+import { useBiometric } from "@/hooks/useBiometric";
+import {
+  User, Shield, Palette, Info, Trash2, Mail, Lock, Bell, Timer, Eye, Key, Save, Loader2,
+  Fingerprint, ScanFace, Smartphone, Monitor, Ban, CheckCircle2, XCircle, Plus,
+} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -18,6 +22,7 @@ type UserSettings = {
   show_favicons: boolean;
   default_password_length: number;
   notifications_enabled: boolean;
+  biometric_enabled: boolean;
 };
 
 const defaultSettings: UserSettings = {
@@ -26,6 +31,7 @@ const defaultSettings: UserSettings = {
   show_favicons: true,
   default_password_length: 16,
   notifications_enabled: true,
+  biometric_enabled: false,
 };
 
 const stagger = {
@@ -36,40 +42,64 @@ const stagger = {
   }),
 };
 
-const SettingsSection = ({ icon: Icon, title, description, children, index }: {
-  icon: React.ElementType; title: string; description: string; children: React.ReactNode; index: number;
+const SettingsSection = ({ icon: Icon, title, description, children, index, accent }: {
+  icon: React.ElementType; title: string; description: string; children: React.ReactNode; index: number; accent?: boolean;
 }) => (
   <motion.div custom={index} variants={stagger} initial="hidden" animate="visible">
-    <Card className="p-6 border-border/30 bg-card/60 backdrop-blur-sm">
+    <Card className={cn(
+      "p-6 border-border/30 bg-card/60 backdrop-blur-sm",
+      accent && "border-primary/15 bg-primary/[0.02]"
+    )}>
       <div className="flex items-start gap-3 mb-4">
-        <div className="h-9 w-9 rounded-xl bg-secondary/40 border border-border/20 flex items-center justify-center shrink-0">
-          <Icon className="h-4 w-4 text-muted-foreground" />
+        <div className={cn(
+          "h-9 w-9 rounded-xl border flex items-center justify-center shrink-0",
+          accent ? "bg-primary/10 border-primary/15" : "bg-secondary/40 border-border/20"
+        )}>
+          <Icon className={cn("h-4 w-4", accent ? "text-primary" : "text-muted-foreground")} />
         </div>
         <div>
           <h3 className="text-sm font-semibold text-foreground">{title}</h3>
           <p className="text-[11px] text-muted-foreground/50 mt-0.5">{description}</p>
         </div>
       </div>
-      <Separator className="mb-4 bg-border/20" />
+      <Separator className={cn("mb-4", accent ? "bg-primary/10" : "bg-border/20")} />
       {children}
     </Card>
   </motion.div>
 );
 
+const BiometricIcon = ({ type }: { type: string }) => {
+  switch (type) {
+    case "face": return <ScanFace className="h-4 w-4" />;
+    case "fingerprint": return <Fingerprint className="h-4 w-4" />;
+    default: return <Lock className="h-4 w-4" />;
+  }
+};
+
+const DeviceIcon = ({ name }: { name: string }) => {
+  const n = name?.toLowerCase() || "";
+  if (n.includes("iphone") || n.includes("ipad") || n.includes("android")) {
+    return <Smartphone className="h-4 w-4 text-muted-foreground/50" />;
+  }
+  return <Monitor className="h-4 w-4 text-muted-foreground/50" />;
+};
+
 const SettingsPage = React.memo(() => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { capability, isEnrolled, enrolledDevices, enroll, removeCredential, loading: bioLoading } = useBiometric();
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [enrolling, setEnrolling] = useState(false);
 
   const fetchSettings = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     const { data, error } = await supabase
       .from("user_settings")
-      .select("auto_lock_timeout, clipboard_clear_seconds, show_favicons, default_password_length, notifications_enabled")
+      .select("auto_lock_timeout, clipboard_clear_seconds, show_favicons, default_password_length, notifications_enabled, biometric_enabled")
       .eq("user_id", user.id)
       .maybeSingle();
 
@@ -80,9 +110,9 @@ const SettingsPage = React.memo(() => {
         show_favicons: data.show_favicons,
         default_password_length: data.default_password_length,
         notifications_enabled: data.notifications_enabled,
+        biometric_enabled: (data as any).biometric_enabled ?? false,
       });
     } else if (!error) {
-      // No row yet — insert defaults
       await supabase.from("user_settings").insert({ user_id: user.id });
     }
     setLoading(false);
@@ -100,7 +130,7 @@ const SettingsPage = React.memo(() => {
     setSaving(true);
     const { error } = await supabase
       .from("user_settings")
-      .update(settings)
+      .update(settings as any)
       .eq("user_id", user.id);
 
     if (error) {
@@ -110,6 +140,26 @@ const SettingsPage = React.memo(() => {
       setDirty(false);
     }
     setSaving(false);
+  };
+
+  const handleEnrollBiometric = async () => {
+    setEnrolling(true);
+    const success = await enroll();
+    if (success) {
+      toast({ title: "Biometric enrolled!", description: `${capability.label} has been registered successfully.` });
+      updateSetting("biometric_enabled", true);
+    } else {
+      toast({ title: "Enrollment failed", description: "Could not register biometric. Please try again.", variant: "destructive" });
+    }
+    setEnrolling(false);
+  };
+
+  const handleRemoveDevice = async (id: string, name: string) => {
+    await removeCredential(id);
+    toast({ title: "Device removed", description: `${name} has been unregistered.` });
+    if (enrolledDevices.length <= 1) {
+      updateSetting("biometric_enabled", false);
+    }
   };
 
   if (loading) {
@@ -167,8 +217,136 @@ const SettingsPage = React.memo(() => {
           </div>
         </SettingsSection>
 
+        {/* Biometric Authentication — NEW */}
+        <SettingsSection icon={Fingerprint} title="Biometric Authentication" description="Secure your vault with biometrics" index={1} accent>
+          <div className="space-y-5">
+            {/* Device capability detection */}
+            <div className="rounded-xl bg-secondary/20 border border-border/15 p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className={cn(
+                  "h-10 w-10 rounded-xl flex items-center justify-center",
+                  capability.available
+                    ? "bg-emerald-500/10 border border-emerald-500/20"
+                    : "bg-destructive/10 border border-destructive/20"
+                )}>
+                  {capability.available
+                    ? <BiometricIcon type={capability.type} />
+                    : <Ban className="h-4 w-4 text-destructive/70" />
+                  }
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{capability.label}</p>
+                  <p className="text-[10px] text-muted-foreground/40">
+                    {capability.available
+                      ? `${capability.type === "face" ? "Facial recognition" : "Fingerprint sensor"} detected on this device`
+                      : "No biometric hardware detected on this device"
+                    }
+                  </p>
+                </div>
+                <div className="ml-auto">
+                  {capability.available ? (
+                    <Badge variant="outline" className="text-[9px] border-emerald-500/30 text-emerald-400 gap-1">
+                      <CheckCircle2 className="h-2.5 w-2.5" /> Available
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-[9px] border-destructive/30 text-destructive gap-1">
+                      <XCircle className="h-2.5 w-2.5" /> Unavailable
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              {capability.available && (
+                <div className="text-[10px] text-muted-foreground/30 bg-secondary/20 rounded-lg px-3 py-2 border border-border/10">
+                  <span className="font-semibold text-foreground/50">Supported methods: </span>
+                  {capability.type === "face" && "Face recognition, "}
+                  {capability.type === "fingerprint" && "Fingerprint, "}
+                  PIN / Pattern fallback
+                </div>
+              )}
+            </div>
+
+            {/* Biometric toggle */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Lock className="h-3.5 w-3.5 text-muted-foreground/50" />
+                <div>
+                  <span className="text-xs text-muted-foreground block">Biometric Lock</span>
+                  <span className="text-[10px] text-muted-foreground/30">Lock vault after inactivity timeout</span>
+                </div>
+              </div>
+              <Switch
+                checked={settings.biometric_enabled}
+                onCheckedChange={v => {
+                  if (v && !isEnrolled) {
+                    handleEnrollBiometric();
+                  } else {
+                    updateSetting("biometric_enabled", v);
+                  }
+                }}
+                disabled={!capability.available}
+              />
+            </div>
+
+            {/* Enrolled devices */}
+            {enrolledDevices.length > 0 && (
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-[0.15em] mb-3">
+                  Enrolled Devices
+                </p>
+                <div className="space-y-2">
+                  {enrolledDevices.map((device: any) => (
+                    <motion.div
+                      key={device.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="flex items-center justify-between p-3 rounded-xl bg-secondary/15 border border-border/10"
+                    >
+                      <div className="flex items-center gap-3">
+                        <DeviceIcon name={device.device_name} />
+                        <div>
+                          <p className="text-xs font-medium text-foreground">{device.device_name || "Unknown"}</p>
+                          <p className="text-[9px] text-muted-foreground/30">
+                            {device.authenticator_type === "face" ? "Face ID" : "Fingerprint"} •
+                            Added {new Date(device.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-[10px] text-destructive/60 hover:text-destructive hover:bg-destructive/5"
+                        onClick={() => handleRemoveDevice(device.id, device.device_name)}
+                      >
+                        Remove
+                      </Button>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Add new device */}
+            {capability.available && (
+              <Button
+                variant="outline"
+                className="w-full h-10 rounded-xl gap-2 text-xs border-dashed border-border/30 hover:border-primary/20 hover:bg-primary/[0.03]"
+                onClick={handleEnrollBiometric}
+                disabled={enrolling || !capability.available}
+              >
+                {enrolling ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Plus className="h-3.5 w-3.5" />
+                )}
+                {enrolling ? "Enrolling..." : `Add ${capability.label}`}
+              </Button>
+            )}
+          </div>
+        </SettingsSection>
+
         {/* Security */}
-        <SettingsSection icon={Shield} title="Security" description="Vault protection preferences" index={1}>
+        <SettingsSection icon={Shield} title="Security" description="Vault protection preferences" index={2}>
           <div className="space-y-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -223,7 +401,7 @@ const SettingsPage = React.memo(() => {
         </SettingsSection>
 
         {/* Vault Preferences */}
-        <SettingsSection icon={Key} title="Vault Preferences" description="Default behaviors for your vault" index={2}>
+        <SettingsSection icon={Key} title="Vault Preferences" description="Default behaviors for your vault" index={3}>
           <div className="space-y-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -276,7 +454,7 @@ const SettingsPage = React.memo(() => {
         </SettingsSection>
 
         {/* Appearance */}
-        <SettingsSection icon={Palette} title="Appearance" description="Theme and display preferences" index={3}>
+        <SettingsSection icon={Palette} title="Appearance" description="Theme and display preferences" index={4}>
           <div className="flex items-center justify-between">
             <span className="text-xs text-muted-foreground">Theme</span>
             <Badge variant="secondary" className="text-[10px]">Dark Mode</Badge>
@@ -284,11 +462,11 @@ const SettingsPage = React.memo(() => {
         </SettingsSection>
 
         {/* About */}
-        <SettingsSection icon={Info} title="About" description="App information and credits" index={4}>
+        <SettingsSection icon={Info} title="About" description="App information and credits" index={5}>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Version</span>
-              <span className="text-xs font-mono text-muted-foreground/70">2.1.0</span>
+              <span className="text-xs font-mono text-muted-foreground/70">2.2.0</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Developer</span>
@@ -298,7 +476,7 @@ const SettingsPage = React.memo(() => {
         </SettingsSection>
 
         {/* Danger Zone */}
-        <motion.div custom={5} variants={stagger} initial="hidden" animate="visible">
+        <motion.div custom={6} variants={stagger} initial="hidden" animate="visible">
           <Card className="p-6 border-destructive/20 bg-destructive/[0.03]">
             <div className="flex items-start gap-3 mb-4">
               <div className="h-9 w-9 rounded-xl bg-destructive/10 border border-destructive/15 flex items-center justify-center shrink-0">
