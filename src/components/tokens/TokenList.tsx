@@ -1,43 +1,30 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Search, SlidersHorizontal, Plus, Filter, Calendar, Clock, Grid, List, Copy, Edit, QrCode, MoreVertical, Trash2 } from "lucide-react";
+import { Search, SlidersHorizontal, Plus, Filter, ShieldOff, Lock, Clock, Grid, List, Copy, Edit, QrCode, MoreVertical, Trash2, X, ScanLine } from "lucide-react";
 import TokenCard from "./TokenCard";
 import AddTokenForm from "./AddTokenForm";
+import TokenCardSkeleton from "./TokenCardSkeleton";
 import { useTokens } from "@/context/TokenContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { TokenType } from "@/context/TokenContext";
 import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem,
-  DropdownMenuRadioGroup, 
-  DropdownMenuRadioItem, 
-  DropdownMenuTrigger,
-  DropdownMenuSeparator
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger, DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
-import { 
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle 
-} from "@/components/ui/dialog";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
 import { formatTOTPDisplay, getTimeRemaining } from "@/utils/tokenUtils";
+import { motion, AnimatePresence } from "framer-motion";
 
 const TokenList = () => {
   const { tokens, removeToken, sortTokens } = useTokens();
@@ -50,21 +37,30 @@ const TokenList = () => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
 
+  // Cmd+K keyboard shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        document.getElementById("token-search")?.focus();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
   const filteredTokens = tokens.filter(token => {
     const term = searchTerm.toLowerCase();
     const matchesSearch = token.name.toLowerCase().includes(term) || 
                          token.issuer.toLowerCase().includes(term);
-    
     if (filterType && filterType !== "all") {
       return matchesSearch && token.algorithm === filterType;
     }
-    
     return matchesSearch;
   });
 
   const handleEditToken = (token: TokenType) => {
     setSelectedToken(token);
-    // Implement edit functionality here or open a modal
     console.log("Edit token:", token);
   };
   
@@ -74,23 +70,49 @@ const TokenList = () => {
     sortTokens(sortValue);
   };
   
-  // Group tokens by issuer for list view
   const groupedTokens = filteredTokens.reduce((acc, token) => {
-    if (!acc[token.issuer]) {
-      acc[token.issuer] = [];
-    }
+    if (!acc[token.issuer]) acc[token.issuer] = [];
     acc[token.issuer].push(token);
     return acc;
   }, {} as Record<string, TokenType[]>);
   
   const algorithmTypes = [...new Set(tokens.map(token => token.algorithm))];
   
-  // Animation delay for staggered entrance
-  const getAnimationDelay = (index: number) => {
-    return {
-      animationDelay: `${index * 0.05}s`
-    };
-  };
+  const getAnimationDelay = (index: number) => ({
+    animationDelay: `${index * 0.05}s`
+  });
+
+  // Empty state component
+  const EmptyState = () => (
+    <div className="col-span-full text-center py-16 bg-card/30 backdrop-blur-sm rounded-xl border border-dashed border-border/50">
+      <motion.div 
+        className="max-w-md mx-auto space-y-4 p-4"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+          {searchTerm ? <Search className="h-7 w-7 text-primary/50" /> : <ShieldOff className="h-7 w-7 text-primary/50" />}
+        </div>
+        <p className="text-lg font-medium text-foreground">
+          {searchTerm ? "No tokens match your search" : "No tokens added yet"}
+        </p>
+        <p className="text-sm text-muted-foreground/70">
+          {searchTerm ? 
+            "Try adjusting your search or filters." : 
+            "Add your first authentication token to secure your accounts."
+          }
+        </p>
+        {!searchTerm && (
+          <div className="flex flex-col sm:flex-row gap-2 justify-center pt-2">
+            <Button onClick={() => setIsAddingToken(true)} className="bg-primary hover:bg-primary/90">
+              <Plus className="h-4 w-4 mr-2" /> Add your first token
+            </Button>
+          </div>
+        )}
+      </motion.div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -99,11 +121,24 @@ const TokenList = () => {
           <div className="relative flex-grow">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
+              id="token-search"
               placeholder="Search tokens..."
-              className="pl-9 bg-background/70 backdrop-blur-sm border-input/50 focus-visible:ring-primary"
+              className="pl-9 pr-20 bg-background/70 backdrop-blur-sm border-input/50 focus-visible:ring-primary"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+            {searchTerm ? (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-foreground transition-colors"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            ) : (
+              <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground/40 bg-secondary/40 border border-border/30 rounded px-1.5 py-0.5 font-mono pointer-events-none hidden sm:inline-flex">
+                ⌘K
+              </kbd>
+            )}
           </div>
           
           <div className="flex flex-wrap gap-2 items-center">
@@ -111,34 +146,24 @@ const TokenList = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="flex-grow lg:flex-grow-0">
-                    <Filter className="h-4 w-4 mr-2" />
-                    Filter & Sort
+                    <Filter className="h-4 w-4 mr-2" /> Filter & Sort
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
                   <div className="p-2 border-b border-border">
                     <h4 className="mb-2 text-xs font-medium">Sort by</h4>
-                    <DropdownMenuRadioGroup 
-                      value={sortBy}
-                      onValueChange={(value) => handleSortChange(value)}
-                    >
+                    <DropdownMenuRadioGroup value={sortBy} onValueChange={handleSortChange}>
                       <DropdownMenuRadioItem value="name">Name</DropdownMenuRadioItem>
                       <DropdownMenuRadioItem value="issuer">Issuer</DropdownMenuRadioItem>
                       <DropdownMenuRadioItem value="createdAt">Date Added</DropdownMenuRadioItem>
                     </DropdownMenuRadioGroup>
                   </div>
-                  
                   <div className="p-2">
                     <h4 className="mb-2 text-xs font-medium">Filter by Algorithm</h4>
-                    <DropdownMenuRadioGroup 
-                      value={filterType || "all"}
-                      onValueChange={(value) => setFilterType(value === "all" ? null : value)}
-                    >
+                    <DropdownMenuRadioGroup value={filterType || "all"} onValueChange={(v) => setFilterType(v === "all" ? null : v)}>
                       <DropdownMenuRadioItem value="all">All Types</DropdownMenuRadioItem>
                       {algorithmTypes.map((algo) => (
-                        <DropdownMenuRadioItem key={algo} value={algo}>
-                          {algo}
-                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem key={algo} value={algo}>{algo}</DropdownMenuRadioItem>
                       ))}
                     </DropdownMenuRadioGroup>
                   </div>
@@ -146,10 +171,7 @@ const TokenList = () => {
               </DropdownMenu>
             ) : (
               <>
-                <Select
-                  value={sortBy}
-                  onValueChange={handleSortChange}
-                >
+                <Select value={sortBy} onValueChange={handleSortChange}>
                   <SelectTrigger className="w-[160px] bg-background/70 backdrop-blur-sm">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
@@ -160,10 +182,7 @@ const TokenList = () => {
                   </SelectContent>
                 </Select>
                 
-                <Select
-                  value={filterType || "all"}
-                  onValueChange={(value) => setFilterType(value === "all" ? null : value)}
-                >
+                <Select value={filterType || "all"} onValueChange={(v) => setFilterType(v === "all" ? null : v)}>
                   <SelectTrigger className="w-[160px] bg-background/70 backdrop-blur-sm">
                     <SelectValue placeholder="Filter by Algorithm" />
                   </SelectTrigger>
@@ -178,8 +197,7 @@ const TokenList = () => {
             )}
             
             <ToggleGroup 
-              type="single" 
-              value={viewMode} 
+              type="single" value={viewMode} 
               onValueChange={(value) => value && setViewMode(value as "grid" | "list")}
               className={isMobile ? "w-full" : ""}
             >
@@ -207,44 +225,12 @@ const TokenList = () => {
         <div className={`grid gap-4 animate-in fade-in-50 ${isMobile ? 'grid-cols-1' : 'sm:grid-cols-2 lg:grid-cols-3'}`}>
           {filteredTokens.length > 0 ? (
             filteredTokens.map((token, index) => (
-              <div 
-                key={token.id} 
-                style={getAnimationDelay(index)}
-                className="animate-in fade-in slide-in-from-bottom-3"
-              >
-                <TokenCard
-                  token={token}
-                  onRemove={removeToken}
-                  onEdit={handleEditToken}
-                />
+              <div key={token.id} style={getAnimationDelay(index)} className="animate-in fade-in slide-in-from-bottom-3">
+                <TokenCard token={token} onRemove={removeToken} onEdit={handleEditToken} />
               </div>
             ))
           ) : (
-            <div className="col-span-full text-center py-12 bg-card/30 backdrop-blur-sm rounded-xl border border-border/50">
-              <div className="max-w-md mx-auto space-y-4 p-4">
-                <div className="w-16 h-16 mx-auto rounded-full bg-primary/20 flex items-center justify-center">
-                  <Calendar className="h-8 w-8 text-primary" />
-                </div>
-                <p className="text-xl font-medium">
-                  {searchTerm ? "No tokens match your search" : "No tokens added yet"}
-                </p>
-                <p className="text-muted-foreground">
-                  {searchTerm ? 
-                    "Try adjusting your search or filters to find what you're looking for." : 
-                    "Add your first authentication token to get started with secure access."
-                  }
-                </p>
-                {!searchTerm && (
-                  <Button 
-                    onClick={() => setIsAddingToken(true)}
-                    className="mt-4 bg-primary hover:bg-primary/90"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add your first token
-                  </Button>
-                )}
-              </div>
-            </div>
+            <EmptyState />
           )}
         </div>
       ) : (
@@ -262,11 +248,7 @@ const TokenList = () => {
                 </h3>
                 <div className="space-y-3">
                   {issuerTokens.map((token, tokenIndex) => (
-                    <div 
-                      key={token.id}
-                      className="p-3 bg-background/50 rounded-lg animate-in fade-in"
-                      style={getAnimationDelay(tokenIndex)}
-                    >
+                    <div key={token.id} className="p-3 bg-background/50 rounded-lg animate-in fade-in" style={getAnimationDelay(tokenIndex)}>
                       <div className="flex justify-between items-center">
                         <div>
                           <p className="font-medium">{token.name}</p>
@@ -283,33 +265,23 @@ const TokenList = () => {
                         <div className="flex items-center gap-2">
                           <Button size="sm" variant="outline" onClick={() => {
                             navigator.clipboard.writeText(token.currentCode);
-                            toast({
-                              title: "Code copied",
-                              description: "The code has been copied to your clipboard.",
-                            });
+                            toast({ title: "Code copied", description: "Copied to clipboard." });
                           }}>
                             <Copy className="h-4 w-4" />
                           </Button>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
+                              <Button variant="ghost" size="sm"><MoreVertical className="h-4 w-4" /></Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              {handleEditToken && (
-                                <DropdownMenuItem onClick={() => handleEditToken(token)} className="cursor-pointer">
-                                  <Edit className="h-4 w-4 mr-2" /> Edit
-                                </DropdownMenuItem>
-                              )}
+                              <DropdownMenuItem onClick={() => handleEditToken(token)} className="cursor-pointer">
+                                <Edit className="h-4 w-4 mr-2" /> Edit
+                              </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => setSelectedToken(token)} className="cursor-pointer">
                                 <QrCode className="h-4 w-4 mr-2" /> QR Code
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem 
-                                className="text-destructive focus:text-destructive cursor-pointer" 
-                                onClick={() => removeToken(token.id)}
-                              >
+                              <DropdownMenuItem className="text-destructive focus:text-destructive cursor-pointer" onClick={() => removeToken(token.id)}>
                                 <Trash2 className="h-4 w-4 mr-2" /> Remove
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -322,36 +294,30 @@ const TokenList = () => {
               </div>
             ))
           ) : (
-            <div className="text-center py-12 bg-card/30 backdrop-blur-sm rounded-xl border border-border/50">
-              <div className="max-w-md mx-auto space-y-4 p-4">
-                <div className="w-16 h-16 mx-auto rounded-full bg-primary/20 flex items-center justify-center">
-                  <Calendar className="h-8 w-8 text-primary" />
-                </div>
-                <p className="text-xl font-medium">
-                  {searchTerm ? "No tokens match your search" : "No tokens added yet"}
-                </p>
-                <p className="text-muted-foreground">
-                  {searchTerm ? 
-                    "Try adjusting your search or filters to find what you're looking for." : 
-                    "Add your first authentication token to get started with secure access."
-                  }
-                </p>
-                {!searchTerm && (
-                  <Button 
-                    onClick={() => setIsAddingToken(true)}
-                    className="mt-4 bg-primary hover:bg-primary/90"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add your first token
-                  </Button>
-                )}
-              </div>
-            </div>
+            <EmptyState />
           )}
         </div>
       )}
 
-      <AddTokenForm />
+      <AddTokenForm open={isAddingToken} onOpenChange={setIsAddingToken} />
+
+      {/* FAB for mobile */}
+      {isMobile && (
+        <motion.div
+          className="fixed bottom-6 right-6 z-50"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.5, type: "spring", stiffness: 260, damping: 20 }}
+        >
+          <Button
+            size="lg"
+            className="h-14 w-14 rounded-full shadow-lg shadow-primary/25 p-0"
+            onClick={() => setIsAddingToken(true)}
+          >
+            <Plus className="h-6 w-6" />
+          </Button>
+        </motion.div>
+      )}
       
       {/* Selected Token Dialog for QR Code */}
       {selectedToken && (
@@ -379,14 +345,7 @@ const TokenList = () => {
               <p className="mt-1 text-xs text-center text-muted-foreground">
                 Type: TOTP | Algorithm: {selectedToken.algorithm} | Digits: {selectedToken.digits}
               </p>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setSelectedToken(null)} 
-                className="mt-4"
-              >
-                Close
-              </Button>
+              <Button variant="outline" size="sm" onClick={() => setSelectedToken(null)} className="mt-4">Close</Button>
             </div>
           </DialogContent>
         </Dialog>

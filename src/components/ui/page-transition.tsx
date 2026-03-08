@@ -9,25 +9,25 @@ interface PageTransitionProps {
 const pageVariants = {
   initial: {
     opacity: 0,
-    y: 20,
-    scale: 0.98,
+    y: 16,
+    filter: "blur(6px)",
   },
   animate: {
     opacity: 1,
     y: 0,
-    scale: 1,
+    filter: "blur(0px)",
   },
   exit: {
     opacity: 0,
-    y: -20,
-    scale: 0.98,
+    y: -12,
+    filter: "blur(4px)",
   },
 };
 
 const pageTransition = {
   type: "tween",
   ease: [0.25, 0.46, 0.45, 0.94],
-  duration: 0.4,
+  duration: 0.35,
 };
 
 const PageTransition: React.FC<PageTransitionProps> = ({ children, className }) => {
@@ -39,7 +39,7 @@ const PageTransition: React.FC<PageTransitionProps> = ({ children, className }) 
       variants={pageVariants}
       transition={pageTransition}
       className={className}
-      style={{ willChange: "opacity, transform" }}
+      style={{ willChange: "opacity, transform, filter" }}
     >
       {children}
     </motion.div>
