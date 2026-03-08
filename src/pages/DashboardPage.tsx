@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Shield, Plus, Clock, Activity, ArrowRight, Lightbulb, CreditCard, Key, StickyNote, TrendingUp, Sparkles } from "lucide-react";
+import { Shield, Plus, Clock, Activity, ArrowRight, Lightbulb, CreditCard, Key, StickyNote, TrendingUp, Sparkles, CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -32,15 +32,12 @@ const StatsCard = ({ icon: Icon, label, value, accent, trend, index }: {
 }) => (
   <motion.div custom={index} variants={staggerItem} initial="hidden" animate="visible">
     <Card className={cn(
-      "relative overflow-hidden p-5 border-border/20 bg-card/50 backdrop-blur-sm transition-all duration-300 group cursor-default",
-      "hover:border-border/40 hover:bg-card/70",
+      "relative overflow-hidden p-5 border-border/30 bg-white transition-all duration-300 group cursor-default hover:shadow-[var(--shadow-md)]",
       accent && "border-primary/15 hover:border-primary/25"
     )}>
-      {/* Gradient top accent */}
-      {accent && <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />}
+      {accent && <div className="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />}
       
-      {/* Background icon watermark */}
-      <div className="absolute -top-2 -right-2 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
+      <div className="absolute -top-3 -right-3 opacity-[0.04] group-hover:opacity-[0.07] transition-opacity">
         <Icon className="h-20 w-20" />
       </div>
 
@@ -48,18 +45,18 @@ const StatsCard = ({ icon: Icon, label, value, accent, trend, index }: {
         <div className={cn(
           "h-10 w-10 rounded-xl flex items-center justify-center mb-4 transition-colors duration-300",
           accent
-            ? "bg-primary/10 border border-primary/15 group-hover:bg-primary/15"
-            : "bg-secondary/30 border border-border/15 group-hover:bg-secondary/50"
+            ? "bg-primary/10 border border-primary/12"
+            : "bg-muted/60 border border-border/30"
         )}>
-          <Icon className={cn("h-4.5 w-4.5", accent ? "text-primary" : "text-muted-foreground/70")} />
+          <Icon className={cn("h-4.5 w-4.5", accent ? "text-primary" : "text-muted-foreground/60")} />
         </div>
         <div className="flex items-end justify-between">
           <div>
             <p className="text-3xl font-bold text-foreground tracking-tight">{value}</p>
-            <p className="text-[11px] text-muted-foreground/50 mt-1 font-medium">{label}</p>
+            <p className="text-[11px] text-muted-foreground/50 mt-1.5 font-medium">{label}</p>
           </div>
           {trend && (
-            <div className="flex items-center gap-1 text-emerald-500/80">
+            <div className="flex items-center gap-1 text-primary/80">
               <TrendingUp className="h-3 w-3" />
               <span className="text-[10px] font-semibold">{trend}</span>
             </div>
@@ -119,12 +116,11 @@ const DashboardContent = () => {
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="relative overflow-hidden rounded-2xl border border-border/20 bg-card/40 backdrop-blur-sm p-6 sm:p-8"
+        className="relative overflow-hidden rounded-2xl border border-border/30 bg-white p-6 sm:p-8 shadow-[var(--shadow-sm)]"
       >
-        {/* Accent gradients */}
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/[0.05] to-transparent rounded-bl-full" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-primary/[0.03] to-transparent rounded-tr-full" />
+        <div className="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+        <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-primary/[0.04] to-transparent rounded-bl-full" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-primary/[0.02] to-transparent rounded-tr-full" />
         
         <div className="relative z-10">
           <div className="flex items-start justify-between">
@@ -133,18 +129,18 @@ const DashboardContent = () => {
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
-                className="flex items-center gap-2 mb-3"
+                className="flex items-center gap-2 mb-4"
               >
-                <Sparkles className="h-4 w-4 text-primary/70" />
-                <Badge variant="outline" className="text-[9px] border-primary/20 text-primary/70 font-medium tracking-wider uppercase">
-                  Vault Active
-                </Badge>
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/8 border border-primary/10">
+                  <CheckCircle2 className="h-3 w-3 text-primary" />
+                  <span className="text-[9px] font-bold text-primary uppercase tracking-[0.15em]">Vault Secured</span>
+                </div>
               </motion.div>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-                {greeting}, <span className="text-gradient">{username}</span>
+                {greeting}, <span className="text-primary">{username}</span>
               </h1>
-              <p className="text-sm text-muted-foreground/50 mt-2 max-w-md">
-                Your vault holds <span className="text-foreground/70 font-medium">{totalItems}</span> secured items. Everything is encrypted and protected.
+              <p className="text-sm text-muted-foreground/60 mt-2 max-w-md leading-relaxed">
+                Your vault holds <span className="text-foreground font-semibold">{totalItems}</span> secured items. Everything is encrypted and protected.
               </p>
             </div>
           </div>
@@ -172,7 +168,7 @@ const DashboardContent = () => {
               variant={action.primary ? "default" : "outline"}
               className={cn(
                 "h-11 rounded-xl gap-2 transition-all duration-200",
-                action.primary && "shadow-lg shadow-primary/15 btn-premium"
+                action.primary && "shadow-[var(--shadow-glow-primary)]"
               )}
             >
               <action.icon className="h-4 w-4" /> {action.label}
@@ -194,19 +190,19 @@ const DashboardContent = () => {
             {recentTokens.map((token, i) => (
               <motion.div key={token.id} custom={8 + i} variants={staggerItem} initial="hidden" animate="visible">
                 <Card
-                  className="p-4 border-border/20 bg-card/50 backdrop-blur-sm hover:bg-card/70 hover:border-border/30 cursor-pointer transition-all duration-300 group"
+                  className="p-4 border-border/30 bg-white hover:shadow-[var(--shadow-md)] cursor-pointer transition-all duration-300 group"
                   onClick={() => navigate("/tokens")}
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <div className="h-9 w-9 rounded-xl bg-primary/8 border border-primary/10 flex items-center justify-center group-hover:bg-primary/12 transition-colors">
-                      <Shield className="h-4 w-4 text-primary/60" />
+                      <Shield className="h-4 w-4 text-primary/70" />
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-foreground truncate">{token.issuer}</p>
                       <p className="text-[10px] text-muted-foreground/40 truncate">{token.name}</p>
                     </div>
                   </div>
-                  <div className="p-3 bg-secondary/15 border border-border/15 rounded-xl group-hover:bg-secondary/25 transition-colors">
+                  <div className="p-3 bg-muted/40 border border-border/20 rounded-xl group-hover:bg-muted/60 transition-colors">
                     <p className="text-lg font-mono font-bold tracking-[0.12em] text-foreground">
                       {formatTOTPDisplay(token.currentCode)}
                     </p>
@@ -220,15 +216,15 @@ const DashboardContent = () => {
 
       {/* Security Tip */}
       <motion.div custom={11} variants={staggerItem} initial="hidden" animate="visible">
-        <Card className="p-5 border-primary/10 bg-primary/[0.02] relative overflow-hidden">
-          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+        <Card className="p-5 border-primary/10 bg-primary/[0.02] relative overflow-hidden shadow-[var(--shadow-xs)]">
+          <div className="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
           <div className="flex gap-3">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center shrink-0">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/12 flex items-center justify-center shrink-0">
               <Lightbulb className="h-4.5 w-4.5 text-primary" />
             </div>
             <div>
               <p className="text-[10px] font-semibold text-primary/70 uppercase tracking-[0.15em] mb-1.5">Security Tip</p>
-              <p className="text-sm text-muted-foreground/60 leading-relaxed">{securityTips[tipIndex]}</p>
+              <p className="text-sm text-muted-foreground/70 leading-relaxed">{securityTips[tipIndex]}</p>
             </div>
           </div>
         </Card>

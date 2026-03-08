@@ -5,7 +5,7 @@ import AppSidebar from "@/components/layout/AppSidebar";
 import CommandPalette from "@/components/layout/CommandPalette";
 import BiometricLockScreen from "@/components/auth/BiometricLockScreen";
 import { motion } from "framer-motion";
-import { Bell, Search, LayoutDashboard, Shield, CreditCard, Key, StickyNote, Settings } from "lucide-react";
+import { Bell, Search, LayoutDashboard, Shield, CreditCard, Key, StickyNote, Settings, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +35,7 @@ const mobileNavItems = [
 const LoadingFallback = () => (
   <div className="flex items-center justify-center h-64">
     <motion.div
-      className="h-8 w-8 rounded-full border-2 border-border border-t-primary"
+      className="h-8 w-8 rounded-full border-2 border-border/40 border-t-primary"
       animate={{ rotate: 360 }}
       transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
     />
@@ -116,33 +116,33 @@ const AppLayout = React.memo(() => {
         userName={user?.user_metadata?.username}
       />
       <SidebarProvider>
-        <div className="h-screen w-full overflow-hidden flex">
+        <div className="h-screen w-full overflow-hidden flex bg-background">
           {!isMobile && <AppSidebar />}
 
           <div className="flex-1 h-screen flex flex-col overflow-hidden">
             {/* Sticky header */}
-            <header className="sticky top-0 z-40 h-14 flex items-center justify-between border-b border-border bg-card/80 backdrop-blur-xl px-4 relative">
+            <header className="sticky top-0 z-40 h-14 flex items-center justify-between border-b border-border/50 bg-white/90 backdrop-blur-xl px-4 sm:px-6">
               <div className="flex items-center gap-3">
-                {!isMobile && <SidebarTrigger className="text-muted-foreground hover:text-foreground transition-colors" />}
-                <div className="h-4 w-px bg-border hidden md:block" />
-                <h2 className="text-sm font-semibold text-foreground">{currentLabel}</h2>
+                {!isMobile && <SidebarTrigger className="text-muted-foreground/60 hover:text-foreground transition-colors" />}
+                {!isMobile && <div className="h-5 w-px bg-border/40" />}
+                <h2 className="text-sm font-semibold text-foreground tracking-tight">{currentLabel}</h2>
               </div>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 gap-2 text-xs text-muted-foreground hover:text-foreground"
+                  className="h-9 gap-2 text-xs text-muted-foreground/70 hover:text-foreground rounded-xl hover:bg-muted/60"
                   onClick={() => setCommandOpen(true)}
                 >
                   <Search className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Search</span>
-                  <kbd className="hidden sm:inline-flex h-5 items-center gap-0.5 rounded border border-border bg-muted px-1.5 text-[10px] font-mono text-muted-foreground">
+                  <kbd className="hidden sm:inline-flex h-5 items-center gap-0.5 rounded-md border border-border/50 bg-muted/60 px-1.5 text-[10px] font-mono text-muted-foreground/50">
                     ⌘K
                   </kbd>
                 </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 relative">
-                  <Bell className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                <Button variant="ghost" size="icon" className="h-9 w-9 relative rounded-xl hover:bg-muted/60">
+                  <Bell className="h-4 w-4 text-muted-foreground/60" />
+                  <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_4px_rgba(20,184,166,0.4)]" />
                 </Button>
               </div>
             </header>
@@ -157,7 +157,7 @@ const AppLayout = React.memo(() => {
           </div>
 
           {isMobile && (
-            <nav className="fixed bottom-0 inset-x-0 z-50 h-16 bg-card/95 backdrop-blur-xl border-t border-border flex items-center justify-around px-1 safe-area-bottom">
+            <nav className="fixed bottom-0 inset-x-0 z-50 h-16 bg-white/95 backdrop-blur-xl border-t border-border/40 flex items-center justify-around px-1 safe-area-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
               {mobileNavItems.map((item) => {
                 const active = item.path === "/"
                   ? location.pathname === "/"
@@ -167,16 +167,16 @@ const AppLayout = React.memo(() => {
                     key={item.path}
                     onClick={() => navigate(item.path)}
                     className={cn(
-                      "flex flex-col items-center gap-0.5 py-1.5 px-2 rounded-xl transition-all duration-200 relative",
-                      active ? "text-primary" : "text-muted-foreground"
+                      "flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl transition-all duration-200 relative",
+                      active ? "text-primary" : "text-muted-foreground/60"
                     )}
                   >
-                    <item.icon className={cn("h-5 w-5")} />
+                    <item.icon className="h-5 w-5" />
                     <span className="text-[9px] font-semibold">{item.label}</span>
                     {active && (
                       <motion.div
                         layoutId="mobile-tab-indicator"
-                        className="absolute -top-0.5 h-0.5 w-8 bg-primary rounded-full"
+                        className="absolute -top-0.5 h-0.5 w-8 bg-primary rounded-full shadow-[0_0_6px_rgba(20,184,166,0.4)]"
                       />
                     )}
                   </button>

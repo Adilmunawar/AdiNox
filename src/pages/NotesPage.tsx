@@ -29,13 +29,13 @@ type VaultNote = {
 };
 
 const noteColors: Record<string, { bg: string; border: string; dot: string }> = {
-  default: { bg: "bg-card/60", border: "border-border/30", dot: "bg-muted-foreground/30" },
-  purple: { bg: "bg-purple-500/[0.06]", border: "border-purple-500/15", dot: "bg-purple-500" },
-  blue: { bg: "bg-blue-500/[0.06]", border: "border-blue-500/15", dot: "bg-blue-500" },
-  green: { bg: "bg-emerald-500/[0.06]", border: "border-emerald-500/15", dot: "bg-emerald-500" },
-  yellow: { bg: "bg-amber-500/[0.06]", border: "border-amber-500/15", dot: "bg-amber-500" },
-  red: { bg: "bg-red-500/[0.06]", border: "border-red-500/15", dot: "bg-red-500" },
-  pink: { bg: "bg-pink-500/[0.06]", border: "border-pink-500/15", dot: "bg-pink-500" },
+  default: { bg: "bg-white", border: "border-border/30", dot: "bg-muted-foreground/30" },
+  purple: { bg: "bg-purple-50", border: "border-purple-200/50", dot: "bg-purple-500" },
+  blue: { bg: "bg-blue-50", border: "border-blue-200/50", dot: "bg-blue-500" },
+  green: { bg: "bg-emerald-50", border: "border-emerald-200/50", dot: "bg-emerald-500" },
+  yellow: { bg: "bg-amber-50", border: "border-amber-200/50", dot: "bg-amber-500" },
+  red: { bg: "bg-red-50", border: "border-red-200/50", dot: "bg-red-500" },
+  pink: { bg: "bg-pink-50", border: "border-pink-200/50", dot: "bg-pink-500" },
 };
 
 const stagger = {
@@ -49,10 +49,10 @@ const NoteCard = React.memo(({ note, onDelete, onTogglePin, onEdit }: {
   const colors = noteColors[note.color || "default"] || noteColors.default;
 
   return (
-    <Card className={cn("p-4 backdrop-blur-sm hover-lift transition-all cursor-pointer group", colors.bg, colors.border)}>
+    <Card className={cn("p-4 hover:shadow-[var(--shadow-md)] transition-all duration-200 cursor-pointer group", colors.bg, colors.border)}>
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <div className={cn("h-2 w-2 rounded-full shrink-0", colors.dot)} />
+          <div className={cn("h-2.5 w-2.5 rounded-full shrink-0", colors.dot)} />
           <h3 className="text-sm font-semibold text-foreground truncate">{note.title}</h3>
         </div>
         <div className="flex items-center gap-0.5 shrink-0">
@@ -96,7 +96,7 @@ const NoteCard = React.memo(({ note, onDelete, onTogglePin, onEdit }: {
           {new Date(note.updated_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
         </p>
         {note.category && (
-          <span className="text-[9px] px-1.5 py-0.5 rounded bg-secondary/40 border border-border/20 text-muted-foreground/50">{note.category}</span>
+          <span className="text-[9px] px-2 py-0.5 rounded-full bg-muted/60 border border-border/20 text-muted-foreground/50 font-medium">{note.category}</span>
         )}
       </div>
     </Card>
@@ -182,48 +182,48 @@ const NotesPage = () => {
   });
 
   const colorOptions = Object.keys(noteColors);
-  const inputCls = "h-10 bg-secondary/30 border-border/40 rounded-lg text-sm focus:border-primary/50 focus:ring-1 focus:ring-primary/15";
+  const inputCls = "h-10 bg-muted/40 border-border/40 rounded-xl text-sm focus:border-primary/50 focus:ring-1 focus:ring-primary/15";
 
   const formContent = (
     <div className="space-y-4 py-2">
-      <div><Label className="text-[11px] text-muted-foreground mb-1 block">Title</Label>
+      <div><Label className="text-[11px] text-muted-foreground/70 mb-1.5 block font-medium">Title</Label>
         <Input className={inputCls} value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="Note title" required />
       </div>
-      <div><Label className="text-[11px] text-muted-foreground mb-1 block">Content</Label>
+      <div><Label className="text-[11px] text-muted-foreground/70 mb-1.5 block font-medium">Content</Label>
         <Textarea
-          className="bg-secondary/30 border-border/40 rounded-lg text-sm min-h-[120px] focus:border-primary/50 focus:ring-1 focus:ring-primary/15 resize-none"
+          className="bg-muted/40 border-border/40 rounded-xl text-sm min-h-[120px] focus:border-primary/50 focus:ring-1 focus:ring-primary/15 resize-none"
           value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))} placeholder="Write your note..."
         />
       </div>
-      <div><Label className="text-[11px] text-muted-foreground mb-1 block">Color</Label>
+      <div><Label className="text-[11px] text-muted-foreground/70 mb-1.5 block font-medium">Color</Label>
         <div className="flex gap-2 flex-wrap">
           {colorOptions.map(c => (
             <button
               key={c}
               onClick={() => setForm(f => ({ ...f, color: c }))}
               className={cn(
-                "h-7 w-7 rounded-lg border-2 transition-all",
-                noteColors[c].dot === "bg-muted-foreground/30" ? "bg-secondary/60" : "",
+                "h-8 w-8 rounded-xl border-2 transition-all",
+                noteColors[c].dot === "bg-muted-foreground/30" ? "bg-muted/60" : "",
                 form.color === c ? "border-primary scale-110 shadow-md" : "border-transparent hover:scale-105"
               )}
             >
-              <div className={cn("h-full w-full rounded-md", noteColors[c].dot)} />
+              <div className={cn("h-full w-full rounded-lg", noteColors[c].dot)} />
             </button>
           ))}
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <div><Label className="text-[11px] text-muted-foreground mb-1 block">Category</Label>
+        <div><Label className="text-[11px] text-muted-foreground/70 mb-1.5 block font-medium">Category</Label>
           <Input className={inputCls} value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} placeholder="e.g. Personal" />
         </div>
         <div className="flex items-end gap-2 pb-0.5">
-          <Label className="text-[11px] text-muted-foreground flex items-center gap-2">
+          <Label className="text-[11px] text-muted-foreground/70 flex items-center gap-2">
             <Lock className="h-3 w-3" /> Locked
           </Label>
           <Switch checked={form.is_locked} onCheckedChange={v => setForm(f => ({ ...f, is_locked: v }))} className="scale-75" />
         </div>
       </div>
-      <Button onClick={handleSave} className="w-full h-11 rounded-xl btn-premium" disabled={!form.title}>
+      <Button onClick={handleSave} className="w-full h-11 rounded-xl shadow-[var(--shadow-glow-primary)]" disabled={!form.title}>
         <Plus className="h-4 w-4 mr-1.5" /> {editingNote ? "Update Note" : "Save Note"}
       </Button>
     </div>
@@ -233,12 +233,17 @@ const NotesPage = () => {
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">Secure Notes</h1>
-            <p className="text-sm text-muted-foreground/60 mt-1">Keep your sensitive notes safe and organized.</p>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/12 flex items-center justify-center">
+              <StickyNote className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground tracking-tight">Secure Notes</h1>
+              <p className="text-sm text-muted-foreground/60 mt-0.5">Keep your sensitive notes safe and organized.</p>
+            </div>
           </div>
           {!isMobile && (
-            <Button onClick={() => { setEditingNote(null); setForm({ title: "", content: "", color: "default", category: "", is_locked: false }); setIsAdding(true); }} className="rounded-xl gap-2 btn-premium">
+            <Button onClick={() => { setEditingNote(null); setForm({ title: "", content: "", color: "default", category: "", is_locked: false }); setIsAdding(true); }} className="rounded-xl gap-2 shadow-[var(--shadow-glow-primary)]">
               <Plus className="h-4 w-4" /> Add Note
             </Button>
           )}
@@ -246,22 +251,22 @@ const NotesPage = () => {
       </motion.div>
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Search notes..." className="pl-9 bg-card/40 border-border/40 rounded-xl" value={search} onChange={e => setSearch(e.target.value)} />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
+        <Input placeholder="Search notes..." className="pl-10 bg-white border-border/40 rounded-xl h-11 shadow-[var(--shadow-xs)]" value={search} onChange={e => setSearch(e.target.value)} />
       </div>
 
       {loading ? (
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-          {[1, 2, 3, 4].map(i => <div key={i} className="h-32 rounded-xl bg-card/40 animate-pulse border border-border/20 break-inside-avoid" />)}
+          {[1, 2, 3, 4].map(i => <div key={i} className="h-32 rounded-xl bg-muted/30 animate-pulse border border-border/20 break-inside-avoid" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 bg-card/30 rounded-xl border border-dashed border-border/40">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 bg-white rounded-2xl border border-dashed border-border/50 shadow-[var(--shadow-xs)]">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 border border-primary/15 flex items-center justify-center mb-4">
             <StickyNote className="h-7 w-7 text-primary/50" />
           </div>
-          <p className="text-lg font-medium">{search ? "No notes found" : "No notes yet"}</p>
-          <p className="text-sm text-muted-foreground/60 mt-1 mb-4">{search ? "Try a different search." : "Create your first secure note."}</p>
-          {!search && <Button onClick={() => setIsAdding(true)} className="rounded-xl btn-premium"><Plus className="h-4 w-4 mr-1.5" /> Add Note</Button>}
+          <p className="text-lg font-semibold text-foreground">{search ? "No notes found" : "No notes yet"}</p>
+          <p className="text-sm text-muted-foreground/60 mt-1 mb-5">{search ? "Try a different search." : "Create your first secure note."}</p>
+          {!search && <Button onClick={() => setIsAdding(true)} className="rounded-xl shadow-[var(--shadow-glow-primary)]"><Plus className="h-4 w-4 mr-1.5" /> Add Note</Button>}
         </motion.div>
       ) : (
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
@@ -275,7 +280,7 @@ const NotesPage = () => {
 
       {isMobile && (
         <motion.div className="fixed bottom-20 right-4 z-50" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3, type: "spring" }}>
-          <Button size="lg" className="h-14 w-14 rounded-full shadow-lg shadow-primary/25 p-0" onClick={() => { setEditingNote(null); setForm({ title: "", content: "", color: "default", category: "", is_locked: false }); setIsAdding(true); }}>
+          <Button size="lg" className="h-14 w-14 rounded-full shadow-[var(--shadow-glow-primary)] p-0" onClick={() => { setEditingNote(null); setForm({ title: "", content: "", color: "default", category: "", is_locked: false }); setIsAdding(true); }}>
             <Plus className="h-6 w-6" />
           </Button>
         </motion.div>
@@ -290,7 +295,7 @@ const NotesPage = () => {
         </Drawer>
       ) : (
         <Dialog open={isAdding} onOpenChange={(v) => { if (!v) resetForm(); else setIsAdding(true); }}>
-          <DialogContent className="sm:max-w-md bg-card/95 backdrop-blur-xl border-border/30 rounded-2xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-md bg-white border-border/40 rounded-2xl shadow-lg max-h-[85vh] overflow-y-auto">
             <DialogHeader><DialogTitle className="flex items-center gap-2"><StickyNote className="h-4 w-4 text-primary" /> {editingNote ? "Edit Note" : "Add Note"}</DialogTitle></DialogHeader>
             {formContent}
           </DialogContent>
