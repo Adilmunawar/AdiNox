@@ -71,92 +71,94 @@ export const AppSidebar = React.memo(() => {
 
       <SidebarSeparator className="opacity-30" />
 
-      <SidebarContent className="px-2 py-2">
-        {/* Main navigation */}
-        <SidebarGroup>
-          {!collapsed && (
-            <SidebarGroupLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/30 px-3 mb-1 h-6">
-              Main
-            </SidebarGroupLabel>
-          )}
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-0.5">
-              {mainNav.map((item) => {
-                const active = isActive(item.url);
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      onClick={() => navigate(item.url)}
-                      tooltip={collapsed ? item.title : undefined}
-                      className={cn(
-                        "h-9 rounded-lg transition-all duration-150 cursor-pointer group/item relative",
-                        active
-                          ? "bg-primary/10 text-primary font-medium"
-                          : "text-muted-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/5"
-                      )}
-                    >
-                      {active && (
-                        <motion.div
-                          layoutId="sidebar-active"
-                          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-primary"
-                          transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                        />
-                      )}
-                      <item.icon className={cn(
-                        "h-4 w-4 shrink-0 transition-colors",
-                        active ? "text-primary" : "text-muted-foreground/50 group-hover/item:text-sidebar-foreground"
-                      )} />
-                      {!collapsed && <span className="text-[13px]">{item.title}</span>}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+      <SidebarContent className="px-2 py-2 overflow-hidden">
+        <div className="flex h-full flex-col justify-between">
+          {/* Main navigation */}
+          <SidebarGroup>
+            {!collapsed && (
+              <SidebarGroupLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/30 px-3 mb-1 h-6">
+                Main
+              </SidebarGroupLabel>
+            )}
+            <SidebarGroupContent>
+              <SidebarMenu className="gap-0.5">
+                {mainNav.map((item) => {
+                  const active = isActive(item.url);
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        onClick={() => navigate(item.url)}
+                        tooltip={collapsed ? item.title : undefined}
+                        className={cn(
+                          "h-9 rounded-lg transition-all duration-150 cursor-pointer group/item relative",
+                          active
+                            ? "bg-primary/10 text-primary font-medium"
+                            : "text-muted-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/5"
+                        )}
+                      >
+                        {active && (
+                          <motion.div
+                            layoutId="sidebar-active"
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-primary"
+                            transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                          />
+                        )}
+                        <item.icon className={cn(
+                          "h-4 w-4 shrink-0 transition-colors",
+                          active ? "text-primary" : "text-muted-foreground/50 group-hover/item:text-sidebar-foreground"
+                        )} />
+                        {!collapsed && <span className="text-[13px]">{item.title}</span>}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
 
-        {/* Secondary */}
-        <SidebarGroup className="mt-auto">
-          {!collapsed && (
-            <SidebarGroupLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/30 px-3 mb-1 h-6">
-              System
-            </SidebarGroupLabel>
-          )}
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {secondaryNav.map((item) => {
-                const active = isActive(item.url);
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      onClick={() => navigate(item.url)}
-                      tooltip={collapsed ? item.title : undefined}
-                      className={cn(
-                        "h-9 rounded-lg transition-all duration-150 cursor-pointer group/item relative",
-                        active
-                          ? "bg-primary/10 text-primary font-medium"
-                          : "text-muted-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/5"
-                      )}
-                    >
-                      {active && (
-                        <motion.div
-                          layoutId="sidebar-active"
-                          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-primary"
-                          transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                        />
-                      )}
-                      <item.icon className={cn(
-                        "h-4 w-4 shrink-0 transition-colors",
-                        active ? "text-primary" : "text-muted-foreground/50 group-hover/item:text-sidebar-foreground"
-                      )} />
-                      {!collapsed && <span className="text-[13px]">{item.title}</span>}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+          {/* Secondary */}
+          <SidebarGroup>
+            {!collapsed && (
+              <SidebarGroupLabel className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground/30 px-3 mb-1 h-6">
+                System
+              </SidebarGroupLabel>
+            )}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {secondaryNav.map((item) => {
+                  const active = isActive(item.url);
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        onClick={() => navigate(item.url)}
+                        tooltip={collapsed ? item.title : undefined}
+                        className={cn(
+                          "h-9 rounded-lg transition-all duration-150 cursor-pointer group/item relative",
+                          active
+                            ? "bg-primary/10 text-primary font-medium"
+                            : "text-muted-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/5"
+                        )}
+                      >
+                        {active && (
+                          <motion.div
+                            layoutId="sidebar-active"
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-primary"
+                            transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                          />
+                        )}
+                        <item.icon className={cn(
+                          "h-4 w-4 shrink-0 transition-colors",
+                          active ? "text-primary" : "text-muted-foreground/50 group-hover/item:text-sidebar-foreground"
+                        )} />
+                        {!collapsed && <span className="text-[13px]">{item.title}</span>}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </div>
       </SidebarContent>
 
       <SidebarSeparator className="opacity-30" />
