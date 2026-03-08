@@ -61,7 +61,7 @@ const AppLayout = React.memo(() => {
       <div className="min-h-screen flex w-full">
         {!isMobile && <AppSidebar />}
 
-        <div className="flex-1 flex flex-col min-h-screen">
+        <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
           {/* Sticky header */}
           <header className="sticky top-0 z-40 h-14 flex items-center justify-between border-b border-border/30 bg-background/80 backdrop-blur-xl px-4">
             <div className="flex items-center gap-3">
@@ -90,8 +90,8 @@ const AppLayout = React.memo(() => {
             </div>
           </header>
 
-          {/* Main content */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-20 md:pb-8">
+          {/* Main content — scrollable area */}
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8">
             <div className="max-w-6xl mx-auto">
               <Suspense fallback={<LoadingFallback />}>
                 <Outlet />

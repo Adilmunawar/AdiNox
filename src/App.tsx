@@ -48,7 +48,7 @@ const App = () => (
   <Router>
     <ThemeProvider>
       <AuthProvider>
-        <div className="min-h-screen bg-background gpu-accelerated overflow-hidden">
+        <div className="min-h-screen bg-background gpu-accelerated">
           <AnimatedBackground />
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
