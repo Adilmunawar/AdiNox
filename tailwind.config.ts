@@ -64,11 +64,11 @@ export default {
     				ring: 'hsl(var(--sidebar-ring))'
     			},
     			adinox: {
-    				dark: '#0f1115',
-    				purple: '#8b70f0',
-    				'light-purple': '#b8a4f8',
-    				'soft-purple': '#d4c8fc',
-    				red: '#ef4444',
+    				teal: 'hsl(168, 76%, 42%)',
+    				'light-teal': 'hsl(168, 60%, 55%)',
+    				'soft-teal': 'hsl(168, 50%, 75%)',
+    				'pale-teal': 'hsl(168, 40%, 92%)',
+    				red: 'hsl(0, 72%, 56%)',
     			}
     		},
     		borderRadius: {
@@ -116,9 +116,9 @@ export default {
     			'spin-slow': 'spin-slow 6s linear infinite',
     		},
     		boxShadow: {
-    			'glow-sm': '0 0 10px rgba(139, 112, 240, 0.3)',
-    			'glow-md': '0 0 20px rgba(139, 112, 240, 0.4)',
-    			'glow-lg': '0 0 30px rgba(139, 112, 240, 0.5)',
+    			'glow-sm': '0 0 10px rgba(20, 184, 166, 0.15)',
+    			'glow-md': '0 0 20px rgba(20, 184, 166, 0.2)',
+    			'glow-lg': '0 0 30px rgba(20, 184, 166, 0.25)',
     		},
     		fontFamily: {
     			sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],

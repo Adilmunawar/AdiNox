@@ -1,7 +1,7 @@
 import React from "react";
 import {
   LayoutDashboard, Shield, CreditCard, Key, StickyNote, Settings,
-  LogOut, User, ChevronUp, Fingerprint, Lock, Sparkles,
+  LogOut, ChevronUp, Lock,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -77,20 +77,19 @@ export const AppSidebar = React.memo(() => {
   const initials = username.slice(0, 2).toUpperCase();
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border/20 bg-sidebar">
+    <Sidebar collapsible="icon" className="border-r border-border bg-card">
       {/* Logo header */}
       <SidebarHeader className="px-4 py-5">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/15 flex items-center justify-center shrink-0 relative overflow-hidden">
+          <div className="h-10 w-10 rounded-2xl bg-primary/10 border border-primary/15 flex items-center justify-center shrink-0 relative overflow-hidden">
             <Shield className="h-5 w-5 text-primary relative z-10" />
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
           </div>
           {!collapsed && (
             <div className="overflow-hidden">
-              <h1 className="text-base font-extrabold tracking-tight text-sidebar-foreground leading-none">
+              <h1 className="text-base font-extrabold tracking-tight text-foreground leading-none">
                 Adi<span className="text-primary">Nox</span>
               </h1>
-              <p className="text-[8px] text-muted-foreground/30 uppercase tracking-[0.3em] mt-1 font-semibold">
+              <p className="text-[8px] text-muted-foreground uppercase tracking-[0.3em] mt-1 font-semibold">
                 Security Vault
               </p>
             </div>
@@ -98,31 +97,31 @@ export const AppSidebar = React.memo(() => {
         </div>
       </SidebarHeader>
 
-      <SidebarSeparator className="opacity-10" />
+      <SidebarSeparator className="bg-border" />
 
       {/* Vault status banner */}
       {!collapsed && (
         <div className="px-4 py-3">
-          <div className="rounded-xl bg-gradient-to-r from-primary/[0.08] to-primary/[0.03] border border-primary/10 p-3">
+          <div className="rounded-xl bg-primary/[0.04] border border-primary/10 p-3">
             <div className="flex items-center gap-2 mb-2">
-              <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[9px] font-bold text-emerald-400/80 uppercase tracking-[0.2em]">
+              <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-[9px] font-bold text-primary uppercase tracking-[0.2em]">
                 Vault Active
               </span>
             </div>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-extrabold text-foreground tracking-tight">{totalItems}</span>
-              <span className="text-[10px] text-muted-foreground/40 font-medium">secured items</span>
+              <span className="text-[10px] text-muted-foreground font-medium">secured items</span>
             </div>
             <div className="flex gap-3 mt-2">
               {[
-                { label: "Tokens", val: stats.tokens, color: "text-primary/60" },
-                { label: "Cards", val: stats.cards, color: "text-blue-400/60" },
-                { label: "Keys", val: stats.passwords, color: "text-amber-400/60" },
+                { label: "Tokens", val: stats.tokens, color: "text-primary" },
+                { label: "Cards", val: stats.cards, color: "text-blue-500" },
+                { label: "Keys", val: stats.passwords, color: "text-amber-500" },
               ].map(s => (
                 <div key={s.label} className="flex items-center gap-1">
                   <span className={cn("text-[10px] font-bold", s.color)}>{s.val}</span>
-                  <span className="text-[8px] text-muted-foreground/25">{s.label}</span>
+                  <span className="text-[8px] text-muted-foreground/60">{s.label}</span>
                 </div>
               ))}
             </div>
@@ -135,7 +134,7 @@ export const AppSidebar = React.memo(() => {
           {/* Main nav */}
           <SidebarGroup>
             {!collapsed && (
-              <SidebarGroupLabel className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground/20 px-3 mb-1 h-6 font-bold">
+              <SidebarGroupLabel className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground/50 px-3 mb-1 h-6 font-bold">
                 Navigation
               </SidebarGroupLabel>
             )}
@@ -152,23 +151,22 @@ export const AppSidebar = React.memo(() => {
                         className={cn(
                           "h-10 rounded-xl transition-all duration-200 cursor-pointer group/item relative",
                           active
-                            ? "bg-primary/12 text-primary font-semibold shadow-[inset_0_0_20px_hsl(var(--primary)/0.05)]"
-                            : "text-muted-foreground/45 hover:text-sidebar-foreground hover:bg-sidebar-accent/5"
+                            ? "bg-primary/10 text-primary font-semibold"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
                         )}
                       >
                         {active && (
                           <motion.div
                             layoutId="sidebar-active-indicator"
                             className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-primary"
-                            style={{ boxShadow: "0 0 12px hsl(var(--primary) / 0.5), 0 0 4px hsl(var(--primary) / 0.3)" }}
                             transition={{ type: "spring", stiffness: 400, damping: 28 }}
                           />
                         )}
                         <item.icon className={cn(
                           "h-[18px] w-[18px] shrink-0 transition-all duration-200",
                           active
-                            ? "text-primary drop-shadow-[0_0_6px_hsl(var(--primary)/0.4)]"
-                            : "text-muted-foreground/35 group-hover/item:text-sidebar-foreground"
+                            ? "text-primary"
+                            : "text-muted-foreground/60 group-hover/item:text-foreground"
                         )} />
                         {!collapsed && (
                           <div className="flex items-center justify-between flex-1">
@@ -178,7 +176,7 @@ export const AppSidebar = React.memo(() => {
                                 "text-[10px] font-bold min-w-[20px] text-center rounded-md px-1.5 py-0.5",
                                 active
                                   ? "bg-primary/15 text-primary"
-                                  : "bg-secondary/30 text-muted-foreground/30"
+                                  : "bg-muted text-muted-foreground/50"
                               )}>
                                 {stat}
                               </span>
@@ -196,7 +194,7 @@ export const AppSidebar = React.memo(() => {
           {/* System nav */}
           <SidebarGroup>
             {!collapsed && (
-              <SidebarGroupLabel className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground/20 px-3 mb-1 h-6 font-bold">
+              <SidebarGroupLabel className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground/50 px-3 mb-1 h-6 font-bold">
                 System
               </SidebarGroupLabel>
             )}
@@ -212,21 +210,20 @@ export const AppSidebar = React.memo(() => {
                         className={cn(
                           "h-10 rounded-xl transition-all duration-200 cursor-pointer group/item relative",
                           active
-                            ? "bg-primary/12 text-primary font-semibold"
-                            : "text-muted-foreground/45 hover:text-sidebar-foreground hover:bg-sidebar-accent/5"
+                            ? "bg-primary/10 text-primary font-semibold"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
                         )}
                       >
                         {active && (
                           <motion.div
                             layoutId="sidebar-active-indicator"
                             className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-primary"
-                            style={{ boxShadow: "0 0 12px hsl(var(--primary) / 0.5)" }}
                             transition={{ type: "spring", stiffness: 400, damping: 28 }}
                           />
                         )}
                         <item.icon className={cn(
                           "h-[18px] w-[18px] shrink-0 transition-colors duration-200",
-                          active ? "text-primary" : "text-muted-foreground/35 group-hover/item:text-sidebar-foreground"
+                          active ? "text-primary" : "text-muted-foreground/60 group-hover/item:text-foreground"
                         )} />
                         {!collapsed && <span className="text-[13px]">{item.title}</span>}
                       </SidebarMenuButton>
@@ -239,14 +236,14 @@ export const AppSidebar = React.memo(() => {
         </div>
       </SidebarContent>
 
-      <SidebarSeparator className="opacity-10" />
+      <SidebarSeparator className="bg-border" />
 
       {/* Security badge */}
       {!collapsed && (
         <div className="px-4 py-2">
           <div className="flex items-center gap-2 px-2">
-            <Lock className="h-3 w-3 text-emerald-500/50" />
-            <span className="text-[9px] text-muted-foreground/25 font-medium">End-to-End Encrypted</span>
+            <Lock className="h-3 w-3 text-primary" />
+            <span className="text-[9px] text-muted-foreground font-medium">End-to-End Encrypted</span>
           </div>
         </div>
       )}
@@ -257,22 +254,22 @@ export const AppSidebar = React.memo(() => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className={cn(
-                "flex items-center gap-2.5 w-full p-2.5 rounded-xl hover:bg-secondary/15 transition-all duration-200 text-left outline-none group",
+                "flex items-center gap-2.5 w-full p-2.5 rounded-xl hover:bg-muted transition-all duration-200 text-left outline-none group",
                 collapsed && "justify-center p-2"
               )}>
-                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary/20 via-primary/10 to-accent/10 border border-primary/15 flex items-center justify-center shrink-0 relative overflow-hidden">
+                <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center shrink-0 relative overflow-hidden">
                   <span className="text-[11px] font-bold text-primary relative z-10">{initials}</span>
-                  <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-sidebar" />
+                  <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-primary border-2 border-card" />
                 </div>
                 {!collapsed && (
                   <>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[12px] font-bold text-sidebar-foreground truncate leading-none">
+                      <p className="text-[12px] font-bold text-foreground truncate leading-none">
                         {username}
                       </p>
-                      <p className="text-[10px] text-muted-foreground/30 truncate mt-1">{user.email}</p>
+                      <p className="text-[10px] text-muted-foreground truncate mt-1">{user.email}</p>
                     </div>
-                    <ChevronUp className="h-3 w-3 text-muted-foreground/20 group-hover:text-muted-foreground/40 transition-colors shrink-0" />
+                    <ChevronUp className="h-3 w-3 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors shrink-0" />
                   </>
                 )}
               </button>
@@ -280,24 +277,24 @@ export const AppSidebar = React.memo(() => {
             <DropdownMenuContent
               align="end"
               side={collapsed ? "right" : "top"}
-              className="w-56 bg-card/95 backdrop-blur-2xl border-border/20 rounded-xl shadow-lg"
+              className="w-56 bg-card border-border rounded-xl shadow-lg"
             >
               <div className="px-3 py-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/10 flex items-center justify-center">
+                  <div className="h-8 w-8 rounded-lg bg-primary/10 border border-primary/10 flex items-center justify-center">
                     <span className="text-[10px] font-bold text-primary">{initials}</span>
                   </div>
                   <div>
-                    <p className="text-xs font-bold">{username}</p>
-                    <p className="text-[10px] text-muted-foreground/40 truncate">{user.email}</p>
+                    <p className="text-xs font-bold text-foreground">{username}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{user.email}</p>
                   </div>
                 </div>
               </div>
-              <DropdownMenuSeparator className="bg-border/10" />
+              <DropdownMenuSeparator className="bg-border" />
               <DropdownMenuItem onClick={() => navigate("/settings")} className="text-xs cursor-pointer rounded-lg mx-1">
                 <Settings className="h-3.5 w-3.5 mr-2" /> Settings
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-border/10" />
+              <DropdownMenuSeparator className="bg-border" />
               <DropdownMenuItem
                 onClick={signOut}
                 className="text-destructive focus:text-destructive text-xs cursor-pointer rounded-lg mx-1"
