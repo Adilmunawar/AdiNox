@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useBiometric } from "@/hooks/useBiometric";
+import { useFaceAuth } from "@/hooks/useFaceAuth";
 import { cn } from "@/lib/utils";
 
 const routeLabels: Record<string, string> = {
@@ -46,30 +47,31 @@ const AppLayout = React.memo(() => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { isEnrolled } = useBiometric();
+  const { isEnrolled: bioEnrolled } = useBiometric();
+  const { isEnrolled: faceEnrolled } = useFaceAuth();
   const [commandOpen, setCommandOpen] = React.useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [lastActivity, setLastActivity] = useState(Date.now());
   const [lockTimeout, setLockTimeout] = useState(300);
+  const [lockEnabled, setLockEnabled] = useState(false);
 
   // Fetch user's auto-lock setting
   useEffect(() => {
     if (!user) return;
     supabase
       .from("user_settings")
-      .select("auto_lock_timeout, biometric_enabled")
+      .select("auto_lock_timeout, biometric_enabled, face_scan_enabled")
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }) => {
         if (data) {
           setLockTimeout(data.auto_lock_timeout);
-          // Only auto-lock if biometric is enabled and enrolled
-          if ((data as any).biometric_enabled && isEnrolled) {
-            // Don't lock on initial load
-          }
+          const bioActive = (data as any).biometric_enabled && bioEnrolled;
+          const faceActive = (data as any).face_scan_enabled && faceEnrolled;
+          setLockEnabled(bioActive || faceActive);
         }
       });
-  }, [user, isEnrolled]);
+  }, [user, bioEnrolled, faceEnrolled]);
 
   // Activity tracking for auto-lock
   useEffect(() => {
@@ -81,7 +83,7 @@ const AppLayout = React.memo(() => {
 
   // Auto-lock timer
   useEffect(() => {
-    if (!isEnrolled) return;
+    if (!lockEnabled) return;
     const interval = setInterval(() => {
       const idle = (Date.now() - lastActivity) / 1000;
       if (idle >= lockTimeout && !isLocked) {
@@ -89,7 +91,7 @@ const AppLayout = React.memo(() => {
       }
     }, 5000);
     return () => clearInterval(interval);
-  }, [lastActivity, lockTimeout, isLocked, isEnrolled]);
+  }, [lastActivity, lockTimeout, isLocked, lockEnabled]);
 
   const handleUnlock = useCallback(() => {
     setIsLocked(false);

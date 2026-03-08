@@ -130,6 +130,39 @@ export type Database = {
           },
         ]
       }
+      user_face_data: {
+        Row: {
+          created_at: string
+          descriptors: Json
+          id: string
+          image_snapshot: string | null
+          label: string
+          scan_quality: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          descriptors: Json
+          id?: string
+          image_snapshot?: string | null
+          label?: string
+          scan_quality?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          descriptors?: Json
+          id?: string
+          image_snapshot?: string | null
+          label?: string
+          scan_quality?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_settings: {
         Row: {
           auto_lock_timeout: number
@@ -137,6 +170,7 @@ export type Database = {
           clipboard_clear_seconds: number
           created_at: string
           default_password_length: number
+          face_scan_enabled: boolean
           id: string
           notifications_enabled: boolean
           show_favicons: boolean
@@ -149,6 +183,7 @@ export type Database = {
           clipboard_clear_seconds?: number
           created_at?: string
           default_password_length?: number
+          face_scan_enabled?: boolean
           id?: string
           notifications_enabled?: boolean
           show_favicons?: boolean
@@ -161,6 +196,7 @@ export type Database = {
           clipboard_clear_seconds?: number
           created_at?: string
           default_password_length?: number
+          face_scan_enabled?: boolean
           id?: string
           notifications_enabled?: boolean
           show_favicons?: boolean
