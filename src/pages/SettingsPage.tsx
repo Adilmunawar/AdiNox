@@ -108,7 +108,7 @@ const SettingsPage = React.memo(() => {
     setLoading(true);
     const { data, error } = await supabase
       .from("user_settings")
-      .select("auto_lock_timeout, clipboard_clear_seconds, show_favicons, default_password_length, notifications_enabled, biometric_enabled")
+      .select("auto_lock_timeout, clipboard_clear_seconds, show_favicons, default_password_length, notifications_enabled, biometric_enabled, face_scan_enabled")
       .eq("user_id", user.id)
       .maybeSingle();
 
@@ -120,6 +120,8 @@ const SettingsPage = React.memo(() => {
         default_password_length: data.default_password_length,
         notifications_enabled: data.notifications_enabled,
         biometric_enabled: (data as any).biometric_enabled ?? false,
+        face_scan_enabled: (data as any).face_scan_enabled ?? false,
+      });
       });
     } else if (!error) {
       await supabase.from("user_settings").insert({ user_id: user.id });
