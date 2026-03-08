@@ -97,6 +97,8 @@ const AppLayout = React.memo(() => {
   }, []);
 
   const currentLabel = routeLabels[location.pathname] || "AdiNox";
+
+  React.useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
