@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { LogOut, Shield, Zap } from 'lucide-react';
+import { LogOut, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface AuthContainerProps {
@@ -21,76 +21,56 @@ const AuthContainer: React.FC<AuthContainerProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-hidden flex flex-col">
-      {/* Animated mesh gradient background */}
+      {/* Ambient light */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div 
-          className="absolute -top-1/4 -right-1/4 w-[600px] h-[600px] bg-primary/8 rounded-full blur-[120px]"
-          animate={{ 
-            x: [0, 30, 0], 
-            y: [0, -20, 0],
-            scale: [1, 1.1, 1] 
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -top-[20%] -right-[10%] w-[600px] h-[600px] rounded-full blur-[160px]"
+          style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.08), transparent 70%)' }}
+          animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute -bottom-1/4 -left-1/4 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[100px]"
-          animate={{ 
-            x: [0, -20, 0], 
-            y: [0, 30, 0],
-            scale: [1, 1.15, 1] 
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div 
-          className="absolute top-1/3 left-1/3 w-[400px] h-[400px] bg-primary/3 rounded-full blur-[80px]"
-          animate={{ 
-            x: [0, 40, 0], 
-            y: [0, -40, 0] 
-          }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -bottom-[20%] -left-[10%] w-[500px] h-[500px] rounded-full blur-[140px]"
+          style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.05), transparent 70%)' }}
+          animate={{ x: [0, -30, 0], y: [0, 40, 0] }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
 
-      {/* Dot pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
-        backgroundImage: 'radial-gradient(circle, hsl(var(--primary)) 1px, transparent 1px)',
-        backgroundSize: '24px 24px'
+      {/* Subtle dot grid */}
+      <div className="absolute inset-0 opacity-[0.025]" style={{
+        backgroundImage: 'radial-gradient(circle, hsl(var(--foreground)) 0.5px, transparent 0.5px)',
+        backgroundSize: '20px 20px'
       }} />
-
-      {/* Scan line effect */}
-      <motion.div 
-        className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent pointer-events-none"
-        animate={{ y: [0, typeof window !== 'undefined' ? window.innerHeight : 1000] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-      />
 
       {/* Header for authenticated users */}
       {user && (
         <motion.header 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="relative z-10 border-b border-border/30 bg-card/30 backdrop-blur-xl px-4 sm:px-6 py-4"
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="relative z-10 border-b border-border/40 bg-card/40 backdrop-blur-xl px-4 sm:px-6 py-3.5"
         >
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="max-w-5xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-primary to-primary/80 rounded-xl shadow-lg shadow-primary/25">
-                <Shield className="h-6 w-6 text-primary-foreground" />
+              <div className="p-2.5 bg-primary/15 rounded-xl border border-primary/10">
+                <Shield className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
-                  AdiNox
+                <h1 className="text-lg font-semibold text-foreground tracking-tight">
+                  Adi<span className="text-primary">Nox</span>
                 </h1>
-                <p className="text-xs text-muted-foreground tracking-wider uppercase">Enterprise Security</p>
+                <p className="text-[10px] text-muted-foreground tracking-[0.15em] uppercase">Security Portal</p>
               </div>
             </div>
             
             <motion.button
               onClick={handleSignOut}
-              className="flex items-center gap-2 px-4 py-2 bg-secondary/50 hover:bg-secondary/80 border border-border/50 rounded-xl text-sm font-medium transition-all duration-200"
+              className="flex items-center gap-2 px-3.5 py-2 bg-secondary/60 hover:bg-secondary border border-border/40 hover:border-border/60 rounded-lg text-xs font-medium transition-all duration-200"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-3.5 w-3.5" />
               Sign Out
             </motion.button>
           </div>
@@ -101,32 +81,25 @@ const AuthContainer: React.FC<AuthContainerProps> = ({ children }) => {
       <main className="relative z-10 flex items-center justify-center flex-1 p-4 sm:p-6">
         <motion.div 
           className="w-full max-w-md"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
           {children}
         </motion.div>
       </main>
 
-      {/* Professional Footer */}
-      <footer className="relative z-10 py-5 border-t border-border/20">
-        <div className="container mx-auto px-4">
-          <motion.div 
-            className="flex items-center justify-center gap-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-          >
-            <Zap className="h-3 w-3 text-primary/60" />
-            <p className="text-center text-xs text-muted-foreground/80 tracking-wide">
-              Proudly Developed by{" "}
-              <span className="font-semibold text-primary/90">
-                Adil Munawar
-              </span>
-            </p>
-          </motion.div>
-        </div>
+      {/* Footer */}
+      <footer className="relative z-10 py-4 border-t border-border/20">
+        <motion.p 
+          className="text-center text-[11px] text-muted-foreground/50 tracking-wide"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
+          Proudly Developed by{" "}
+          <span className="font-medium text-primary/70">Adil Munawar</span>
+        </motion.p>
       </footer>
     </div>
   );

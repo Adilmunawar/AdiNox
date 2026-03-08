@@ -10,36 +10,32 @@ interface AnimatedBackgroundProps {
 const AnimatedBackground = ({ className }: AnimatedBackgroundProps) => {
   return (
     <div className={cn("fixed inset-0 -z-10 bg-background overflow-hidden", className)}>
-      {/* Large ambient orbs */}
+      {/* Primary ambient orb */}
       <motion.div 
-        className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary/6 rounded-full blur-[100px]"
-        animate={{ 
-          x: [0, 30, -20, 0], 
-          y: [0, -30, 20, 0],
-        }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[-15%] right-[-8%] w-[500px] h-[500px] rounded-full blur-[140px]"
+        style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.06), transparent 70%)' }}
+        animate={{ x: [0, 30, -15, 0], y: [0, -25, 15, 0] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
       />
+      {/* Secondary orb */}
       <motion.div 
-        className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-purple-500/4 rounded-full blur-[80px]"
-        animate={{ 
-          x: [0, -30, 20, 0], 
-          y: [0, 20, -30, 0],
-        }}
-        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-[-15%] left-[-8%] w-[400px] h-[400px] rounded-full blur-[120px]"
+        style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.04), transparent 70%)' }}
+        animate={{ x: [0, -25, 15, 0], y: [0, 25, -20, 0] }}
+        transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
       />
+      {/* Center accent */}
       <motion.div 
-        className="absolute top-[40%] left-[30%] w-[300px] h-[300px] bg-primary/3 rounded-full blur-[60px]"
-        animate={{ 
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
-        }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[35%] left-[25%] w-[300px] h-[300px] rounded-full blur-[100px]"
+        style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.03), transparent 70%)' }}
+        animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.6, 0.4] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
       />
       
-      {/* Grid pattern */}
-      <div className="absolute inset-0 opacity-[0.015]" style={{
-        backgroundImage: `linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)`,
-        backgroundSize: '60px 60px'
+      {/* Subtle grid */}
+      <div className="absolute inset-0 opacity-[0.012]" style={{
+        backgroundImage: `linear-gradient(hsl(var(--foreground)) 0.5px, transparent 0.5px), linear-gradient(90deg, hsl(var(--foreground)) 0.5px, transparent 0.5px)`,
+        backgroundSize: '48px 48px'
       }} />
     </div>
   );
