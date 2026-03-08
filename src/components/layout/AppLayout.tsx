@@ -45,9 +45,56 @@ const AppLayout = React.memo(() => {
   const location = useLocation();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isEnrolled } = useBiometric();
   const [commandOpen, setCommandOpen] = React.useState(false);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lastActivity, setLastActivity] = useState(Date.now());
+  const [lockTimeout, setLockTimeout] = useState(300);
 
-  const currentLabel = routeLabels[location.pathname] || "AdiNox";
+  // Fetch user's auto-lock setting
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("user_settings")
+      .select("auto_lock_timeout, biometric_enabled")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          setLockTimeout(data.auto_lock_timeout);
+          // Only auto-lock if biometric is enabled and enrolled
+          if ((data as any).biometric_enabled && isEnrolled) {
+            // Don't lock on initial load
+          }
+        }
+      });
+  }, [user, isEnrolled]);
+
+  // Activity tracking for auto-lock
+  useEffect(() => {
+    const resetActivity = () => setLastActivity(Date.now());
+    const events = ["mousedown", "keydown", "touchstart", "scroll"];
+    events.forEach(e => window.addEventListener(e, resetActivity, { passive: true }));
+    return () => events.forEach(e => window.removeEventListener(e, resetActivity));
+  }, []);
+
+  // Auto-lock timer
+  useEffect(() => {
+    if (!isEnrolled) return;
+    const interval = setInterval(() => {
+      const idle = (Date.now() - lastActivity) / 1000;
+      if (idle >= lockTimeout && !isLocked) {
+        setIsLocked(true);
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [lastActivity, lockTimeout, isLocked, isEnrolled]);
+
+  const handleUnlock = useCallback(() => {
+    setIsLocked(false);
+    setLastActivity(Date.now());
+  }, []);
 
   React.useEffect(() => {
     const handler = (e: KeyboardEvent) => {
