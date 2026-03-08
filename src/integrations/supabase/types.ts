@@ -130,6 +130,138 @@ export type Database = {
         }
         Relationships: []
       }
+      vault_cards: {
+        Row: {
+          card_brand: string | null
+          card_holder: string
+          card_number: string
+          card_type: string
+          color_theme: string | null
+          created_at: string
+          cvv: string | null
+          expiry_date: string | null
+          id: string
+          issuer_bank: string | null
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          card_brand?: string | null
+          card_holder: string
+          card_number: string
+          card_type?: string
+          color_theme?: string | null
+          created_at?: string
+          cvv?: string | null
+          expiry_date?: string | null
+          id?: string
+          issuer_bank?: string | null
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          card_brand?: string | null
+          card_holder?: string
+          card_number?: string
+          card_type?: string
+          color_theme?: string | null
+          created_at?: string
+          cvv?: string | null
+          expiry_date?: string | null
+          id?: string
+          issuer_bank?: string | null
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vault_notes: {
+        Row: {
+          category: string | null
+          color: string | null
+          content: string | null
+          created_at: string
+          id: string
+          is_locked: boolean
+          is_pinned: boolean
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          color?: string | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_locked?: boolean
+          is_pinned?: boolean
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          color?: string | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_locked?: boolean
+          is_pinned?: boolean
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vault_passwords: {
+        Row: {
+          category: string | null
+          created_at: string
+          encrypted_password: string
+          favicon_url: string | null
+          id: string
+          last_used: string | null
+          notes: string | null
+          site_name: string
+          site_url: string | null
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          encrypted_password: string
+          favicon_url?: string | null
+          id?: string
+          last_used?: string | null
+          notes?: string | null
+          site_name: string
+          site_url?: string | null
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          encrypted_password?: string
+          favicon_url?: string | null
+          id?: string
+          last_used?: string | null
+          notes?: string | null
+          site_name?: string
+          site_url?: string | null
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
