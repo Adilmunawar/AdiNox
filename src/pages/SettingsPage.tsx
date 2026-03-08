@@ -95,11 +95,13 @@ const SettingsPage = React.memo(() => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { capability, isEnrolled, enrolledDevices, enroll, removeCredential, loading: bioLoading } = useBiometric();
+  const { isEnrolled: faceEnrolled, removeFaceData, status: faceStatus } = useFaceAuth();
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
+  const [showFaceScanner, setShowFaceScanner] = useState(false);
 
   const fetchSettings = useCallback(async () => {
     if (!user) return;
