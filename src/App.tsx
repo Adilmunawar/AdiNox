@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/NotFound";
 import AuthPage from "@/pages/AuthPage";
@@ -6,13 +6,15 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import AnimatedBackground from "@/components/ui/animated-background";
 import PageTransition from "@/components/ui/page-transition";
-import { AnimatePresence } from "framer-motion";
 import React, { Suspense, lazy } from "react";
 import { motion } from "framer-motion";
 import AppLayout from "@/components/layout/AppLayout";
 
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
 const TokensPage = lazy(() => import("@/pages/TokensPage"));
+const CardsPage = lazy(() => import("@/pages/CardsPage"));
+const PasswordsPage = lazy(() => import("@/pages/PasswordsPage"));
+const NotesPage = lazy(() => import("@/pages/NotesPage"));
 const SettingsPage = lazy(() => import("@/pages/SettingsPage"));
 
 const LoadingSpinner = React.memo(() => (
@@ -60,6 +62,9 @@ const App = () => (
               >
                 <Route path="/" element={<DashboardPage />} />
                 <Route path="/tokens" element={<TokensPage />} />
+                <Route path="/cards" element={<CardsPage />} />
+                <Route path="/passwords" element={<PasswordsPage />} />
+                <Route path="/notes" element={<NotesPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
               </Route>
               <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
