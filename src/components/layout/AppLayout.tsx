@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useBiometric } from "@/hooks/useBiometric";
+import { useFaceAuth } from "@/hooks/useFaceAuth";
 import { cn } from "@/lib/utils";
 
 const routeLabels: Record<string, string> = {
