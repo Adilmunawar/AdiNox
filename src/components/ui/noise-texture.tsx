@@ -109,7 +109,7 @@ const NoiseTexture = ({
       className="fixed inset-0 -z-5 pointer-events-none"
       style={{ 
         opacity: opacity, 
-        mixBlendMode: theme === 'dark' ? 'soft-light' : 'multiply' 
+        mixBlendMode: 'multiply'
       }}
     />
   );
