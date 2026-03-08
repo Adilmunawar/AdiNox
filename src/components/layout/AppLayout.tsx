@@ -108,85 +108,87 @@ const AppLayout = React.memo(() => {
   }, []);
 
   return (
-    <SidebarProvider>
-      <div className="h-screen w-full overflow-hidden flex">
-        {!isMobile && <AppSidebar />}
+    <>
+      <BiometricLockScreen
+        isLocked={isLocked}
+        onUnlock={handleUnlock}
+        userName={user?.user_metadata?.username}
+      />
+      <SidebarProvider>
+        <div className="h-screen w-full overflow-hidden flex">
+          {!isMobile && <AppSidebar />}
 
-        <div className="flex-1 h-screen flex flex-col overflow-hidden">
-          {/* Sticky header */}
-          <header className="sticky top-0 z-40 h-14 flex items-center justify-between border-b border-border/20 bg-background/70 backdrop-blur-2xl px-4 relative">
-            {/* Top glow accent */}
-            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/15 to-transparent" />
-            
-            <div className="flex items-center gap-3">
-              {!isMobile && <SidebarTrigger className="text-muted-foreground/50 hover:text-foreground transition-colors" />}
-              <div className="h-4 w-px bg-border/20 hidden md:block" />
-              <h2 className="text-sm font-semibold text-foreground/90">{currentLabel}</h2>
-            </div>
-
-            <div className="flex items-center gap-1.5">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 gap-2 text-xs text-muted-foreground/50 hover:text-foreground"
-                onClick={() => setCommandOpen(true)}
-              >
-                <Search className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Search</span>
-                <kbd className="hidden sm:inline-flex h-5 items-center gap-0.5 rounded border border-border/30 bg-secondary/20 px-1.5 text-[10px] font-mono text-muted-foreground/40">
-                  ⌘K
-                </kbd>
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 relative">
-                <Bell className="h-3.5 w-3.5 text-muted-foreground/50" />
-                <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-              </Button>
-            </div>
-          </header>
-
-          {/* Main content — scrollable area */}
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8">
-            <div className="max-w-6xl mx-auto">
-              <Suspense fallback={<LoadingFallback />}>
-                <Outlet />
-              </Suspense>
-            </div>
-          </main>
-        </div>
-
-        {/* Mobile bottom tab bar */}
-        {isMobile && (
-          <nav className="fixed bottom-0 inset-x-0 z-50 h-16 bg-card/80 backdrop-blur-2xl border-t border-border/20 flex items-center justify-around px-1 safe-area-bottom">
-            {mobileNavItems.map((item) => {
-              const active = item.path === "/"
-                ? location.pathname === "/"
-                : location.pathname.startsWith(item.path);
-              return (
-                <button
-                  key={item.path}
-                  onClick={() => navigate(item.path)}
-                  className={cn(
-                    "flex flex-col items-center gap-0.5 py-1.5 px-2 rounded-xl transition-all duration-200 relative",
-                    active ? "text-primary" : "text-muted-foreground/40"
-                  )}
+          <div className="flex-1 h-screen flex flex-col overflow-hidden">
+            {/* Sticky header */}
+            <header className="sticky top-0 z-40 h-14 flex items-center justify-between border-b border-border/20 bg-background/70 backdrop-blur-2xl px-4 relative">
+              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/15 to-transparent" />
+              <div className="flex items-center gap-3">
+                {!isMobile && <SidebarTrigger className="text-muted-foreground/50 hover:text-foreground transition-colors" />}
+                <div className="h-4 w-px bg-border/20 hidden md:block" />
+                <h2 className="text-sm font-semibold text-foreground/90">{currentLabel}</h2>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 gap-2 text-xs text-muted-foreground/50 hover:text-foreground"
+                  onClick={() => setCommandOpen(true)}
                 >
-                  <item.icon className={cn("h-5 w-5", active && "drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]")} />
-                  <span className="text-[9px] font-semibold">{item.label}</span>
-                  {active && (
-                    <motion.div
-                      layoutId="mobile-tab-indicator"
-                      className="absolute -top-0.5 h-0.5 w-8 bg-gradient-to-r from-primary/50 via-primary to-primary/50 rounded-full"
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-        )}
+                  <Search className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Search</span>
+                  <kbd className="hidden sm:inline-flex h-5 items-center gap-0.5 rounded border border-border/30 bg-secondary/20 px-1.5 text-[10px] font-mono text-muted-foreground/40">
+                    ⌘K
+                  </kbd>
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 relative">
+                  <Bell className="h-3.5 w-3.5 text-muted-foreground/50" />
+                  <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                </Button>
+              </div>
+            </header>
 
-        <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
-      </div>
-    </SidebarProvider>
+            <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8">
+              <div className="max-w-6xl mx-auto">
+                <Suspense fallback={<LoadingFallback />}>
+                  <Outlet />
+                </Suspense>
+              </div>
+            </main>
+          </div>
+
+          {isMobile && (
+            <nav className="fixed bottom-0 inset-x-0 z-50 h-16 bg-card/80 backdrop-blur-2xl border-t border-border/20 flex items-center justify-around px-1 safe-area-bottom">
+              {mobileNavItems.map((item) => {
+                const active = item.path === "/"
+                  ? location.pathname === "/"
+                  : location.pathname.startsWith(item.path);
+                return (
+                  <button
+                    key={item.path}
+                    onClick={() => navigate(item.path)}
+                    className={cn(
+                      "flex flex-col items-center gap-0.5 py-1.5 px-2 rounded-xl transition-all duration-200 relative",
+                      active ? "text-primary" : "text-muted-foreground/40"
+                    )}
+                  >
+                    <item.icon className={cn("h-5 w-5", active && "drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]")} />
+                    <span className="text-[9px] font-semibold">{item.label}</span>
+                    {active && (
+                      <motion.div
+                        layoutId="mobile-tab-indicator"
+                        className="absolute -top-0.5 h-0.5 w-8 bg-gradient-to-r from-primary/50 via-primary to-primary/50 rounded-full"
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+          )}
+
+          <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
+        </div>
+      </SidebarProvider>
+    </>
   );
 });
 
