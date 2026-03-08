@@ -43,9 +43,9 @@ const NoiseTexture = ({
       
       // Base color tint for the noise
       const baseTint = {
-        r: theme === 'dark' ? 30 : 245,  // Red component
-        g: theme === 'dark' ? 20 : 240,  // Green component
-        b: theme === 'dark' ? 40 : 247   // Blue component
+        r: 245,
+        g: 240,
+        b: 247
       };
       
       const purpleTint = {
