@@ -96,7 +96,7 @@ const AppLayout = React.memo(() => {
     setLastActivity(Date.now());
   }, []);
 
-  React.useEffect(() => {
+  const currentLabel = routeLabels[location.pathname] || "AdiNox";
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
