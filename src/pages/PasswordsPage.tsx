@@ -38,8 +38,8 @@ const getStrength = (pw: string): { score: number; label: string; color: string 
     { label: "Weak", color: "bg-orange-500" },
     { label: "Fair", color: "bg-yellow-500" },
     { label: "Good", color: "bg-blue-500" },
-    { label: "Strong", color: "bg-emerald-500" },
-    { label: "Excellent", color: "bg-emerald-400" },
+    { label: "Strong", color: "bg-primary" },
+    { label: "Excellent", color: "bg-primary/80" },
   ];
   return { score: s, ...(configs[s - 1] || configs[0]) };
 };
@@ -73,14 +73,14 @@ const PasswordItem = React.memo(({ pw, onDelete }: { pw: VaultPassword; onDelete
     : null;
 
   return (
-    <Card className="p-4 border-border/30 bg-card/60 backdrop-blur-sm hover-lift transition-all">
+    <Card className="p-4 border-border/30 bg-white hover:shadow-[var(--shadow-md)] transition-all duration-200">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className="h-10 w-10 rounded-xl bg-secondary/40 border border-border/20 flex items-center justify-center shrink-0 overflow-hidden">
+          <div className="h-10 w-10 rounded-xl bg-muted/50 border border-border/30 flex items-center justify-center shrink-0 overflow-hidden">
             {faviconUrl ? (
               <img src={faviconUrl} alt="" className="h-5 w-5" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             ) : (
-              <Globe className="h-4 w-4 text-muted-foreground/50" />
+              <Globe className="h-4 w-4 text-muted-foreground/40" />
             )}
           </div>
           <div className="min-w-0">
@@ -90,7 +90,7 @@ const PasswordItem = React.memo(({ pw, onDelete }: { pw: VaultPassword; onDelete
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground shrink-0"><MoreVertical className="h-3.5 w-3.5" /></Button>
+            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground/40 hover:text-foreground shrink-0"><MoreVertical className="h-3.5 w-3.5" /></Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-44">
             <DropdownMenuItem onClick={() => copyField(pw.username, "Username")} className="text-xs cursor-pointer">
@@ -112,16 +112,16 @@ const PasswordItem = React.memo(({ pw, onDelete }: { pw: VaultPassword; onDelete
         </DropdownMenu>
       </div>
 
-      <div className="mt-3 p-3 bg-secondary/20 border border-border/20 rounded-xl">
+      <div className="mt-3 p-3 bg-muted/30 border border-border/20 rounded-xl">
         <div className="flex items-center justify-between">
           <p className="font-mono text-sm tracking-wide text-foreground">
             {visible ? pw.encrypted_password : "•".repeat(Math.min(pw.encrypted_password.length, 16))}
           </p>
           <div className="flex gap-1">
-            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setVisible(!visible)}>
+            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground/50" onClick={() => setVisible(!visible)}>
               {visible ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
             </Button>
-            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => copyField(pw.encrypted_password, "Password")}>
+            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground/50" onClick={() => copyField(pw.encrypted_password, "Password")}>
               <Copy className="h-3 w-3" />
             </Button>
           </div>
@@ -149,7 +149,6 @@ const PasswordsPage = () => {
 
   const [form, setForm] = useState({ site_name: "", site_url: "", username: "", password: "", notes: "" });
 
-  // Generator state
   const [genLength, setGenLength] = useState(16);
   const [genUpper, setGenUpper] = useState(true);
   const [genLower, setGenLower] = useState(true);
@@ -198,25 +197,25 @@ const PasswordsPage = () => {
     return p.site_name.toLowerCase().includes(t) || p.username.toLowerCase().includes(t);
   });
 
-  const inputCls = "h-10 bg-secondary/30 border-border/40 rounded-lg text-sm focus:border-primary/50 focus:ring-1 focus:ring-primary/15";
+  const inputCls = "h-10 bg-muted/40 border-border/40 rounded-xl text-sm focus:border-primary/50 focus:ring-1 focus:ring-primary/15";
   const strength = getStrength(form.password);
 
   const formContent = (
     <div className="space-y-4 py-2">
-      <div><Label className="text-[11px] text-muted-foreground mb-1 block">Site Name</Label>
+      <div><Label className="text-[11px] text-muted-foreground/70 mb-1.5 block font-medium">Site Name</Label>
         <Input className={inputCls} value={form.site_name} onChange={e => setForm(f => ({ ...f, site_name: e.target.value }))} placeholder="Google, GitHub..." required />
       </div>
-      <div><Label className="text-[11px] text-muted-foreground mb-1 block">URL (optional)</Label>
+      <div><Label className="text-[11px] text-muted-foreground/70 mb-1.5 block font-medium">URL (optional)</Label>
         <Input className={inputCls} value={form.site_url} onChange={e => setForm(f => ({ ...f, site_url: e.target.value }))} placeholder="https://example.com" />
       </div>
-      <div><Label className="text-[11px] text-muted-foreground mb-1 block">Username / Email</Label>
+      <div><Label className="text-[11px] text-muted-foreground/70 mb-1.5 block font-medium">Username / Email</Label>
         <Input className={inputCls} value={form.username} onChange={e => setForm(f => ({ ...f, username: e.target.value }))} placeholder="user@email.com" required />
       </div>
       <div>
-        <Label className="text-[11px] text-muted-foreground mb-1 block">Password</Label>
+        <Label className="text-[11px] text-muted-foreground/70 mb-1.5 block font-medium">Password</Label>
         <div className="flex gap-2">
           <Input className={cn(inputCls, "flex-1")} value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} placeholder="Password" required />
-          <Button variant="outline" size="icon" className="h-10 w-10 shrink-0" onClick={handleGenerate} title="Generate">
+          <Button variant="outline" size="icon" className="h-10 w-10 shrink-0 rounded-xl border-border/40" onClick={handleGenerate} title="Generate">
             <RefreshCw className="h-3.5 w-3.5" />
           </Button>
         </div>
@@ -224,7 +223,7 @@ const PasswordsPage = () => {
           <div className="mt-2">
             <div className="flex justify-between text-[10px] mb-1">
               <span className="text-muted-foreground/50">Strength</span>
-              <span className="text-muted-foreground/70">{strength.label}</span>
+              <span className="text-muted-foreground/70 font-medium">{strength.label}</span>
             </div>
             <div className="flex gap-0.5">
               {[1, 2, 3, 4, 5, 6].map(i => (
@@ -235,9 +234,8 @@ const PasswordsPage = () => {
         )}
       </div>
 
-      {/* Generator options */}
-      <div className="p-3 bg-secondary/20 border border-border/20 rounded-xl space-y-3">
-        <p className="text-[10px] text-muted-foreground/50 uppercase tracking-widest font-medium">Generator</p>
+      <div className="p-3 bg-muted/30 border border-border/20 rounded-xl space-y-3">
+        <p className="text-[10px] text-muted-foreground/50 uppercase tracking-widest font-semibold">Generator</p>
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">Length: {genLength}</span>
           <Slider value={[genLength]} onValueChange={v => setGenLength(v[0])} min={8} max={64} step={1} className="w-32" />
@@ -257,7 +255,7 @@ const PasswordsPage = () => {
         </div>
       </div>
 
-      <Button onClick={handleAdd} className="w-full h-11 rounded-xl btn-premium" disabled={!form.site_name || !form.username || !form.password}>
+      <Button onClick={handleAdd} className="w-full h-11 rounded-xl shadow-[var(--shadow-glow-primary)]" disabled={!form.site_name || !form.username || !form.password}>
         <Plus className="h-4 w-4 mr-1.5" /> Save Password
       </Button>
     </div>
@@ -267,40 +265,44 @@ const PasswordsPage = () => {
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">Password Manager</h1>
-            <p className="text-sm text-muted-foreground/60 mt-1">Store and manage your credentials securely.</p>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/12 flex items-center justify-center">
+              <Key className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground tracking-tight">Password Manager</h1>
+              <p className="text-sm text-muted-foreground/60 mt-0.5">Store and manage your credentials securely.</p>
+            </div>
           </div>
           {!isMobile && (
-            <Button onClick={() => setIsAdding(true)} className="rounded-xl gap-2 btn-premium">
+            <Button onClick={() => setIsAdding(true)} className="rounded-xl gap-2 shadow-[var(--shadow-glow-primary)]">
               <Plus className="h-4 w-4" /> Add Password
             </Button>
           )}
         </div>
       </motion.div>
 
-      {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
         <Input
           placeholder="Search credentials..."
-          className="pl-9 bg-card/40 border-border/40 rounded-xl"
+          className="pl-10 bg-white border-border/40 rounded-xl h-11 shadow-[var(--shadow-xs)]"
           value={search} onChange={e => setSearch(e.target.value)}
         />
       </div>
 
       {loading ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map(i => <div key={i} className="h-40 rounded-xl bg-card/40 animate-pulse border border-border/20" />)}
+          {[1, 2, 3].map(i => <div key={i} className="h-40 rounded-xl bg-muted/30 animate-pulse border border-border/20" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 bg-card/30 rounded-xl border border-dashed border-border/40">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 bg-white rounded-2xl border border-dashed border-border/50 shadow-[var(--shadow-xs)]">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 border border-primary/15 flex items-center justify-center mb-4">
             <Key className="h-7 w-7 text-primary/50" />
           </div>
-          <p className="text-lg font-medium">{search ? "No results found" : "No passwords saved yet"}</p>
-          <p className="text-sm text-muted-foreground/60 mt-1 mb-4">{search ? "Try a different search term." : "Add your first credential to the vault."}</p>
-          {!search && <Button onClick={() => setIsAdding(true)} className="rounded-xl btn-premium"><Plus className="h-4 w-4 mr-1.5" /> Add Password</Button>}
+          <p className="text-lg font-semibold text-foreground">{search ? "No results found" : "No passwords saved yet"}</p>
+          <p className="text-sm text-muted-foreground/60 mt-1 mb-5">{search ? "Try a different search term." : "Add your first credential to the vault."}</p>
+          {!search && <Button onClick={() => setIsAdding(true)} className="rounded-xl shadow-[var(--shadow-glow-primary)]"><Plus className="h-4 w-4 mr-1.5" /> Add Password</Button>}
         </motion.div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -314,7 +316,7 @@ const PasswordsPage = () => {
 
       {isMobile && (
         <motion.div className="fixed bottom-20 right-4 z-50" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3, type: "spring" }}>
-          <Button size="lg" className="h-14 w-14 rounded-full shadow-lg shadow-primary/25 p-0" onClick={() => setIsAdding(true)}>
+          <Button size="lg" className="h-14 w-14 rounded-full shadow-[var(--shadow-glow-primary)] p-0" onClick={() => setIsAdding(true)}>
             <Plus className="h-6 w-6" />
           </Button>
         </motion.div>
@@ -329,7 +331,7 @@ const PasswordsPage = () => {
         </Drawer>
       ) : (
         <Dialog open={isAdding} onOpenChange={setIsAdding}>
-          <DialogContent className="sm:max-w-md bg-card/95 backdrop-blur-xl border-border/30 rounded-2xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-md bg-white border-border/40 rounded-2xl shadow-lg max-h-[85vh] overflow-y-auto">
             <DialogHeader><DialogTitle className="flex items-center gap-2"><Key className="h-4 w-4 text-primary" /> Add Password</DialogTitle></DialogHeader>
             {formContent}
           </DialogContent>
