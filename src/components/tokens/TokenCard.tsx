@@ -1,12 +1,11 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Copy, Edit, QrCode, MoreVertical, Trash2, AlertCircle, Check, ShieldCheck } from "lucide-react";
 import { TokenType } from "@/context/TokenContext";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { formatTOTPDisplay, getTimeRemaining } from "@/utils/tokenUtils";
-import { useToast } from "@/components/ui/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
@@ -18,27 +17,75 @@ interface TokenCardProps {
   onEdit?: (token: TokenType) => void;
 }
 
+const CountdownCircle = ({ timeRemaining, period }: { timeRemaining: number; period: number }) => {
+  const size = 32;
+  const strokeWidth = 2.5;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const progress = (timeRemaining / period) * circumference;
+  const isUrgent = timeRemaining <= 5;
+  const isWarning = timeRemaining <= 10 && !isUrgent;
+
+  return (
+    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="hsl(var(--border) / 0.3)"
+          strokeWidth={strokeWidth}
+        />
+        <motion.circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={isUrgent ? "hsl(var(--destructive))" : isWarning ? "hsl(var(--accent-foreground))" : "hsl(var(--primary))"}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          animate={{ strokeDashoffset: circumference - progress }}
+          transition={{ duration: 0.5, ease: "linear" }}
+        />
+      </svg>
+      <span className={cn(
+        "absolute text-[9px] font-mono font-bold transition-colors",
+        isUrgent ? "text-destructive" : isWarning ? "text-amber-500" : "text-primary"
+      )}>
+        {timeRemaining}
+      </span>
+    </div>
+  );
+};
+
 const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
   const [timeRemaining, setTimeRemaining] = useState(getTimeRemaining(token.period));
-  const [progress, setProgress] = useState(0);
   const [showQR, setShowQR] = useState(false);
   const [copied, setCopied] = useState(false);
-  const { toast } = useToast();
+  const [codeKey, setCodeKey] = useState(0);
+  const prevCodeRef = useRef(token.currentCode);
   const isMobile = useIsMobile();
   
   useEffect(() => {
     const interval = setInterval(() => {
-      const remaining = getTimeRemaining(token.period);
-      setTimeRemaining(remaining);
-      setProgress((remaining / token.period) * 100);
+      setTimeRemaining(getTimeRemaining(token.period));
     }, 1000);
     return () => clearInterval(interval);
   }, [token.period]);
+
+  // Detect code changes for transition
+  useEffect(() => {
+    if (prevCodeRef.current !== token.currentCode && token.currentCode !== "------") {
+      prevCodeRef.current = token.currentCode;
+      setCodeKey(k => k + 1);
+    }
+  }, [token.currentCode]);
   
   const handleCopy = () => {
     navigator.clipboard.writeText(token.currentCode);
     setCopied(true);
-    toast({ title: "Copied", description: "Code copied to clipboard.", duration: 1500 });
     setTimeout(() => setCopied(false), 1500);
   };
 
@@ -48,15 +95,13 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
     }
   };
 
-  const timerColor = timeRemaining <= 5 ? "text-destructive" : timeRemaining <= 10 ? "text-amber-500" : "text-primary";
-  const barColor = timeRemaining <= 5 ? "bg-destructive" : timeRemaining <= 10 ? "bg-amber-500" : "bg-primary";
-
   return (
     <>
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        whileTap={copied ? { scale: [1, 1.02, 1] } : undefined}
       >
         <Card className={cn(
           "relative overflow-hidden border-border/30 bg-card/70 backdrop-blur-sm",
@@ -101,11 +146,20 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
             </DropdownMenu>
           </div>
           
-          {/* Code */}
+          {/* Code with fade transition */}
           <div className={`p-3 bg-secondary/20 border border-border/20 rounded-xl flex ${isMobile ? 'flex-col gap-2' : 'justify-between items-center'}`}>
-            <div className="text-2xl font-mono font-bold tracking-[0.12em] select-all text-foreground">
-              {formatTOTPDisplay(token.currentCode)}
-            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={codeKey}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="text-2xl font-mono font-bold tracking-[0.12em] select-all text-foreground"
+              >
+                {formatTOTPDisplay(token.currentCode)}
+              </motion.div>
+            </AnimatePresence>
             <Button 
               variant={copied ? "secondary" : "outline"} 
               size="sm" 
@@ -119,30 +173,25 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
             </Button>
           </div>
           
-          {/* Timer */}
-          <div className="mt-3">
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-[10px] text-muted-foreground/50 uppercase tracking-wider">Refresh</span>
-              <span className={`text-[11px] font-mono font-medium ${timerColor} transition-colors`}>{timeRemaining}s</span>
+          {/* Timer with circular countdown */}
+          <div className="mt-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CountdownCircle timeRemaining={timeRemaining} period={token.period} />
+              <AnimatePresence>
+                {timeRemaining <= 5 && (
+                  <motion.div 
+                    initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
+                    className="flex items-center gap-1"
+                  >
+                    <AlertCircle className="h-2.5 w-2.5 text-destructive" />
+                    <span className="text-[10px] text-destructive font-medium">Expiring</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-            <div className="h-0.5 bg-border/30 rounded-full overflow-hidden">
-              <motion.div 
-                className={`h-full rounded-full ${barColor} transition-colors`}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.5, ease: "linear" }}
-              />
-            </div>
-            <AnimatePresence>
-              {timeRemaining <= 5 && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="flex items-center gap-1 mt-1.5"
-                >
-                  <AlertCircle className="h-2.5 w-2.5 text-destructive" />
-                  <span className="text-[10px] text-destructive font-medium">Expiring soon</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <span className="text-[10px] text-muted-foreground/50 uppercase tracking-wider">
+              {token.algorithm} · {token.digits}d
+            </span>
           </div>
         </Card>
       </motion.div>
