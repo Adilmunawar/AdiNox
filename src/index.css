@@ -117,6 +117,29 @@
     box-shadow: var(--shadow-lg);
   }
 
+  /* Gradient border on hover */
+  .gradient-border-hover {
+    @apply relative;
+  }
+  .gradient-border-hover::before {
+    content: '';
+    @apply absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300;
+    padding: 1px;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.4), transparent 60%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .gradient-border-hover:hover::before {
+    opacity: 1;
+  }
+
+  /* Safe area for mobile bottom bar */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
   /* Loading shimmer */
   .loading-shimmer {
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
