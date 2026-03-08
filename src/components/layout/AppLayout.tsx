@@ -151,9 +151,13 @@ const AppLayout = React.memo(() => {
 
             <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8 bg-background">
               <div className="max-w-6xl mx-auto">
-                <Suspense fallback={<LoadingFallback />}>
-                  <Outlet />
-                </Suspense>
+              <AnimatePresence mode="wait">
+                <PageTransition key={location.pathname}>
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Outlet />
+                  </Suspense>
+                </PageTransition>
+              </AnimatePresence>
               </div>
             </main>
           </div>
