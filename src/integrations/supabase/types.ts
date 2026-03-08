@@ -94,6 +94,42 @@ export type Database = {
           },
         ]
       }
+      user_settings: {
+        Row: {
+          auto_lock_timeout: number
+          clipboard_clear_seconds: number
+          created_at: string
+          default_password_length: number
+          id: string
+          notifications_enabled: boolean
+          show_favicons: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_lock_timeout?: number
+          clipboard_clear_seconds?: number
+          created_at?: string
+          default_password_length?: number
+          id?: string
+          notifications_enabled?: boolean
+          show_favicons?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_lock_timeout?: number
+          clipboard_clear_seconds?: number
+          created_at?: string
+          default_password_length?: number
+          id?: string
+          notifications_enabled?: boolean
+          show_favicons?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_tokens: {
         Row: {
           algorithm: string
