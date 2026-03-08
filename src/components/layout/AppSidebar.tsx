@@ -1,5 +1,5 @@
 import React from "react";
-import { LayoutDashboard, Shield, Settings, LogOut, User, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Shield, CreditCard, Key, StickyNote, Settings, LogOut, User, ChevronRight } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
@@ -23,11 +23,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Logo from "@/components/ui/logo";
 
 const navItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "2FA Tokens", url: "/tokens", icon: Shield },
+  { title: "Cards", url: "/cards", icon: CreditCard },
+  { title: "Passwords", url: "/passwords", icon: Key },
+  { title: "Notes", url: "/notes", icon: StickyNote },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 

@@ -299,7 +299,4 @@ const NotesPage = () => {
   );
 };
 
-// Import Switch here since it's used in the form
-import { Switch } from "@/components/ui/switch";
-
 export default NotesPage;
