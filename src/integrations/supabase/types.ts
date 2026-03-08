@@ -23,6 +23,7 @@ export type Database = {
           id: string
           last_used_at: string | null
           public_key: string
+          updated_at: string
           user_id: string
         }
         Insert: {
@@ -33,6 +34,7 @@ export type Database = {
           id?: string
           last_used_at?: string | null
           public_key: string
+          updated_at?: string
           user_id: string
         }
         Update: {
@@ -43,6 +45,7 @@ export type Database = {
           id?: string
           last_used_at?: string | null
           public_key?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
