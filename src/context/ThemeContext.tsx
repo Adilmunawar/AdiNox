@@ -1,8 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { useToast } from "@/hooks/use-toast";
 
-type Theme = "dark" | "light";
+type Theme = "light";
 
 type ThemeContextType = {
   theme: Theme;
@@ -13,27 +12,17 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  // Force dark theme only
-  const [theme] = useState<Theme>("dark");
-  
-  const { toast } = useToast();
+  const [theme] = useState<Theme>("light");
 
-  // Always apply dark theme
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove("light");
-    root.classList.add("dark");
-    localStorage.setItem("theme", "dark");
+    root.classList.remove("dark");
+    root.classList.add("light");
+    localStorage.setItem("theme", "light");
   }, []);
 
-  // Disabled theme toggling - always dark
-  const toggleTheme = () => {
-    // Theme toggle disabled - always dark mode
-  };
-  
-  const setTheme = () => {
-    // Theme setting disabled - always dark mode
-  };
+  const toggleTheme = () => {};
+  const setTheme = () => {};
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme: setTheme as any }}>
