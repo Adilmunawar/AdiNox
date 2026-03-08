@@ -1,12 +1,14 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Shield, Plus, Clock, Activity, ArrowRight, Lightbulb, ScanLine } from "lucide-react";
+import { Shield, Plus, Clock, Activity, ArrowRight, Lightbulb, ScanLine, CreditCard, Key, StickyNote } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { TokenProvider, useTokens } from "@/context/TokenContext";
 import { getTimeRemaining, formatTOTPDisplay } from "@/utils/tokenUtils";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/context/AuthContext";
 
 const securityTips = [
   "Enable 2FA on all your critical accounts — email, banking, and cloud services.",
@@ -50,8 +52,27 @@ const StatsCard = ({ icon: Icon, label, value, accent, index }: {
 
 const DashboardContent = () => {
   const { tokens } = useTokens();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [tipIndex] = React.useState(() => Math.floor(Math.random() * securityTips.length));
+  const [vaultStats, setVaultStats] = React.useState({ cards: 0, passwords: 0, notes: 0 });
+
+  React.useEffect(() => {
+    if (!user) return;
+    const fetchStats = async () => {
+      const [cardsRes, passwordsRes, notesRes] = await Promise.all([
+        supabase.from("vault_cards").select("id", { count: "exact", head: true }),
+        supabase.from("vault_passwords").select("id", { count: "exact", head: true }),
+        supabase.from("vault_notes").select("id", { count: "exact", head: true }),
+      ]);
+      setVaultStats({
+        cards: cardsRes.count ?? 0,
+        passwords: passwordsRes.count ?? 0,
+        notes: notesRes.count ?? 0,
+      });
+    };
+    fetchStats();
+  }, [user]);
 
   const urgentTokens = tokens.filter(t => getTimeRemaining(t.period) <= 10);
   const recentTokens = tokens.slice(-3).reverse();
@@ -69,15 +90,17 @@ const DashboardContent = () => {
       </motion.div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard icon={Shield} label="Total Tokens" value={tokens.length} accent index={0} />
-        <StatsCard icon={Clock} label="Expiring Soon" value={urgentTokens.length} index={1} />
-        <StatsCard icon={Activity} label="Active Now" value={tokens.length} index={2} />
-        <StatsCard icon={Shield} label="Security Score" value="A+" accent index={3} />
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        <StatsCard icon={Shield} label="2FA Tokens" value={tokens.length} accent index={0} />
+        <StatsCard icon={CreditCard} label="Saved Cards" value={vaultStats.cards} index={1} />
+        <StatsCard icon={Key} label="Passwords" value={vaultStats.passwords} index={2} />
+        <StatsCard icon={StickyNote} label="Secure Notes" value={vaultStats.notes} index={3} />
+        <StatsCard icon={Clock} label="Expiring Soon" value={urgentTokens.length} index={4} />
+        <StatsCard icon={Activity} label="Security Score" value="A+" accent index={5} />
       </div>
 
       {/* Quick Actions */}
-      <motion.div custom={4} variants={staggerItem} initial="hidden" animate="visible">
+      <motion.div custom={6} variants={staggerItem} initial="hidden" animate="visible">
         <h3 className="text-xs font-semibold text-muted-foreground/50 uppercase tracking-widest mb-3">Quick Actions</h3>
         <div className="flex flex-wrap gap-3">
           <Button
@@ -88,25 +111,31 @@ const DashboardContent = () => {
           </Button>
           <Button
             variant="outline"
-            onClick={() => navigate("/tokens")}
+            onClick={() => navigate("/cards")}
             className="h-11 rounded-xl gap-2"
           >
-            <ScanLine className="h-4 w-4" /> Scan QR Code
+            <CreditCard className="h-4 w-4" /> Add Card
           </Button>
           <Button
             variant="outline"
-            onClick={() => navigate("/tokens")}
+            onClick={() => navigate("/passwords")}
             className="h-11 rounded-xl gap-2"
           >
-            <Shield className="h-4 w-4" /> View All Tokens
-            <ArrowRight className="h-3.5 w-3.5" />
+            <Key className="h-4 w-4" /> Add Password
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate("/notes")}
+            className="h-11 rounded-xl gap-2"
+          >
+            <StickyNote className="h-4 w-4" /> Add Note
           </Button>
         </div>
       </motion.div>
 
       {/* Recent Tokens */}
       {recentTokens.length > 0 && (
-        <motion.div custom={5} variants={staggerItem} initial="hidden" animate="visible">
+        <motion.div custom={7} variants={staggerItem} initial="hidden" animate="visible">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-xs font-semibold text-muted-foreground/50 uppercase tracking-widest">Recent Tokens</h3>
             <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7" onClick={() => navigate("/tokens")}>
@@ -117,7 +146,7 @@ const DashboardContent = () => {
             {recentTokens.map((token, i) => (
               <motion.div
                 key={token.id}
-                custom={6 + i}
+                custom={8 + i}
                 variants={staggerItem}
                 initial="hidden"
                 animate="visible"
@@ -145,7 +174,7 @@ const DashboardContent = () => {
       )}
 
       {/* Security Tip */}
-      <motion.div custom={9} variants={staggerItem} initial="hidden" animate="visible">
+      <motion.div custom={11} variants={staggerItem} initial="hidden" animate="visible">
         <Card className="p-5 border-border/20 bg-primary/[0.03] border-primary/10">
           <div className="flex gap-3">
             <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center shrink-0">
