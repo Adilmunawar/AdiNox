@@ -28,6 +28,7 @@ type UserSettings = {
   default_password_length: number;
   notifications_enabled: boolean;
   biometric_enabled: boolean;
+  face_scan_enabled: boolean;
 };
 
 const defaultSettings: UserSettings = {
@@ -37,6 +38,7 @@ const defaultSettings: UserSettings = {
   default_password_length: 16,
   notifications_enabled: true,
   biometric_enabled: false,
+  face_scan_enabled: false,
 };
 
 const stagger = {
