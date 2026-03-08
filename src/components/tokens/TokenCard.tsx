@@ -4,22 +4,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Copy, Edit, QrCode, MoreVertical, Trash2, AlertCircle, Check, ShieldCheck } from "lucide-react";
 import { TokenType } from "@/context/TokenContext";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger,
-  DropdownMenuSeparator
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { formatTOTPDisplay, getTimeRemaining } from "@/utils/tokenUtils";
 import { useToast } from "@/components/ui/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -43,143 +32,113 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
       setTimeRemaining(remaining);
       setProgress((remaining / token.period) * 100);
     }, 1000);
-    
     return () => clearInterval(interval);
   }, [token.period]);
   
   const handleCopy = () => {
     navigator.clipboard.writeText(token.currentCode);
     setCopied(true);
-    toast({
-      title: "Code copied",
-      description: "The code has been copied to your clipboard.",
-      duration: 2000,
-    });
-    setTimeout(() => setCopied(false), 2000);
+    toast({ title: "Copied", description: "Code copied to clipboard.", duration: 1500 });
+    setTimeout(() => setCopied(false), 1500);
   };
 
   const handleRemove = () => {
-    if (window.confirm(`Are you sure you want to remove the token for ${token.issuer || token.name}?`)) {
+    if (window.confirm(`Remove token for ${token.issuer || token.name}?`)) {
       onRemove(token.id);
     }
   };
 
-  const getTimerColor = () => {
-    if (timeRemaining <= 5) return "text-destructive";
-    if (timeRemaining <= 10) return "text-amber-500";
-    return "text-primary";
-  };
-
-  const getBarColor = () => {
-    if (timeRemaining <= 5) return "bg-destructive";
-    if (timeRemaining <= 10) return "bg-amber-500";
-    return "bg-primary";
-  };
+  const timerColor = timeRemaining <= 5 ? "text-destructive" : timeRemaining <= 10 ? "text-amber-500" : "text-primary";
+  const barColor = timeRemaining <= 5 ? "bg-destructive" : timeRemaining <= 10 ? "bg-amber-500" : "bg-primary";
 
   return (
     <>
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-        whileHover={{ y: -2 }}
-        layoutId={`token-card-${token.id}`}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       >
         <Card className={cn(
-          "relative overflow-hidden border-border/40 bg-card/60 backdrop-blur-sm",
-          "p-4 transition-all duration-300",
-          "hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5",
-          timeRemaining <= 5 && "border-l-2 border-l-destructive"
+          "relative overflow-hidden border-border/30 bg-card/70 backdrop-blur-sm",
+          "p-4 transition-all duration-200 hover:border-border/50 hover-lift",
+          timeRemaining <= 5 && "border-l-2 border-l-destructive/60"
         )}>
-          {/* Top section */}
-          <div className="flex justify-between items-start mb-4">
+          {/* Header */}
+          <div className="flex justify-between items-start mb-3">
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <div className="p-1.5 bg-primary/10 rounded-lg shrink-0">
-                <ShieldCheck className="h-4 w-4 text-primary" />
+              <div className="p-1.5 bg-primary/8 rounded-lg shrink-0 border border-primary/10">
+                <ShieldCheck className="h-3.5 w-3.5 text-primary/70" />
               </div>
               <div className="min-w-0">
-                <h3 className="font-semibold text-sm truncate">{token.issuer}</h3>
-                <p className="text-xs text-muted-foreground/70 truncate">{token.name}</p>
+                <h3 className="font-semibold text-sm truncate text-foreground">{token.issuer}</h3>
+                <p className="text-[11px] text-muted-foreground/60 truncate">{token.name}</p>
               </div>
             </div>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-7 w-7 p-0 rounded-lg hover:bg-secondary/80 shrink-0">
+                <Button variant="ghost" size="sm" className="h-7 w-7 p-0 rounded-lg text-muted-foreground hover:text-foreground shrink-0">
                   <MoreVertical className="h-3.5 w-3.5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={handleCopy} className="cursor-pointer text-sm">
-                  <Copy className="h-3.5 w-3.5 mr-2" /> Copy Code
+              <DropdownMenuContent align="end" className="w-44">
+                <DropdownMenuItem onClick={handleCopy} className="text-xs cursor-pointer">
+                  <Copy className="h-3 w-3 mr-2" /> Copy Code
                 </DropdownMenuItem>
                 {onEdit && (
-                  <DropdownMenuItem onClick={() => onEdit(token)} className="cursor-pointer text-sm">
-                    <Edit className="h-3.5 w-3.5 mr-2" /> Edit Token
+                  <DropdownMenuItem onClick={() => onEdit(token)} className="text-xs cursor-pointer">
+                    <Edit className="h-3 w-3 mr-2" /> Edit
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={() => setShowQR(true)} className="cursor-pointer text-sm">
-                  <QrCode className="h-3.5 w-3.5 mr-2" /> Show QR Code
+                <DropdownMenuItem onClick={() => setShowQR(true)} className="text-xs cursor-pointer">
+                  <QrCode className="h-3 w-3 mr-2" /> QR Code
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  className="text-destructive focus:text-destructive cursor-pointer text-sm" 
-                  onClick={handleRemove}
-                >
-                  <Trash2 className="h-3.5 w-3.5 mr-2" /> Remove
+                <DropdownMenuItem className="text-destructive focus:text-destructive text-xs cursor-pointer" onClick={handleRemove}>
+                  <Trash2 className="h-3 w-3 mr-2" /> Remove
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
           
-          {/* Code display */}
-          <div className={`p-3 bg-secondary/30 rounded-xl flex ${isMobile ? 'flex-col gap-2' : 'justify-between items-center'}`}>
-            <div className="text-2xl font-mono font-bold tracking-[0.15em] select-all text-foreground">
+          {/* Code */}
+          <div className={`p-3 bg-secondary/20 border border-border/20 rounded-xl flex ${isMobile ? 'flex-col gap-2' : 'justify-between items-center'}`}>
+            <div className="text-2xl font-mono font-bold tracking-[0.12em] select-all text-foreground">
               {formatTOTPDisplay(token.currentCode)}
             </div>
-            <motion.div whileTap={{ scale: 0.95 }}>
-              <Button 
-                variant={copied ? "secondary" : "outline"} 
-                size="sm" 
-                className={cn(
-                  "h-8 text-xs transition-all duration-200 rounded-lg",
-                  copied && "bg-green-500/20 text-green-400 border-green-500/30"
-                )}
-                onClick={handleCopy}
-              >
-                {copied ? (
-                  <><Check className="h-3.5 w-3.5 mr-1" /> Copied</>
-                ) : (
-                  <><Copy className="h-3.5 w-3.5 mr-1" /> {!isMobile && "Copy"}</>
-                )}
-              </Button>
-            </motion.div>
+            <Button 
+              variant={copied ? "secondary" : "outline"} 
+              size="sm" 
+              className={cn(
+                "h-7 text-[11px] rounded-lg transition-all",
+                copied && "bg-emerald-500/15 text-emerald-400 border-emerald-500/20"
+              )}
+              onClick={handleCopy}
+            >
+              {copied ? <><Check className="h-3 w-3 mr-1" /> Copied</> : <><Copy className="h-3 w-3 mr-1" /> {!isMobile && "Copy"}</>}
+            </Button>
           </div>
           
           {/* Timer */}
           <div className="mt-3">
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="text-[10px] text-muted-foreground/60 uppercase tracking-wider">Refresh</span>
-              <span className={`text-xs font-mono font-medium ${getTimerColor()} transition-colors`}>
-                {timeRemaining}s
-              </span>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-[10px] text-muted-foreground/50 uppercase tracking-wider">Refresh</span>
+              <span className={`text-[11px] font-mono font-medium ${timerColor} transition-colors`}>{timeRemaining}s</span>
             </div>
-            <div className="h-1 bg-secondary/50 rounded-full overflow-hidden">
+            <div className="h-0.5 bg-border/30 rounded-full overflow-hidden">
               <motion.div 
-                className={`h-full rounded-full ${getBarColor()} transition-colors duration-300`}
+                className={`h-full rounded-full ${barColor} transition-colors`}
                 animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.3, ease: "linear" }}
+                transition={{ duration: 0.5, ease: "linear" }}
               />
             </div>
             <AnimatePresence>
               {timeRemaining <= 5 && (
                 <motion.div 
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
+                  initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                   className="flex items-center gap-1 mt-1.5"
                 >
-                  <AlertCircle className="h-3 w-3 text-destructive" />
+                  <AlertCircle className="h-2.5 w-2.5 text-destructive" />
                   <span className="text-[10px] text-destructive font-medium">Expiring soon</span>
                 </motion.div>
               )}
@@ -188,35 +147,28 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
         </Card>
       </motion.div>
       
-      {/* QR Code Dialog */}
+      {/* QR Dialog */}
       <Dialog open={showQR} onOpenChange={setShowQR}>
-        <DialogContent className="sm:max-w-sm bg-card/95 backdrop-blur-xl border-border/30">
+        <DialogContent className="sm:max-w-sm bg-card border-border/30">
           <DialogHeader>
-            <DialogTitle className="text-center text-base">Token Details</DialogTitle>
+            <DialogTitle className="text-center text-sm">Token Details</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col items-center justify-center py-4">
-            <div className="bg-secondary/30 p-6 rounded-xl border border-border/30 mb-4">
-              <div className="w-40 h-40 flex items-center justify-center">
-                <p className="text-xs text-muted-foreground/70 text-center leading-relaxed">
-                  For security reasons, the original QR code cannot be regenerated without the original secret.
+          <div className="flex flex-col items-center py-4">
+            <div className="bg-secondary/20 border border-border/20 p-5 rounded-xl mb-3">
+              <div className="w-36 h-36 flex items-center justify-center">
+                <p className="text-[11px] text-muted-foreground/60 text-center leading-relaxed">
+                  QR code cannot be regenerated without the original secret.
                 </p>
               </div>
             </div>
-            <div className="text-center space-y-1">
-              <p className="text-sm font-medium">{token.issuer}</p>
-              <p className="text-xs text-muted-foreground">{token.name}</p>
-              <div className="flex items-center justify-center gap-2 mt-2">
-                <span className="text-[10px] px-2 py-0.5 bg-secondary/50 rounded-md text-muted-foreground">TOTP</span>
-                <span className="text-[10px] px-2 py-0.5 bg-secondary/50 rounded-md text-muted-foreground">{token.algorithm}</span>
-                <span className="text-[10px] px-2 py-0.5 bg-secondary/50 rounded-md text-muted-foreground">{token.digits} digits</span>
-              </div>
+            <p className="text-sm font-medium">{token.issuer}</p>
+            <p className="text-[11px] text-muted-foreground">{token.name}</p>
+            <div className="flex items-center gap-1.5 mt-2">
+              {["TOTP", token.algorithm, `${token.digits}d`].map(tag => (
+                <span key={tag} className="text-[9px] px-1.5 py-0.5 bg-secondary/40 border border-border/20 rounded text-muted-foreground font-mono">{tag}</span>
+              ))}
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setShowQR(false)} 
-              className="mt-5 w-full rounded-xl"
-            >
+            <Button variant="outline" size="sm" onClick={() => setShowQR(false)} className="mt-4 w-full rounded-lg text-xs">
               Close
             </Button>
           </div>
