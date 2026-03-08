@@ -1,5 +1,7 @@
 import React, { Suspense, useState, useEffect, useCallback } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import PageTransition from "@/components/ui/page-transition";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/layout/AppSidebar";
 import CommandPalette from "@/components/layout/CommandPalette";
