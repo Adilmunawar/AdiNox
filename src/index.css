@@ -140,6 +140,11 @@
     padding-bottom: env(safe-area-inset-bottom, 0);
   }
 
+  /* 3D perspective for card flip */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
   /* Loading shimmer */
   .loading-shimmer {
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
