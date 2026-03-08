@@ -7,99 +7,56 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import AnimatedBackground from "@/components/ui/animated-background";
 import PageTransition from "@/components/ui/page-transition";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import React, { Suspense } from "react";
-// High-performance loading component with enhanced visuals
+import { motion } from "framer-motion";
+
 const LoadingSpinner = React.memo(() => (
-  <div className="flex items-center justify-center h-screen bg-gradient-to-br from-background via-background to-primary/5">
-    <div className="relative">
-      {/* Glow effect */}
-      <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full animate-pulse" />
-      
-      {/* Spinner */}
-      <motion.div
-        className="relative h-20 w-20 rounded-full border-4 border-primary/20 border-t-primary shadow-glow-lg"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-      />
-      
-      {/* Inner pulse */}
-      <motion.div
-        className="absolute inset-0 m-auto h-12 w-12 rounded-full bg-primary/10"
-        animate={{
-          scale: [0.8, 1.2, 0.8],
-          opacity: [0.3, 0.6, 0.3]
-        }}
-        transition={{
-          duration: 1.5,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-    </div>
+  <div className="flex items-center justify-center h-screen bg-background">
+    <motion.div
+      className="h-10 w-10 rounded-full border-2 border-border border-t-primary"
+      animate={{ rotate: 360 }}
+      transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+    />
   </div>
 ));
 LoadingSpinner.displayName = "LoadingSpinner";
-// Optimized protected route component
+
 const ProtectedRoute = React.memo(({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-  if (!isAuthenticated) {
-    return <Navigate to="/auth" replace />;
-  }
-  
+  if (isLoading) return <LoadingSpinner />;
+  if (!isAuthenticated) return <Navigate to="/auth" replace />;
   return <>{children}</>;
 });
-
 ProtectedRoute.displayName = "ProtectedRoute";
 
-// Animated routes wrapper
 const AnimatedRoutes = () => {
   const location = useLocation();
-  
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={
-          <ProtectedRoute>
-            <PageTransition>
-              <Index />
-            </PageTransition>
-          </ProtectedRoute>
-        } />
-        <Route path="/auth" element={
-          <PageTransition>
-            <AuthPage />
-          </PageTransition>
-        } />
-        <Route path="*" element={
-          <PageTransition>
-            <NotFound />
-          </PageTransition>
-        } />
+        <Route path="/" element={<ProtectedRoute><PageTransition><Index /></PageTransition></ProtectedRoute>} />
+        <Route path="/auth" element={<PageTransition><AuthPage /></PageTransition>} />
+        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
   );
 };
 
-const App = () => {
-  return (
-    <Router>
-      <ThemeProvider>
-        <AuthProvider>
-          <div className="min-h-screen bg-background gpu-accelerated overflow-hidden">
-            <AnimatedBackground />
-            <Suspense fallback={<LoadingSpinner />}>
-              <AnimatedRoutes />
-            </Suspense>
-            <Toaster />
-          </div>
-        </AuthProvider>
-      </ThemeProvider>
-    </Router>
-  );
-};
+const App = () => (
+  <Router>
+    <ThemeProvider>
+      <AuthProvider>
+        <div className="min-h-screen bg-background gpu-accelerated overflow-hidden">
+          <AnimatedBackground />
+          <Suspense fallback={<LoadingSpinner />}>
+            <AnimatedRoutes />
+          </Suspense>
+          <Toaster />
+        </div>
+      </AuthProvider>
+    </ThemeProvider>
+  </Router>
+);
 
 export default App;
