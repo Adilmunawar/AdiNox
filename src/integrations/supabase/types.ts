@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      biometric_credentials: {
+        Row: {
+          authenticator_type: string | null
+          created_at: string
+          credential_id: string
+          device_name: string | null
+          id: string
+          last_used_at: string | null
+          public_key: string
+          user_id: string
+        }
+        Insert: {
+          authenticator_type?: string | null
+          created_at?: string
+          credential_id: string
+          device_name?: string | null
+          id?: string
+          last_used_at?: string | null
+          public_key: string
+          user_id: string
+        }
+        Update: {
+          authenticator_type?: string | null
+          created_at?: string
+          credential_id?: string
+          device_name?: string | null
+          id?: string
+          last_used_at?: string | null
+          public_key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       health_check: {
         Row: {
           created_at: string | null
@@ -97,6 +130,7 @@ export type Database = {
       user_settings: {
         Row: {
           auto_lock_timeout: number
+          biometric_enabled: boolean
           clipboard_clear_seconds: number
           created_at: string
           default_password_length: number
@@ -108,6 +142,7 @@ export type Database = {
         }
         Insert: {
           auto_lock_timeout?: number
+          biometric_enabled?: boolean
           clipboard_clear_seconds?: number
           created_at?: string
           default_password_length?: number
@@ -119,6 +154,7 @@ export type Database = {
         }
         Update: {
           auto_lock_timeout?: number
+          biometric_enabled?: boolean
           clipboard_clear_seconds?: number
           created_at?: string
           default_password_length?: number
