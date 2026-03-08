@@ -4,23 +4,27 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/layout/AppSidebar";
 import CommandPalette from "@/components/layout/CommandPalette";
 import { motion } from "framer-motion";
-import { Bell, Search } from "lucide-react";
+import { Bell, Search, LayoutDashboard, Shield, CreditCard, Key, StickyNote, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigate } from "react-router-dom";
-import { Shield, LayoutDashboard, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const routeLabels: Record<string, string> = {
   "/": "Dashboard",
   "/tokens": "2FA Tokens",
+  "/cards": "Cards",
+  "/passwords": "Passwords",
+  "/notes": "Notes",
   "/settings": "Settings",
 };
 
 const mobileNavItems = [
   { path: "/", icon: LayoutDashboard, label: "Home" },
   { path: "/tokens", icon: Shield, label: "Tokens" },
-  { path: "/settings", icon: Settings, label: "Settings" },
+  { path: "/cards", icon: CreditCard, label: "Cards" },
+  { path: "/passwords", icon: Key, label: "Keys" },
+  { path: "/notes", icon: StickyNote, label: "Notes" },
 ];
 
 const LoadingFallback = () => (
@@ -98,26 +102,26 @@ const AppLayout = React.memo(() => {
 
         {/* Mobile bottom tab bar */}
         {isMobile && (
-          <nav className="fixed bottom-0 inset-x-0 z-50 h-16 bg-card/90 backdrop-blur-xl border-t border-border/30 flex items-center justify-around px-2 safe-area-bottom">
+          <nav className="fixed bottom-0 inset-x-0 z-50 h-16 bg-card/90 backdrop-blur-xl border-t border-border/30 flex items-center justify-around px-1 safe-area-bottom">
             {mobileNavItems.map((item) => {
-              const active = item.path === "/" 
-                ? location.pathname === "/" 
+              const active = item.path === "/"
+                ? location.pathname === "/"
                 : location.pathname.startsWith(item.path);
               return (
                 <button
                   key={item.path}
                   onClick={() => navigate(item.path)}
                   className={cn(
-                    "flex flex-col items-center gap-0.5 py-1.5 px-4 rounded-xl transition-colors",
+                    "flex flex-col items-center gap-0.5 py-1.5 px-2 rounded-xl transition-colors relative",
                     active ? "text-primary" : "text-muted-foreground/50"
                   )}
                 >
-                  <item.icon className={cn("h-5 w-5", active && "drop-shadow-[0_0_6px_hsl(var(--primary)/0.5)]")} />
-                  <span className="text-[10px] font-medium">{item.label}</span>
+                  <item.icon className={cn("h-4.5 w-4.5", active && "drop-shadow-[0_0_6px_hsl(var(--primary)/0.5)]")} />
+                  <span className="text-[9px] font-medium">{item.label}</span>
                   {active && (
                     <motion.div
                       layoutId="mobile-tab-indicator"
-                      className="absolute top-0 h-0.5 w-8 bg-primary rounded-full"
+                      className="absolute top-0 h-0.5 w-6 bg-primary rounded-full"
                     />
                   )}
                 </button>
