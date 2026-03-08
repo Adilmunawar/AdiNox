@@ -222,7 +222,7 @@ export const AppSidebar = React.memo(() => {
                   <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                     <span className="text-[11px] font-bold text-primary">{initials}</span>
                   </div>
-                  <div className="absolute -bottom-px -right-px h-2.5 w-2.5 rounded-full bg-emerald-400 border-[1.5px] border-sidebar" />
+                  <div className="absolute -bottom-px -right-px h-2.5 w-2.5 rounded-full bg-primary/80 border-[1.5px] border-sidebar" />
                 </div>
                 {!collapsed && (
                   <>
