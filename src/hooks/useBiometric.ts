@@ -9,53 +9,38 @@ export type BiometricCapability = {
   icon: string;
 };
 
-// Detect what biometric capabilities the device supports
 async function detectBiometricCapabilities(): Promise<BiometricCapability> {
   if (!window.PublicKeyCredential) {
     return { available: false, type: "unknown", label: "Not Supported", icon: "ban" };
   }
-
   try {
     const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
     if (!available) {
       return { available: false, type: "unknown", label: "No Biometric Hardware", icon: "ban" };
     }
-
     const ua = navigator.userAgent.toLowerCase();
     const platform = navigator.platform?.toLowerCase() || "";
 
-    // iOS / macOS — Face ID or Touch ID
     if (/iphone|ipad/.test(ua) || /mac/.test(platform)) {
-      // Face ID devices (iPhone X+)
       if (/iphone/.test(ua)) {
-        const screenHeight = window.screen.height;
-        if (screenHeight >= 812) {
-          return { available: true, type: "face", label: "Face ID", icon: "scan-face" };
-        }
-        return { available: true, type: "fingerprint", label: "Touch ID", icon: "fingerprint" };
+        return window.screen.height >= 812
+          ? { available: true, type: "face", label: "Face ID", icon: "scan-face" }
+          : { available: true, type: "fingerprint", label: "Touch ID", icon: "fingerprint" };
       }
-      // macOS — Touch ID on MacBooks
       return { available: true, type: "fingerprint", label: "Touch ID", icon: "fingerprint" };
     }
-
-    // Android
     if (/android/.test(ua)) {
       return { available: true, type: "fingerprint", label: "Biometric Unlock", icon: "fingerprint" };
     }
-
-    // Windows Hello
     if (/win/.test(platform)) {
       return { available: true, type: "face", label: "Windows Hello", icon: "scan-face" };
     }
-
-    // Linux / Other
     return { available: true, type: "fingerprint", label: "Biometric Auth", icon: "fingerprint" };
   } catch {
     return { available: false, type: "unknown", label: "Detection Failed", icon: "ban" };
   }
 }
 
-// Convert ArrayBuffer to Base64 URL string
 function bufferToBase64url(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
   let str = "";
@@ -63,7 +48,6 @@ function bufferToBase64url(buffer: ArrayBuffer): string {
   return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 }
 
-// Convert Base64 URL string to ArrayBuffer
 function base64urlToBuffer(base64url: string): ArrayBuffer {
   const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
   const pad = base64.length % 4;
@@ -72,6 +56,39 @@ function base64urlToBuffer(base64url: string): ArrayBuffer {
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
   return bytes.buffer;
+}
+
+function getDeviceName(): string {
+  const ua = navigator.userAgent;
+  if (/iPhone/.test(ua)) return "iPhone";
+  if (/iPad/.test(ua)) return "iPad";
+  if (/Mac/.test(ua)) return "MacBook";
+  if (/Windows/.test(ua)) return "Windows PC";
+  if (/Android/.test(ua)) return "Android Device";
+  if (/Linux/.test(ua)) return "Linux Device";
+  return "Unknown Device";
+}
+
+async function invokeEdge(action: string, body?: Record<string, unknown>) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error("Not authenticated");
+
+  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+  const url = `https://${projectId}.supabase.co/functions/v1/biometric-auth/${action}`;
+
+  const res = await fetch(url, {
+    method: body ? "POST" : "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session.access_token}`,
+      apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || "Edge function error");
+  return json;
 }
 
 export function useBiometric() {
@@ -83,57 +100,63 @@ export function useBiometric() {
   const [enrolledDevices, setEnrolledDevices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Detect capabilities
   useEffect(() => {
     detectBiometricCapabilities().then(setCapability);
   }, []);
 
-  // Fetch enrolled credentials
   const fetchEnrolled = useCallback(async () => {
     if (!user) return;
     setLoading(true);
-    const { data } = await supabase
-      .from("biometric_credentials" as any)
-      .select("*")
-      .eq("user_id", user.id);
-    
-    const creds = (data as any[]) || [];
-    setEnrolledDevices(creds);
-    setIsEnrolled(creds.length > 0);
+    try {
+      const { devices } = await invokeEdge("devices");
+      setEnrolledDevices(devices || []);
+      setIsEnrolled((devices || []).length > 0);
+    } catch {
+      // Fallback to direct query
+      const { data } = await supabase
+        .from("biometric_credentials" as any)
+        .select("*")
+        .eq("user_id", user.id);
+      const creds = (data as any[]) || [];
+      setEnrolledDevices(creds);
+      setIsEnrolled(creds.length > 0);
+    }
     setLoading(false);
   }, [user]);
 
   useEffect(() => { fetchEnrolled(); }, [fetchEnrolled]);
 
-  // Register a new biometric credential
   const enroll = useCallback(async (): Promise<boolean> => {
     if (!user || !capability.available) return false;
-
     try {
+      // 1. Get challenge from server
+      const challengeData = await invokeEdge("register-challenge");
+      const challenge = base64urlToBuffer(challengeData.challenge);
       const userId = new TextEncoder().encode(user.id);
-      const challenge = crypto.getRandomValues(new Uint8Array(32));
 
+      // 2. Create credential with platform authenticator
       const credential = await navigator.credentials.create({
         publicKey: {
           challenge,
-          rp: {
-            name: "AdiNox Vault",
-            id: window.location.hostname,
-          },
+          rp: { name: challengeData.rpName, id: window.location.hostname },
           user: {
             id: userId,
-            name: user.email || "user",
-            displayName: user.user_metadata?.username || user.email || "User",
+            name: challengeData.userName,
+            displayName: challengeData.displayName,
           },
           pubKeyCredParams: [
-            { alg: -7, type: "public-key" },   // ES256
-            { alg: -257, type: "public-key" },  // RS256
+            { alg: -7, type: "public-key" },
+            { alg: -257, type: "public-key" },
           ],
           authenticatorSelection: {
             authenticatorAttachment: "platform",
             userVerification: "required",
             residentKey: "preferred",
           },
+          excludeCredentials: (challengeData.excludeCredentials || []).map((id: string) => ({
+            id: base64urlToBuffer(id),
+            type: "public-key" as const,
+          })),
           timeout: 60000,
           attestation: "none",
         },
@@ -145,25 +168,13 @@ export function useBiometric() {
       const credentialId = bufferToBase64url(credential.rawId);
       const publicKey = bufferToBase64url(response.getPublicKey?.() || new ArrayBuffer(0));
 
-      // Determine device name
-      const ua = navigator.userAgent;
-      let deviceName = "Unknown Device";
-      if (/iPhone/.test(ua)) deviceName = "iPhone";
-      else if (/iPad/.test(ua)) deviceName = "iPad";
-      else if (/Mac/.test(ua)) deviceName = "MacBook";
-      else if (/Windows/.test(ua)) deviceName = "Windows PC";
-      else if (/Android/.test(ua)) deviceName = "Android Device";
-      else if (/Linux/.test(ua)) deviceName = "Linux Device";
-
-      const { error } = await supabase.from("biometric_credentials" as any).insert({
-        user_id: user.id,
-        credential_id: credentialId,
-        public_key: publicKey,
-        device_name: deviceName,
-        authenticator_type: capability.type,
+      // 3. Verify with server and store
+      await invokeEdge("register-verify", {
+        credentialId,
+        publicKey,
+        deviceName: getDeviceName(),
+        authenticatorType: capability.type,
       });
-
-      if (error) throw error;
 
       await fetchEnrolled();
       return true;
@@ -173,18 +184,20 @@ export function useBiometric() {
     }
   }, [user, capability, fetchEnrolled]);
 
-  // Verify biometric (re-authenticate)
   const verify = useCallback(async (): Promise<boolean> => {
     if (!user || enrolledDevices.length === 0) return false;
-
     try {
-      const challenge = crypto.getRandomValues(new Uint8Array(32));
-      const allowCredentials = enrolledDevices.map((d: any) => ({
-        id: base64urlToBuffer(d.credential_id),
+      // 1. Get challenge from server
+      const challengeData = await invokeEdge("auth-challenge");
+      const challenge = base64urlToBuffer(challengeData.challenge);
+
+      const allowCredentials = (challengeData.allowCredentials || []).map((id: string) => ({
+        id: base64urlToBuffer(id),
         type: "public-key" as const,
         transports: ["internal" as const],
       }));
 
+      // 2. Get assertion from authenticator
       const assertion = await navigator.credentials.get({
         publicKey: {
           challenge,
@@ -193,33 +206,33 @@ export function useBiometric() {
           timeout: 60000,
           rpId: window.location.hostname,
         },
-      });
+      }) as PublicKeyCredential;
 
       if (!assertion) return false;
 
-      // Update last_used_at
-      const credId = bufferToBase64url((assertion as PublicKeyCredential).rawId);
-      await supabase
-        .from("biometric_credentials" as any)
-        .update({ last_used_at: new Date().toISOString() })
-        .eq("credential_id", credId)
-        .eq("user_id", user.id);
+      const credentialId = bufferToBase64url(assertion.rawId);
 
-      return true;
+      // 3. Verify with server
+      const result = await invokeEdge("auth-verify", { credentialId });
+      return result.verified === true;
     } catch (e) {
       console.error("Biometric verification failed:", e);
       return false;
     }
   }, [user, enrolledDevices]);
 
-  // Remove a credential
-  const removeCredential = useCallback(async (credId: string) => {
+  const removeCredential = useCallback(async (deviceId: string) => {
     if (!user) return;
-    await supabase
-      .from("biometric_credentials" as any)
-      .delete()
-      .eq("id", credId)
-      .eq("user_id", user.id);
+    try {
+      await invokeEdge("remove-device", { deviceId });
+    } catch {
+      // Fallback
+      await supabase
+        .from("biometric_credentials" as any)
+        .delete()
+        .eq("id", deviceId)
+        .eq("user_id", user.id);
+    }
     await fetchEnrolled();
   }, [user, fetchEnrolled]);
 
