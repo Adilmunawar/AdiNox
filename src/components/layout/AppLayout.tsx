@@ -90,8 +90,8 @@ const AppLayout = React.memo(() => {
             </div>
           </header>
 
-          {/* Main content */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-20 md:pb-8">
+          {/* Main content — scrollable area */}
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8">
             <div className="max-w-6xl mx-auto">
               <Suspense fallback={<LoadingFallback />}>
                 <Outlet />
