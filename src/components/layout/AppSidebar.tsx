@@ -27,13 +27,13 @@ const navItems = [
   { title: "Documents", url: "/documents", icon: FileText },
 ];
 
-type VaultStats = { tokens: number; cards: number; passwords: number; notes: number };
+type VaultStats = { tokens: number; cards: number; passwords: number; documents: number };
 
 const statKeyMap: Record<string, keyof VaultStats> = {
   "/tokens": "tokens",
   "/cards": "cards",
   "/passwords": "passwords",
-  "/notes": "notes",
+  "/documents": "documents",
 };
 
 export const AppSidebar = React.memo(() => {
