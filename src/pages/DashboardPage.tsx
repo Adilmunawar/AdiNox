@@ -79,7 +79,7 @@ const DashboardContent = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [tipIndex] = React.useState(() => Math.floor(Math.random() * securityTips.length));
-  const [vaultStats, setVaultStats] = React.useState({ cards: 0, passwords: 0, notes: 0 });
+  const [vaultStats, setVaultStats] = React.useState({ cards: 0, passwords: 0, documents: 0 });
   const [greeting, setGreeting] = React.useState("");
 
   React.useEffect(() => {
