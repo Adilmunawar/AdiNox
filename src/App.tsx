@@ -1,3 +1,4 @@
+// App root
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/NotFound";
