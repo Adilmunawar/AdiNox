@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  LayoutDashboard, Shield, CreditCard, Key, StickyNote, Settings,
+  LayoutDashboard, Shield, CreditCard, Key, FileText, Settings,
   LogOut, ChevronRight, Lock, HelpCircle,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
