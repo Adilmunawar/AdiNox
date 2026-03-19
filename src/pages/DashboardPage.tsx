@@ -152,7 +152,7 @@ const DashboardContent = () => {
         <StatsCard icon={Shield} label="2FA Tokens" value={tokens.length} accent index={0} />
         <StatsCard icon={CreditCard} label="Saved Cards" value={vaultStats.cards} index={1} />
         <StatsCard icon={Key} label="Passwords" value={vaultStats.passwords} index={2} />
-        <StatsCard icon={StickyNote} label="Secure Notes" value={vaultStats.notes} index={3} />
+        <StatsCard icon={FileText} label="Documents" value={vaultStats.documents} index={3} />
         <StatsCard icon={Clock} label="Expiring Soon" value={urgentTokens.length} index={4} />
         <StatsCard icon={Activity} label="Security Score" value="A+" accent trend="+2%" index={5} />
       </div>

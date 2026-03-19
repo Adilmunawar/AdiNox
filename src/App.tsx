@@ -64,7 +64,7 @@ const App = () => (
                 <Route path="/tokens" element={<TokensPage />} />
                 <Route path="/cards" element={<CardsPage />} />
                 <Route path="/passwords" element={<PasswordsPage />} />
-                <Route path="/notes" element={<NotesPage />} />
+                <Route path="/documents" element={<DocumentsPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
               </Route>
               <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
