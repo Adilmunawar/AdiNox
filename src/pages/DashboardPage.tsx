@@ -90,15 +90,15 @@ const DashboardContent = () => {
   React.useEffect(() => {
     if (!user) return;
     const fetchStats = async () => {
-      const [cardsRes, passwordsRes, notesRes] = await Promise.all([
+      const [cardsRes, passwordsRes, docsRes] = await Promise.all([
         supabase.from("vault_cards").select("id", { count: "exact", head: true }),
         supabase.from("vault_passwords").select("id", { count: "exact", head: true }),
-        supabase.from("vault_notes").select("id", { count: "exact", head: true }),
+        supabase.from("vault_documents" as any).select("id", { count: "exact", head: true }),
       ]);
       setVaultStats({
         cards: cardsRes.count ?? 0,
         passwords: passwordsRes.count ?? 0,
-        notes: notesRes.count ?? 0,
+        documents: docsRes.count ?? 0,
       });
     };
     fetchStats();
