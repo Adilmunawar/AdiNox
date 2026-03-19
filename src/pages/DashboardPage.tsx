@@ -71,7 +71,7 @@ const quickActions = [
   { label: "Add Token", icon: Shield, path: "/tokens", primary: true },
   { label: "Add Card", icon: CreditCard, path: "/cards" },
   { label: "Add Password", icon: Key, path: "/passwords" },
-  { label: "Add Note", icon: StickyNote, path: "/notes" },
+  { label: "Add Document", icon: FileText, path: "/documents" },
 ];
 
 const DashboardContent = () => {
