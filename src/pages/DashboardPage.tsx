@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Shield, Plus, Clock, Activity, ArrowRight, Lightbulb, CreditCard, Key, StickyNote, TrendingUp, Sparkles, CheckCircle2 } from "lucide-react";
+import { Shield, Plus, Clock, Activity, ArrowRight, Lightbulb, CreditCard, Key, FileText, TrendingUp, Sparkles, CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
