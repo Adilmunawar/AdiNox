@@ -14,7 +14,7 @@ const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
 const TokensPage = lazy(() => import("@/pages/TokensPage"));
 const CardsPage = lazy(() => import("@/pages/CardsPage"));
 const PasswordsPage = lazy(() => import("@/pages/PasswordsPage"));
-const NotesPage = lazy(() => import("@/pages/NotesPage"));
+const DocumentsPage = lazy(() => import("@/pages/DocumentsPage"));
 const SettingsPage = lazy(() => import("@/pages/SettingsPage"));
 
 const LoadingSpinner = React.memo(() => (
