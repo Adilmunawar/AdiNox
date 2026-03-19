@@ -106,7 +106,7 @@ const DashboardContent = () => {
 
   const urgentTokens = tokens.filter(t => getTimeRemaining(t.period) <= 10);
   const recentTokens = tokens.slice(-3).reverse();
-  const totalItems = tokens.length + vaultStats.cards + vaultStats.passwords + vaultStats.notes;
+  const totalItems = tokens.length + vaultStats.cards + vaultStats.passwords + vaultStats.documents;
   const username = user?.user_metadata?.username || "there";
 
   return (
