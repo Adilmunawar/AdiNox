@@ -24,7 +24,7 @@ const navItems = [
   { title: "2FA Tokens", url: "/tokens", icon: Shield },
   { title: "Cards", url: "/cards", icon: CreditCard },
   { title: "Passwords", url: "/passwords", icon: Key },
-  { title: "Notes", url: "/notes", icon: StickyNote },
+  { title: "Documents", url: "/documents", icon: FileText },
 ];
 
 type VaultStats = { tokens: number; cards: number; passwords: number; notes: number };
