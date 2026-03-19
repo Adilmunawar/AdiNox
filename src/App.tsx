@@ -14,7 +14,7 @@ const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
 const TokensPage = lazy(() => import("@/pages/TokensPage"));
 const CardsPage = lazy(() => import("@/pages/CardsPage"));
 const PasswordsPage = lazy(() => import("@/pages/PasswordsPage"));
-const NotesPage = lazy(() => import("@/pages/NotesPage"));
+const DocumentsPage = lazy(() => import("@/pages/DocumentsPage"));
 const SettingsPage = lazy(() => import("@/pages/SettingsPage"));
 
 const LoadingSpinner = React.memo(() => (
@@ -64,7 +64,7 @@ const App = () => (
                 <Route path="/tokens" element={<TokensPage />} />
                 <Route path="/cards" element={<CardsPage />} />
                 <Route path="/passwords" element={<PasswordsPage />} />
-                <Route path="/notes" element={<NotesPage />} />
+                <Route path="/documents" element={<DocumentsPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
               </Route>
               <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />

@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Shield, Plus, Clock, Activity, ArrowRight, Lightbulb, CreditCard, Key, StickyNote, TrendingUp, Sparkles, CheckCircle2 } from "lucide-react";
+import { Shield, Plus, Clock, Activity, ArrowRight, Lightbulb, CreditCard, Key, FileText, TrendingUp, Sparkles, CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -71,7 +71,7 @@ const quickActions = [
   { label: "Add Token", icon: Shield, path: "/tokens", primary: true },
   { label: "Add Card", icon: CreditCard, path: "/cards" },
   { label: "Add Password", icon: Key, path: "/passwords" },
-  { label: "Add Note", icon: StickyNote, path: "/notes" },
+  { label: "Add Document", icon: FileText, path: "/documents" },
 ];
 
 const DashboardContent = () => {
@@ -79,7 +79,7 @@ const DashboardContent = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [tipIndex] = React.useState(() => Math.floor(Math.random() * securityTips.length));
-  const [vaultStats, setVaultStats] = React.useState({ cards: 0, passwords: 0, notes: 0 });
+  const [vaultStats, setVaultStats] = React.useState({ cards: 0, passwords: 0, documents: 0 });
   const [greeting, setGreeting] = React.useState("");
 
   React.useEffect(() => {
@@ -90,15 +90,15 @@ const DashboardContent = () => {
   React.useEffect(() => {
     if (!user) return;
     const fetchStats = async () => {
-      const [cardsRes, passwordsRes, notesRes] = await Promise.all([
+      const [cardsRes, passwordsRes, docsRes] = await Promise.all([
         supabase.from("vault_cards").select("id", { count: "exact", head: true }),
         supabase.from("vault_passwords").select("id", { count: "exact", head: true }),
-        supabase.from("vault_notes").select("id", { count: "exact", head: true }),
+        supabase.from("vault_documents" as any).select("id", { count: "exact", head: true }),
       ]);
       setVaultStats({
         cards: cardsRes.count ?? 0,
         passwords: passwordsRes.count ?? 0,
-        notes: notesRes.count ?? 0,
+        documents: docsRes.count ?? 0,
       });
     };
     fetchStats();
@@ -106,7 +106,7 @@ const DashboardContent = () => {
 
   const urgentTokens = tokens.filter(t => getTimeRemaining(t.period) <= 10);
   const recentTokens = tokens.slice(-3).reverse();
-  const totalItems = tokens.length + vaultStats.cards + vaultStats.passwords + vaultStats.notes;
+  const totalItems = tokens.length + vaultStats.cards + vaultStats.passwords + vaultStats.documents;
   const username = user?.user_metadata?.username || "there";
 
   return (
@@ -152,7 +152,7 @@ const DashboardContent = () => {
         <StatsCard icon={Shield} label="2FA Tokens" value={tokens.length} accent index={0} />
         <StatsCard icon={CreditCard} label="Saved Cards" value={vaultStats.cards} index={1} />
         <StatsCard icon={Key} label="Passwords" value={vaultStats.passwords} index={2} />
-        <StatsCard icon={StickyNote} label="Secure Notes" value={vaultStats.notes} index={3} />
+        <StatsCard icon={FileText} label="Documents" value={vaultStats.documents} index={3} />
         <StatsCard icon={Clock} label="Expiring Soon" value={urgentTokens.length} index={4} />
         <StatsCard icon={Activity} label="Security Score" value="A+" accent trend="+2%" index={5} />
       </div>

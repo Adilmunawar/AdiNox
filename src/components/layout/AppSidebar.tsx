@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  LayoutDashboard, Shield, CreditCard, Key, StickyNote, Settings,
+  LayoutDashboard, Shield, CreditCard, Key, FileText, Settings,
   LogOut, ChevronRight, Lock, HelpCircle,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -24,16 +24,16 @@ const navItems = [
   { title: "2FA Tokens", url: "/tokens", icon: Shield },
   { title: "Cards", url: "/cards", icon: CreditCard },
   { title: "Passwords", url: "/passwords", icon: Key },
-  { title: "Notes", url: "/notes", icon: StickyNote },
+  { title: "Documents", url: "/documents", icon: FileText },
 ];
 
-type VaultStats = { tokens: number; cards: number; passwords: number; notes: number };
+type VaultStats = { tokens: number; cards: number; passwords: number; documents: number };
 
 const statKeyMap: Record<string, keyof VaultStats> = {
   "/tokens": "tokens",
   "/cards": "cards",
   "/passwords": "passwords",
-  "/notes": "notes",
+  "/documents": "documents",
 };
 
 export const AppSidebar = React.memo(() => {
@@ -42,18 +42,18 @@ export const AppSidebar = React.memo(() => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const [stats, setStats] = React.useState<VaultStats>({ tokens: 0, cards: 0, passwords: 0, notes: 0 });
+  const [stats, setStats] = React.useState<VaultStats>({ tokens: 0, cards: 0, passwords: 0, documents: 0 });
 
   React.useEffect(() => {
     if (!user) return;
     (async () => {
-      const [t, c, p, n] = await Promise.all([
+      const [t, c, p, d] = await Promise.all([
         supabase.from("user_tokens").select("id", { count: "exact", head: true }),
         supabase.from("vault_cards").select("id", { count: "exact", head: true }),
         supabase.from("vault_passwords").select("id", { count: "exact", head: true }),
-        supabase.from("vault_notes").select("id", { count: "exact", head: true }),
+        supabase.from("vault_documents" as any).select("id", { count: "exact", head: true }),
       ]);
-      setStats({ tokens: t.count ?? 0, cards: c.count ?? 0, passwords: p.count ?? 0, notes: n.count ?? 0 });
+      setStats({ tokens: t.count ?? 0, cards: c.count ?? 0, passwords: p.count ?? 0, documents: d.count ?? 0 });
     })();
   }, [user]);
 

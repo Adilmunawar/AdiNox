@@ -289,6 +289,60 @@ export type Database = {
         }
         Relationships: []
       }
+      vault_documents: {
+        Row: {
+          category: string
+          color_theme: string | null
+          created_at: string
+          document_number: string | null
+          document_type: string
+          expiry_date: string | null
+          id: string
+          image_back_url: string | null
+          image_front_url: string | null
+          issue_date: string | null
+          issuer: string | null
+          notes: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          color_theme?: string | null
+          created_at?: string
+          document_number?: string | null
+          document_type?: string
+          expiry_date?: string | null
+          id?: string
+          image_back_url?: string | null
+          image_front_url?: string | null
+          issue_date?: string | null
+          issuer?: string | null
+          notes?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          color_theme?: string | null
+          created_at?: string
+          document_number?: string | null
+          document_type?: string
+          expiry_date?: string | null
+          id?: string
+          image_back_url?: string | null
+          image_front_url?: string | null
+          issue_date?: string | null
+          issuer?: string | null
+          notes?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       vault_notes: {
         Row: {
           category: string | null
