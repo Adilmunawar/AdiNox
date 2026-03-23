@@ -37,9 +37,9 @@ const getStrength = (pw: string): { score: number; label: string; color: string 
     { label: "Very Weak", color: "bg-destructive" },
     { label: "Weak", color: "bg-orange-500" },
     { label: "Fair", color: "bg-yellow-500" },
-    { label: "Good", color: "bg-blue-500" },
+    { label: "Good", color: "bg-primary/60" },
     { label: "Strong", color: "bg-primary" },
-    { label: "Excellent", color: "bg-primary/80" },
+    { label: "Excellent", color: "bg-primary" },
   ];
   return { score: s, ...(configs[s - 1] || configs[0]) };
 };
