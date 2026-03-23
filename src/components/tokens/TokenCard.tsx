@@ -165,7 +165,7 @@ const TokenCard = ({ token, onRemove, onEdit }: TokenCardProps) => {
               size="sm" 
               className={cn(
                 "h-7 text-[11px] rounded-lg transition-all",
-                copied && "bg-emerald-500/15 text-emerald-400 border-emerald-500/20"
+                copied && "bg-primary/15 text-primary border-primary/20"
               )}
               onClick={handleCopy}
             >

@@ -118,10 +118,10 @@ const PasswordItem = React.memo(({ pw, onDelete }: { pw: VaultPassword; onDelete
             {visible ? pw.encrypted_password : "•".repeat(Math.min(pw.encrypted_password.length, 16))}
           </p>
           <div className="flex gap-1">
-            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground/50" onClick={() => setVisible(!visible)}>
+            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-primary/50 hover:text-primary" onClick={() => setVisible(!visible)}>
               {visible ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
             </Button>
-            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground/50" onClick={() => copyField(pw.encrypted_password, "Password")}>
+            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-primary/50 hover:text-primary" onClick={() => copyField(pw.encrypted_password, "Password")}>
               <Copy className="h-3 w-3" />
             </Button>
           </div>
