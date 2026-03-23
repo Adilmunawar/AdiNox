@@ -163,7 +163,7 @@ const AppLayout = React.memo(() => {
           </div>
 
           {isMobile && (
-            <nav className="fixed bottom-0 inset-x-0 z-50 h-16 bg-white/95 backdrop-blur-xl border-t border-border/40 flex items-center justify-around px-1 safe-area-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
+            <nav className="fixed bottom-0 inset-x-0 z-50 h-16 bg-background/95 backdrop-blur-xl border-t border-border/40 flex items-center justify-around px-1 safe-area-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
               {mobileNavItems.map((item) => {
                 const active = item.path === "/"
                   ? location.pathname === "/"
