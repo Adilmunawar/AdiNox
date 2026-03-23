@@ -13,24 +13,24 @@
     --card-foreground: 210 20% 12%;
     --popover: 0 0% 100%;
     --popover-foreground: 210 20% 12%;
-    --primary: 168 76% 42%;
+    --primary: 168 76% 32%;
     --primary-foreground: 0 0% 100%;
     --secondary: 168 20% 95%;
     --secondary-foreground: 210 15% 30%;
     --muted: 210 10% 95%;
     --muted-foreground: 210 8% 50%;
-    --accent: 168 50% 92%;
-    --accent-foreground: 168 76% 30%;
+    --accent: 168 40% 92%;
+    --accent-foreground: 168 76% 25%;
     --destructive: 0 72% 56%;
     --destructive-foreground: 0 0% 98%;
     --border: 210 12% 90%;
     --input: 210 12% 90%;
-    --ring: 168 76% 42%;
+    --ring: 168 76% 32%;
     --radius: 0.75rem;
-    --chart-1: 168 76% 42%;
-    --chart-2: 168 60% 55%;
-    --chart-3: 200 80% 50%;
-    --chart-4: 168 40% 65%;
+    --chart-1: 168 76% 32%;
+    --chart-2: 168 60% 40%;
+    --chart-3: 200 80% 45%;
+    --chart-4: 168 40% 50%;
     --chart-5: 210 10% 70%;
     --sidebar-background: 168 45% 14%;
     --sidebar-foreground: 168 8% 92%;
@@ -46,9 +46,9 @@
     --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-    --shadow-glow: 0 0 20px rgba(20, 184, 166, 0.08);
-    --shadow-glow-lg: 0 0 40px rgba(20, 184, 166, 0.12);
-    --shadow-glow-primary: 0 4px 20px -4px rgba(20, 184, 166, 0.25);
+    --shadow-glow: 0 0 20px rgba(14, 130, 116, 0.1);
+    --shadow-glow-lg: 0 0 40px rgba(14, 130, 116, 0.14);
+    --shadow-glow-primary: 0 4px 20px -4px rgba(14, 130, 116, 0.3);
   }
 
   * {
