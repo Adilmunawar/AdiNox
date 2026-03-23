@@ -101,9 +101,9 @@ const DocumentCard = React.memo(({
           </div>
         </div>
       ) : (
-        <div className="h-32 flex items-center justify-center bg-muted/5 relative border-b border-border/10">
-          <div className="h-14 w-14 rounded-2xl bg-muted/20 flex items-center justify-center">
-            <DocIcon className="h-7 w-7 text-muted-foreground/15" />
+        <div className="h-32 flex items-center justify-center bg-primary/[0.02] relative border-b border-primary/5">
+          <div className="h-14 w-14 rounded-2xl bg-primary/8 border border-primary/10 flex items-center justify-center">
+            <DocIcon className="h-7 w-7 text-primary/30" />
           </div>
           <div className="absolute bottom-3 left-3">
             <Badge variant="outline" className="text-[9px] border-border/20 text-muted-foreground/40 font-medium px-2 py-0.5">

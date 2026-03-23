@@ -37,9 +37,9 @@ const getStrength = (pw: string): { score: number; label: string; color: string 
     { label: "Very Weak", color: "bg-destructive" },
     { label: "Weak", color: "bg-orange-500" },
     { label: "Fair", color: "bg-yellow-500" },
-    { label: "Good", color: "bg-blue-500" },
+    { label: "Good", color: "bg-primary/60" },
     { label: "Strong", color: "bg-primary" },
-    { label: "Excellent", color: "bg-primary/80" },
+    { label: "Excellent", color: "bg-primary" },
   ];
   return { score: s, ...(configs[s - 1] || configs[0]) };
 };
@@ -76,11 +76,11 @@ const PasswordItem = React.memo(({ pw, onDelete }: { pw: VaultPassword; onDelete
     <Card className="p-4 border-border/30 bg-white hover:shadow-[var(--shadow-md)] transition-all duration-200">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className="h-10 w-10 rounded-xl bg-muted/50 border border-border/30 flex items-center justify-center shrink-0 overflow-hidden">
+          <div className="h-10 w-10 rounded-xl bg-primary/8 border border-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
             {faviconUrl ? (
               <img src={faviconUrl} alt="" className="h-5 w-5" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             ) : (
-              <Globe className="h-4 w-4 text-muted-foreground/40" />
+              <Globe className="h-4 w-4 text-primary/50" />
             )}
           </div>
           <div className="min-w-0">
@@ -118,10 +118,10 @@ const PasswordItem = React.memo(({ pw, onDelete }: { pw: VaultPassword; onDelete
             {visible ? pw.encrypted_password : "•".repeat(Math.min(pw.encrypted_password.length, 16))}
           </p>
           <div className="flex gap-1">
-            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground/50" onClick={() => setVisible(!visible)}>
+            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-primary/50 hover:text-primary" onClick={() => setVisible(!visible)}>
               {visible ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
             </Button>
-            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-muted-foreground/50" onClick={() => copyField(pw.encrypted_password, "Password")}>
+            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-primary/50 hover:text-primary" onClick={() => copyField(pw.encrypted_password, "Password")}>
               <Copy className="h-3 w-3" />
             </Button>
           </div>
@@ -283,7 +283,7 @@ const PasswordsPage = () => {
       </motion.div>
 
       <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/50" />
         <Input
           placeholder="Search credentials..."
           className="pl-10 bg-white border-border/40 rounded-xl h-11 shadow-[var(--shadow-xs)]"

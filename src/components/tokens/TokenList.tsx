@@ -119,7 +119,7 @@ const TokenList = () => {
       <div className="rounded-xl bg-card/30 backdrop-blur-sm p-4 border border-border/50 shadow-lg">
         <div className={`flex gap-3 flex-wrap ${isMobile ? 'flex-col' : 'items-center'}`}>
           <div className="relative flex-grow">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/50" />
             <Input
               id="token-search"
               placeholder="Search tokens..."
