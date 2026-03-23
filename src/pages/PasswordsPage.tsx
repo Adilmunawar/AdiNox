@@ -76,11 +76,11 @@ const PasswordItem = React.memo(({ pw, onDelete }: { pw: VaultPassword; onDelete
     <Card className="p-4 border-border/30 bg-white hover:shadow-[var(--shadow-md)] transition-all duration-200">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className="h-10 w-10 rounded-xl bg-muted/50 border border-border/30 flex items-center justify-center shrink-0 overflow-hidden">
+          <div className="h-10 w-10 rounded-xl bg-primary/8 border border-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
             {faviconUrl ? (
               <img src={faviconUrl} alt="" className="h-5 w-5" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             ) : (
-              <Globe className="h-4 w-4 text-muted-foreground/40" />
+              <Globe className="h-4 w-4 text-primary/50" />
             )}
           </div>
           <div className="min-w-0">
