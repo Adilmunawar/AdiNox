@@ -123,8 +123,20 @@ const SettingsPage = React.memo(() => {
   const [dirty, setDirty] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
   const [showFaceScanner, setShowFaceScanner] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabId>("account");
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<TabId>(() => {
+    const tabParam = searchParams.get("tab");
+    return (tabParam && ["account", "security", "preferences", "help"].includes(tabParam)) ? tabParam as TabId : "account";
+  });
   const [copiedEmail, setCopiedEmail] = useState(false);
+
+  // Sync tab from URL changes
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam && ["account", "security", "preferences", "help"].includes(tabParam)) {
+      setActiveTab(tabParam as TabId);
+    }
+  }, [searchParams]);
 
   const fetchSettings = useCallback(async () => {
     if (!user) return;
