@@ -123,7 +123,7 @@ const AppLayout = React.memo(() => {
 
           <div className="flex-1 h-screen flex flex-col overflow-hidden">
             {/* Sticky header */}
-            <header className="sticky top-0 z-40 h-14 flex items-center justify-between border-b border-border/50 bg-white/90 backdrop-blur-xl px-4 sm:px-6">
+            <header className="sticky top-0 z-40 h-14 flex items-center justify-between border-b border-border/50 bg-background/90 backdrop-blur-xl px-4 sm:px-6">
               <div className="flex items-center gap-3">
                 {!isMobile && <SidebarTrigger className="text-muted-foreground/60 hover:text-foreground transition-colors" />}
                 {!isMobile && <div className="h-5 w-px bg-border/40" />}
@@ -163,7 +163,7 @@ const AppLayout = React.memo(() => {
           </div>
 
           {isMobile && (
-            <nav className="fixed bottom-0 inset-x-0 z-50 h-16 bg-white/95 backdrop-blur-xl border-t border-border/40 flex items-center justify-around px-1 safe-area-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
+            <nav className="fixed bottom-0 inset-x-0 z-50 h-16 bg-background/95 backdrop-blur-xl border-t border-border/40 flex items-center justify-around px-1 safe-area-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
               {mobileNavItems.map((item) => {
                 const active = item.path === "/"
                   ? location.pathname === "/"
